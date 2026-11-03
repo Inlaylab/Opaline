@@ -12,3 +12,4 @@ coverage
 next-env.d.ts
 .nuxt
 .output
+apps/ssr-sveltekit/build

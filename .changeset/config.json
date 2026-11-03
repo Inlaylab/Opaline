@@ -7,7 +7,7 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["ssr-next", "ssr-angular", "ssr-nuxt"],
+  "ignore": ["ssr-next", "ssr-angular", "ssr-nuxt", "ssr-sveltekit"],
   "privatePackages": {
     "version": false,
     "tag": false
