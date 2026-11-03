@@ -90,3 +90,16 @@ test('vue: a missing seed renders as the empty seed', async () => {
   expect(svg).toBe(expectedSvg({ seed: '' }))
   app.unmount()
 })
+
+test('vue: a bare face attribute turns the face on, as in a template', async () => {
+  const container = document.createElement('div')
+  document.body.append(container)
+  // `<Avatar face />` in a template compiles to `face: ''`.
+  const app = createApp({ render: () => h(Avatar, { look: morph, seed: 'b', face: '' }) })
+  app.mount(container)
+  const svg = container
+    .querySelector('svg')!
+    .outerHTML.replace(/(a[0-9a-z]{7}-[a-z0-9]+)-[\w-]+/g, '$1')
+  expect(svg).toBe(expectedSvg({ seed: 'b', face: true }))
+  app.unmount()
+})

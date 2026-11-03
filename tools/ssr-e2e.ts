@@ -65,6 +65,30 @@ export async function checkSsrApp({ start, port, cwd, env = {} }: Options): Prom
       .toBe(false)
     expect(await page.locator('[data-opaline] svg').count()).toBeGreaterThanOrEqual(2)
     expect(problems).toEqual([])
+    // Production Svelte repairs a mismatch silently, so also compare the hydrated DOM with the
+    // server HTML: each avatar's root attributes and svg must be what the server sent.
+    const hydrated = await page.locator('[data-opaline]').evaluateAll((roots) =>
+      roots.map((root) => ({
+        attrs: [...root.attributes]
+          // Angular's hydration marker; it removes it once hydration is done.
+          .filter((a) => a.name !== 'ngh')
+          .map((a) => `${a.name}=${a.value}`)
+          .sort(),
+        svg: root.querySelector('svg')?.outerHTML,
+      })),
+    )
+    const served = await page.evaluate((source) => {
+      const doc = new DOMParser().parseFromString(source, 'text/html')
+      return [...doc.querySelectorAll('[data-opaline]')].map((root) => ({
+        attrs: [...root.attributes]
+          // Angular's hydration marker; it removes it once hydration is done.
+          .filter((a) => a.name !== 'ngh')
+          .map((a) => `${a.name}=${a.value}`)
+          .sort(),
+        svg: root.querySelector('svg')?.outerHTML,
+      }))
+    }, html)
+    expect(hydrated).toEqual(served)
   } finally {
     await browser.close()
     // The server may have started children; end the whole group.
