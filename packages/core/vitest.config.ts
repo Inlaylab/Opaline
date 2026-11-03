@@ -13,7 +13,11 @@ export default defineConfig({
             enabled: true,
             provider: playwright(),
             headless: true,
-            instances: [{ browser: 'chromium' }],
+            // CI covers all three engines; Firefox will not launch on some Windows dev machines.
+            instances: (process.env.CI
+              ? (['chromium', 'firefox', 'webkit'] as const)
+              : (['chromium', 'webkit'] as const)
+            ).map((browser) => ({ browser })),
           },
         },
       },

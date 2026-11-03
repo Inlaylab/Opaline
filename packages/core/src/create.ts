@@ -32,7 +32,7 @@ export function createAvatar<O extends object>(style: Style<O>, options: BaseOpt
   // Options are part of the ID scope, so the same seed with other options never shares defs.
   const id = createIds(hash(seed + '\u0000' + style.name + '\u0000' + stableStringify(rest)))
   const { defs, body, picks } = style.render({ rng: createRng(seed), id, seed }, options)
-  const label = title === undefined ? undefined : escapeXml(title)
+  const label = title ? escapeXml(title) : undefined
   const svg = el(
     'svg',
     {
@@ -41,7 +41,7 @@ export function createAvatar<O extends object>(style: Style<O>, options: BaseOpt
       width: size,
       height: size,
       role: label === undefined ? undefined : 'img',
-      'aria-label': title,
+      'aria-label': title || undefined,
       'aria-hidden': label === undefined ? 'true' : undefined,
     },
     (label === undefined ? '' : `<title>${label}</title>`) +

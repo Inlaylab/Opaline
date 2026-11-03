@@ -64,3 +64,10 @@ test('never uses Math.random', () => {
   expect(spy).not.toHaveBeenCalled()
   spy.mockRestore()
 })
+
+test('empty title is treated as no title', () => {
+  const svg = createAvatar(fixture, { seed: 'a', title: '' }).svg
+  expect(svg).toContain('aria-hidden="true"')
+  expect(svg).not.toContain('role=')
+  expect(svg).not.toContain('<title>')
+})
