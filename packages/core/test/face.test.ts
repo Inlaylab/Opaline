@@ -24,7 +24,8 @@ test('mood narrows the expressions', () => {
 })
 
 test('a forced expression is used', () => {
-  for (let i = 0; i < 20; i++) expect(face(createRng('w' + i), at, { expression: 'wink' }).expression).toBe('wink')
+  for (let i = 0; i < 20; i++)
+    expect(face(createRng('w' + i), at, { expression: 'wink' }).expression).toBe('wink')
 })
 
 test('forcing an expression keeps spread and tilt', () => {
@@ -36,7 +37,9 @@ test('forcing an expression keeps spread and tilt', () => {
 test.each(Object.keys(EXPRESSIONS) as Expression[])('%s: two catch-lights per open eye', (name) => {
   const { svg } = face(createRng('c'), at, { expression: name })
   const open = EXPRESSIONS[name].eyes.filter((e) => e === 'dot' || e === 'round').length
-  const catchLights = [...svg.matchAll(/<circle [^>]*r="([\d.]+)" fill="#fff"/g)].filter((m) => Number(m[1]) < 3)
+  const catchLights = [...svg.matchAll(/<circle [^>]*r="([\d.]+)" fill="#fff"/g)].filter(
+    (m) => Number(m[1]) < 3,
+  )
   expect(catchLights).toHaveLength(open * 2)
 })
 

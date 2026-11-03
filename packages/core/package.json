@@ -25,6 +25,18 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./morph": {
+      "types": "./dist/morph.d.ts",
+      "import": "./dist/morph.js"
+    },
+    "./gradient": {
+      "types": "./dist/gradient.d.ts",
+      "import": "./dist/gradient.js"
+    },
+    "./aura": {
+      "types": "./dist/aura.d.ts",
+      "import": "./dist/aura.js"
     }
   },
   "files": [

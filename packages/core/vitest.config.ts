@@ -8,7 +8,7 @@ export default defineConfig({
       {
         test: {
           name: 'browser',
-          include: ['test/golden.test.ts'],
+          include: ['test/golden.test.ts', 'test/golden-styles.test.ts'],
           browser: {
             enabled: true,
             provider: playwright(),

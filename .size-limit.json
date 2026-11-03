@@ -5,5 +5,35 @@
     "import": "{ createAvatar }",
     "limit": "3 KB",
     "gzip": true
+  },
+  {
+    "name": "core + morph",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/morph.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/morph.js": "{ morph }"
+    },
+    "limit": "5 KB",
+    "gzip": true
+  },
+  {
+    "name": "core + gradient",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/gradient.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/gradient.js": "{ gradient }"
+    },
+    "limit": "5 KB",
+    "gzip": true
+  },
+  {
+    "name": "core + aura",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/aura.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/aura.js": "{ aura }"
+    },
+    "limit": "4 KB",
+    "gzip": true
   }
 ]
