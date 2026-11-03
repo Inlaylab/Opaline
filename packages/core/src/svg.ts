@@ -17,7 +17,10 @@ const ENTITIES: Record<string, string> = {
 }
 
 export function escapeXml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => ENTITIES[c]!)
+  // Control characters other than tab, LF and CR are invalid in XML 1.0.
+  return s
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+    .replace(/[&<>"']/g, (c) => ENTITIES[c]!)
 }
 
 export function el(tag: string, attrs: Attrs = {}, children?: string): string {

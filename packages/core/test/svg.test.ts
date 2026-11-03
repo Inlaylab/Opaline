@@ -40,3 +40,8 @@ test('el escapes attribute values', () => {
 test('ids start with a letter and carry the prefix', () => {
   expect(createIds('1z0ni6c')('fill')).toBe('a1z0ni6c-fill')
 })
+
+test('escapeXml strips XML-invalid control characters', () => {
+  expect(escapeXml('x\u0001y\u001fz')).toBe('xyz')
+  expect(escapeXml('a\tb\nc')).toBe('a\tb\nc')
+})

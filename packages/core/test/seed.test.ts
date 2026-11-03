@@ -20,3 +20,8 @@ test('unicode is NFC', () => {
 test('empty stays empty', () => {
   expect(normalizeSeed('')).toBe('')
 })
+
+test('missing seeds become empty, never the text undefined', () => {
+  expect(normalizeSeed(null)).toBe('')
+  expect(normalizeSeed(undefined)).toBe('')
+})

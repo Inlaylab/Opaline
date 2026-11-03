@@ -2,7 +2,7 @@ import { expect, test, vi } from 'vitest'
 import { createAvatar } from '../src/index.ts'
 import { fixture } from './fixture-style.ts'
 
-const gradientId = (svg: string) => /id="(a[0-9a-z]+-g)"/.exec(svg)?.[1]
+const gradientId = (svg: string) => /id="(a[0-9a-z]+-g(?:-[a-z0-9]+)?)"/.exec(svg)?.[1]
 
 test('same seed gives the same svg', () => {
   expect(createAvatar(fixture, { seed: 'a' }).svg).toBe(createAvatar(fixture, { seed: 'a' }).svg)
@@ -70,4 +70,25 @@ test('empty title is treated as no title', () => {
   expect(svg).toContain('aria-hidden="true"')
   expect(svg).not.toContain('role=')
   expect(svg).not.toContain('<title>')
+})
+
+test('bad sizes throw a clear error', () => {
+  for (const size of [Infinity, 0, NaN, -5]) {
+    expect(() => createAvatar(fixture, { seed: 'a', size })).toThrow(
+      new RangeError('size must be a positive finite number'),
+    )
+  }
+})
+
+test('instance suffixes every id without changing the picture', () => {
+  const plain = createAvatar(fixture, { seed: 'a' })
+  const scoped = createAvatar(fixture, { seed: 'a', instance: 'r1' })
+  expect(gradientId(scoped.svg)).toBe(`${gradientId(plain.svg)}-r1`)
+  expect(scoped.svg.replaceAll('-r1', '')).toBe(plain.svg)
+  expect(scoped.toJSON()).toEqual(plain.toJSON())
+})
+
+test('picks cannot overwrite style or seed', () => {
+  const sneaky = { name: 'sneaky', render: () => ({ body: '', picks: { seed: 'X', style: 'Y' } }) }
+  expect(createAvatar(sneaky, { seed: 'a' }).toJSON()).toMatchObject({ style: 'sneaky', seed: 'a' })
 })

@@ -3,7 +3,13 @@ import { createRng, hash, type Rng } from './prng.ts'
 import { normalizeSeed } from './seed.ts'
 import { el, escapeXml } from './svg.ts'
 
-export type BaseOptions = { seed: string | number; size?: number; title?: string }
+export type BaseOptions = {
+  seed: string | number | null | undefined
+  size?: number
+  title?: string
+  /** Per-instance ID suffix from a wrapper, so the same avatar can appear twice on a page. */
+  instance?: string
+}
 export type RenderContext = { rng: Rng; id: (name: string) => string; seed: string }
 export type Rendered = { defs?: string; body: string; picks: Record<string, unknown> }
 export type Style<O extends object = {}> = {
@@ -27,10 +33,15 @@ const stableStringify = (v: unknown): string =>
     : String(JSON.stringify(v))
 
 export function createAvatar<O extends object>(style: Style<O>, options: BaseOptions & O): Avatar {
-  const { seed: rawSeed, size = 64, title, ...rest } = options
+  const { seed: rawSeed, size = 64, title, instance, ...rest } = options
+  if (!(Number.isFinite(size) && size > 0))
+    throw new RangeError('size must be a positive finite number')
   const seed = normalizeSeed(rawSeed)
   // Options are part of the ID scope, so the same seed with other options never shares defs.
-  const id = createIds(hash(seed + '\u0000' + style.name + '\u0000' + stableStringify(rest)))
+  const id = createIds(
+    hash(seed + '\u0000' + style.name + '\u0000' + stableStringify(rest)),
+    instance,
+  )
   const { defs, body, picks } = style.render({ rng: createRng(seed), id, seed }, options)
   const label = title ? escapeXml(title) : undefined
   const svg = el(
@@ -50,7 +61,7 @@ export function createAvatar<O extends object>(style: Style<O>, options: BaseOpt
   )
   return {
     svg,
-    toJSON: () => ({ style: style.name, seed, ...picks }),
+    toJSON: () => ({ ...picks, style: style.name, seed }),
     toString: () => svg,
   }
 }
