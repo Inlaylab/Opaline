@@ -92,3 +92,8 @@ test('picks cannot overwrite style or seed', () => {
   const sneaky = { name: 'sneaky', render: () => ({ body: '', picks: { seed: 'X', style: 'Y' } }) }
   expect(createAvatar(sneaky, { seed: 'a' }).toJSON()).toMatchObject({ style: 'sneaky', seed: 'a' })
 })
+
+test('undefined options do not change ids', () => {
+  const plain = createAvatar(fixture, { seed: 'a' }).svg
+  expect(createAvatar(fixture, { seed: 'a', variant: undefined }).svg).toBe(plain)
+})

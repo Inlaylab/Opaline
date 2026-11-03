@@ -1,0 +1,38 @@
+{
+  "name": "@inlaylab/opaline-element",
+  "version": "0.0.0",
+  "description": "<opaline-avatar>: seeded avatars as a framework-free custom element.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inlaylab/opaline.git",
+    "directory": "packages/element"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "sideEffects": true,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json && prettier --check . --ignore-path ../../.prettierignore"
+  },
+  "dependencies": {
+    "@inlaylab/opaline": "workspace:*"
+  },
+  "devDependencies": {
+    "@inlaylab/opaline-contract": "workspace:*",
+    "@vitest/browser-playwright": "^5.1.0",
+    "playwright": "^1.64.1"
+  }
+}

@@ -26,7 +26,9 @@ const stableStringify = (v: unknown): string =>
   v && typeof v === 'object'
     ? Array.isArray(v)
       ? `[${v.map(stableStringify).join(',')}]`
-      : `{${Object.keys(v)
+      : // Unset props from wrappers arrive as undefined; they must not change the IDs.
+        `{${Object.keys(v)
+          .filter((k) => (v as Record<string, unknown>)[k] !== undefined)
           .sort()
           .map((k) => `${JSON.stringify(k)}:${stableStringify((v as Record<string, unknown>)[k])}`)
           .join(',')}}`

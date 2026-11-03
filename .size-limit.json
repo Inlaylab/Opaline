@@ -35,5 +35,17 @@
     },
     "limit": "4 KB",
     "gzip": true
+  },
+  {
+    "name": "element (own code)",
+    "path": "packages/element/dist/index.js",
+    "ignore": [
+      "@inlaylab/opaline",
+      "@inlaylab/opaline/morph",
+      "@inlaylab/opaline/gradient",
+      "@inlaylab/opaline/aura"
+    ],
+    "limit": "1.5 KB",
+    "gzip": true
   }
 ]
