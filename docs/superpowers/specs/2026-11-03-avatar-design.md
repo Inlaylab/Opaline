@@ -264,6 +264,7 @@ The reference implementation is [docs/design/gate-0.4.html](../../design/gate-0.
 
 - `finish: 'flat' | 'soft' | 'gloss'` applies to Morph, Gradient and Clay. Aura ignores it.
 - Defaults: Morph and Gradient `flat`, so their 0.2 output is unchanged byte for byte. Clay `soft`.
+- Defaults are filled in before hashing and before `toJSON()` (builder's call). `finish: 'flat'` on Morph or Gradient, set or not, gives the 0.2 IDs and the 0.2 JSON, which has no `finish` key. A non-default finish adds `finish` to the JSON.
 - With `soft` or `gloss`, Gradient drops the opaline sheen; the finish light replaces it. With `flat`, Gradient is exactly 0.2.
 - No finish takes a random draw. Finishes never touch a fork.
 - **`soft`** adds two gradients, painted over each finished part (same path, gradient fill):
@@ -295,6 +296,7 @@ The reference implementation is [docs/design/gate-0.4.html](../../design/gate-0.
     - bear: circles at (50 ± 27, 25), r 11; inner r 5.8.
     - bunny: ellipses at (50 ± 14, 17), rx 7.5, ry 17, rotated ±12°; inner at (50 ± 14, 19), rx 3.6, ry 12.
 - `toJSON()` adds `body`, `finish`, and `family` and `wave` (jelly) or `ears` (hood).
+- **Theme variables** (builder's call): `--avatar-c1` is always the body, as in the core today. Arms and ears are `--avatar-c2` (`dark`), and the hood opening is `--avatar-c3`. The tint backdrop stays `--avatar-bg`. The sketch's paint-order numbering is not followed.
 - Size budget: core + clay ≤ 8 KB gzip.
 
 ### 500-avatar perf check
