@@ -15,7 +15,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "node node_modules/@angular/cli/bin/ng.js build",
-    "test": "node node_modules/@angular/cli/bin/ng.js test --watch=false",
+    "test": "node -e \"require('fs').rmSync('node_modules/.vite',{recursive:true,force:true})\" && node node_modules/@angular/cli/bin/ng.js test --watch=false",
     "lint": "prettier --check . --ignore-path ../../.prettierignore"
   },
   "peerDependencies": {

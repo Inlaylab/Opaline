@@ -77,13 +77,15 @@ The project fails, even if it works, if any of these happens:
 
 ## Styles (v1)
 
-| Style    | Face                      | Look                                                                                                                              | Budget (gzip) |
-| -------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| Aura     | never                     | Circle or squircle with 2–4 OKLCH radial gradients at seeded points, plus a soft light sweep. No filters.                         | ≤1 KB         |
-| Morph    | default on, `face: false` | Shape genome, solid fill, face kit                                                                                                | ≤2 KB         |
-| Gradient | default on, `face: false` | Shape genome, mesh fill (layered radial gradients), face kit                                                                      | ≤2 KB         |
-| Clay     | yes                       | `soft`/`gloss` finish. Bodies: `jelly` (genome plus nub arms), `hood` (animal-ear hood)                                           | ≤8 KB         |
-| Persona  | yes                       | Parametric people: head, hair, brows, eyes, mouth, glasses, earrings, top. Circle backdrop with dots. Finish is `flat` or `soft`. | ≤20 KB        |
+| Style    | Face                      | Look                                                                                                      | Budget (gzip) |
+| -------- | ------------------------- | --------------------------------------------------------------------------------------------------------- | ------------- |
+| Aura     | never                     | Circle or squircle with 2–4 OKLCH radial gradients at seeded points, plus a soft light sweep. No filters. | ≤1 KB         |
+| Morph    | default on, `face: false` | Shape genome, solid fill, face kit                                                                        | ≤2 KB         |
+| Gradient | default on, `face: false` | Shape genome, mesh fill (layered radial gradients), face kit                                              | ≤2 KB         |
+
+Budgets are measured as `createAvatar` plus the style import, since the shape genome and face kit ship with the blob styles rather than the core entry. Limits: core 3 KB, core + Aura 4 KB, core + Morph 5 KB, core + Gradient 5 KB. The Angular wrapper is measured as partial-compiled code (2 KB); the other wrappers 1.5 KB.
+| Clay | yes | `soft`/`gloss` finish. Bodies: `jelly` (genome plus nub arms), `hood` (animal-ear hood) | ≤8 KB |
+| Persona | yes | Parametric people: head, hair, brows, eyes, mouth, glasses, earrings, top. Circle backdrop with dots. Finish is `flat` or `soft`. | ≤20 KB |
 
 Assumption: Morph and Gradient show a face by default. If they should be faceless by default, change one default.
 

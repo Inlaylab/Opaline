@@ -4,7 +4,20 @@ import { gradient } from '@inlaylab/opaline/gradient'
 import { morph } from '@inlaylab/opaline/morph'
 
 const LOOKS: Record<string, Style<any>> = { morph, gradient, aura }
-const ATTRS = ['seed', 'look', 'size', 'src', 'alt', 'palette', 'mood', 'face', 'shape'] as const
+const ATTRS = [
+  'seed',
+  'look',
+  'size',
+  'src',
+  'alt',
+  'palette',
+  'family',
+  'face',
+  'mood',
+  'expression',
+  'backdrop',
+  'shape',
+] as const
 const IMG_STYLE =
   'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit'
 let count = 0
@@ -15,12 +28,20 @@ export class OpalineAvatar extends HTMLElement {
   // Unique per element, so the same avatar twice on a page never shares gradient IDs.
   readonly #instance = `e${++count}`
 
+  #connected = false
+
   connectedCallback(): void {
+    this.#connected = true
     this.#render()
   }
 
+  disconnectedCallback(): void {
+    this.#connected = false
+  }
+
   attributeChangedCallback(): void {
-    if (this.isConnected) this.#render()
+    // On upgrade every existing attribute fires first; connectedCallback renders once after them.
+    if (this.#connected) this.#render()
   }
 
   #render(): void {
@@ -30,15 +51,21 @@ export class OpalineAvatar extends HTMLElement {
     const size = Number.isFinite(n) && n > 0 ? n : 64
     const alt = get('alt')
     const src = get('src')
-    const svg = createAvatar(LOOKS[get('look') ?? 'morph'] ?? morph, {
-      seed: get('seed'),
-      size,
-      instance: this.#instance,
-      palette: get('palette'),
-      mood: get('mood'),
-      face: get('face') === 'false' ? false : undefined,
-      shape: get('shape'),
-    } as never).svg
+    const svg = createAvatar(
+      Object.hasOwn(LOOKS, get('look') ?? '') ? LOOKS[get('look')!]! : morph,
+      {
+        seed: get('seed'),
+        size,
+        instance: this.#instance,
+        palette: get('palette'),
+        family: get('family'),
+        face: get('face') === 'false' ? false : get('face') === 'true' ? true : undefined,
+        mood: get('mood'),
+        expression: get('expression'),
+        backdrop: get('backdrop'),
+        shape: get('shape'),
+      } as never,
+    ).svg
     const a11y = alt ? `role="img" aria-label="${escapeXml(alt)}"` : 'aria-hidden="true"'
     const img = src ? `<img src="${escapeXml(src)}" alt="" style="${IMG_STYLE}" hidden>` : ''
     this.innerHTML = `<span data-opaline="" style="display:inline-block;width:${size}px;height:${size}px;position:relative" ${a11y}>${svg}${img}</span>`

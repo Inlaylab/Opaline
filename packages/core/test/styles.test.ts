@@ -67,3 +67,20 @@ test('body color is --avatar-c1', () => {
     /<path d="M[^"]+" fill="var\(--avatar-c1, #[0-9a-f]{6}\)"/,
   )
 })
+
+test('unknown option strings fall back to defaults instead of throwing', () => {
+  const plain = createAvatar(morph, { seed: 'a' }).toJSON()
+  for (const bad of ['nope', '__proto__', 'constructor', 'toString']) {
+    const opts = { seed: 'a', palette: bad, mood: bad, expression: bad, family: bad } as never
+    const a = createAvatar(morph, opts)
+    expect(a.toJSON()).toMatchObject({ palette: 'vivid', hue: plain.hue })
+    expect(() => createAvatar(aura, { seed: 'a', palette: bad, shape: bad } as never)).not.toThrow()
+  }
+})
+
+test('an unknown mood picks from all expressions', () => {
+  const free = createAvatar(morph, { seed: 'a' }).toJSON()
+  expect(createAvatar(morph, { seed: 'a', mood: 'angry' } as never).toJSON().expression).toBe(
+    free.expression,
+  )
+})

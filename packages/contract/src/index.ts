@@ -73,6 +73,20 @@ export function runContract(adapter: Adapter): void {
     }
   })
 
+  test(`${adapter.name}: every option reaches the core`, async () => {
+    const props: Props = {
+      seed: 'b',
+      look: 'morph',
+      expression: 'wink',
+      backdrop: 'tint',
+      family: 'petal',
+      palette: 'cool',
+      face: true,
+    }
+    const root = await adapter.render(props)
+    expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
+  })
+
   test(`${adapter.name}: alt names the avatar, no alt hides it`, async () => {
     const named = await adapter.render({ seed: 'a', alt: 'Ada Lovelace' })
     expect(named.getAttribute('role')).toBe('img')

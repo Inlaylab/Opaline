@@ -1,5 +1,6 @@
 import type { Style } from '../create.ts'
-import { pickBase, type PaletteName } from '../parts/palette.ts'
+import { known } from '../parts/known.ts'
+import { PALETTES, pickBase, type PaletteName } from '../parts/palette.ts'
 import { el } from '../svg.ts'
 import { colorVars, lch, sheen, spot } from './paint.ts'
 
@@ -12,8 +13,8 @@ const SQUIRCLE = 'M50 0C88 0 100 12 100 50S88 100 50 100 0 88 0 50 12 0 50 0Z'
 export const aura: Style<AuraOptions> = {
   name: 'aura',
   render({ rng, id }, opts) {
-    const palette = opts.palette ?? 'vivid'
-    const shape = opts.shape ?? 'circle'
+    const palette = known(PALETTES, opts.palette) ?? 'vivid'
+    const shape = opts.shape === 'squircle' ? 'squircle' : 'circle'
     const b = pickBase(rng, palette)
     const g = rng.fork('aura')
     const color = colorVars()

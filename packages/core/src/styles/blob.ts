@@ -3,6 +3,8 @@ import { face, type Expression, type Mood } from '../parts/face.ts'
 import { inscribed } from '../parts/inscribed.ts'
 import { pickBase, type PaletteName } from '../parts/palette.ts'
 import { genome, type Family } from '../parts/shape.ts'
+import { known } from '../parts/known.ts'
+import { PALETTES } from '../parts/palette.ts'
 import { el } from '../svg.ts'
 import { colorVars, lch } from './paint.ts'
 
@@ -27,7 +29,7 @@ export function blobStyle(name: string, fill: Fill): Style<BlobOptions> {
   return {
     name,
     render(ctx, opts): Rendered {
-      const palette = opts.palette ?? 'vivid'
+      const palette = known(PALETTES, opts.palette) ?? 'vivid'
       const base = pickBase(ctx.rng, palette)
       const shape = genome(ctx.rng, opts.family)
       const painted = fill(ctx, shape.d, base, colorVars())

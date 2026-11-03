@@ -1,5 +1,6 @@
 import type { Rng } from '../prng.ts'
 import { num } from '../svg.ts'
+import { known } from './known.ts'
 
 export type Family = 'egg' | 'duo' | 'tri' | 'cushion' | 'clover' | 'petal'
 export type Point = [number, number]
@@ -18,8 +19,9 @@ const SPEC: Record<Family, [number, number, number, number?]> = {
 export const FAMILIES = Object.keys(SPEC) as readonly Family[]
 
 /** Seeded blob: a radial lobe wave plus low wobble, fit into 8..92. */
-export function genome(rng: Rng, family?: Family): Genome {
+export function genome(rng: Rng, requested?: Family): Genome {
   const g = rng.fork('shape')
+  const family = known(SPEC, requested)
   // Always draw the family, so forcing one never shifts the draws after it.
   const fam = family ?? g.pick(FAMILIES)
   if (family) g.next()

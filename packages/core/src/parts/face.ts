@@ -1,6 +1,7 @@
 import { oklchToHex } from '../color.ts'
 import type { Rng } from '../prng.ts'
 import { el, num } from '../svg.ts'
+import { known } from './known.ts'
 
 export type Mood = 'happy' | 'calm' | 'surprised' | 'playful'
 export type Eye = 'round' | 'dot' | 'arc' | 'lid'
@@ -114,10 +115,11 @@ export function face(
   opts: { mood?: Mood; expression?: Expression },
 ): { svg: string; expression: Expression } {
   const g = rng.fork('face')
-  const pool = opts.mood ? NAMES.filter((n) => EXPRESSIONS[n].mood === opts.mood) : NAMES
+  const moodPool = NAMES.filter((n) => EXPRESSIONS[n].mood === opts.mood)
+  const pool = moodPool.length ? moodPool : NAMES
   // Always draw, so a forced expression keeps the spread and tilt of the free one.
   const picked = g.pick(pool)
-  const expression = opts.expression ?? picked
+  const expression = known(EXPRESSIONS, opts.expression) ?? picked
   const spread = 11 + g.float(-1, 1.2)
   const tilt = g.float(-7, 7)
   const E = EXPRESSIONS[expression]
