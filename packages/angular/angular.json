@@ -16,11 +16,11 @@
           "builder": "@angular/build:ng-packagr",
           "options": {
             "project": "ng-package.json",
-            "tsConfig": "tsconfig.lib.json"
+            "tsConfig": "tsconfig.lib.prod.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "tsconfig.lib.json"
+              "tsConfig": "tsconfig.lib.prod.json"
             },
             "development": {
               "tsConfig": "tsconfig.lib.json"

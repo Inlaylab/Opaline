@@ -6,3 +6,4 @@ coverage
 *.log
 .vitest
 .astro
+.angular
