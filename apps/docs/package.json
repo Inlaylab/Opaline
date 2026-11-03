@@ -1,0 +1,17 @@
+{
+  "name": "docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "dev": "astro dev",
+    "preview": "astro preview",
+    "lint": "prettier --check . --ignore-path ../../.prettierignore"
+  },
+  "dependencies": {
+    "@inlaylab/opaline-element": "workspace:*"
+  },
+  "devDependencies": {
+    "astro": "^7.4.5"
+  }
+}

@@ -3,3 +3,4 @@ pnpm-lock.yaml
 CHANGELOG.md
 **/__golden__/**
 .superpowers
+.astro

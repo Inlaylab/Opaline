@@ -1,0 +1,104 @@
+---
+// The same 100 seeds as the approved design sheet (docs/design/gate-0.2.html).
+const FIRST = ['Ada', 'Grace', 'Linus', 'Margaret', 'Alan', 'Katherine', 'Mary', 'Amelia', 'Lucy', 'Maya', 'Sarah', 'Zoë', 'José', 'Søren', 'Nguyễn', 'Aiko', 'Min-jun', 'Olu', 'Priya', 'Mateo', 'Ines', 'Kofi', 'Hana', 'Ravi', 'Lena']
+const SEEDS = Array.from({ length: 100 }, (_, i) => {
+  const n = FIRST[i % FIRST.length]!
+  return i % 4 === 0
+    ? `${n.toLowerCase()}.${i}@inlay.dev`
+    : i % 4 === 1
+      ? `${n} ${String.fromCharCode(65 + (i % 26))}.`
+      : i % 4 === 2
+        ? `user_${(i * 7919).toString(36)}`
+        : `${n}${i}`
+})
+const LOOKS = [
+  { look: 'morph', note: 'Flat seeded blob with a face.' },
+  { look: 'gradient', note: 'Soft mesh fill, milky sheen, a face.' },
+  { look: 'aura', note: 'Faceless milky-glass orb.' },
+]
+const SIZES = [24, 48, 128]
+const INSTALL = [
+  ['Core', 'pnpm add @inlaylab/opaline', `import { createAvatar } from '@inlaylab/opaline'\nimport { morph } from '@inlaylab/opaline/morph'\n\ncreateAvatar(morph, { seed: 'ada@inlay.dev' }).svg`],
+  ['Web Component', 'pnpm add @inlaylab/opaline-element', `<script type="module">import '@inlaylab/opaline-element'</script>\n<opaline-avatar seed="ada@inlay.dev" look="morph"></opaline-avatar>`],
+  ['React', 'pnpm add @inlaylab/opaline-react', `import { Avatar } from '@inlaylab/opaline-react'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<Avatar seed="ada@inlay.dev" look={morph} src={user.photo} alt="Ada" />`],
+  ['Angular', 'pnpm add @inlaylab/opaline-angular', `import { OpalineAvatar } from '@inlaylab/opaline-angular'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<op-avatar seed="ada@inlay.dev" [look]="morph" [src]="user.photo" alt="Ada" />`],
+]
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Opaline</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Figtree:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+    <style is:global>
+      :root {
+        --bg: #f5f4f7; --surface: #fff; --fg: #1d1b26; --muted: #6b6878; --line: #e2e0e8; --accent: #33708a;
+        --display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+        --body: 'Figtree', 'Segoe UI', system-ui, sans-serif;
+        --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #15141b; --surface: #1e1c26; --fg: #ecebf2; --muted: #a09cb0; --line: #2e2b38; --accent: #7fb6cc; color-scheme: dark; }
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); padding-inline: max(16px, env(safe-area-inset-left)); }
+      main { max-width: 1120px; margin: 0 auto; padding-block: 48px 96px; display: grid; gap: 56px; }
+      h1 { font: 700 clamp(40px, 7vw, 72px)/1 var(--display); margin: 0; letter-spacing: -0.02em; }
+      h2 { font: 700 26px/1.2 var(--display); margin: 0; }
+      h3 { font: 500 12px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+      p { margin: 0; max-width: 65ch; }
+      .lede { color: var(--muted); font-size: 18px; }
+      header { display: grid; gap: 14px; }
+      section { display: grid; gap: 18px; }
+      .install { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+      .pkg { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; min-width: 0; }
+      .pkg b { font-weight: 600; }
+      pre { margin: 0; font: 12.5px/1.6 var(--mono); overflow-x: auto; color: var(--fg); }
+      .cmd { color: var(--accent); }
+      .row { display: flex; flex-wrap: wrap; gap: 8px; }
+      .row.s128 { gap: 14px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Opaline</h1>
+        <p class="lede">Seeded avatars for every framework. The same seed always gives the same avatar. Zero dependencies, MIT for code and art.</p>
+      </header>
+
+      <section>
+        <h2>Install</h2>
+        <div class="install">
+          {INSTALL.map(([name, cmd, code]) => (
+            <div class="pkg">
+              <b>{name}</b>
+              <pre class="cmd">{cmd}</pre>
+              <pre>{code}</pre>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {LOOKS.map(({ look, note }) => (
+        <section>
+          <div>
+            <h2>{look[0]!.toUpperCase() + look.slice(1)}</h2>
+            <p class="lede">{note}</p>
+          </div>
+          {SIZES.map((size) => (
+            <div style="display:grid;gap:10px">
+              <h3>{size}px · 100 seeds</h3>
+              <div class={`row s${size}`}>
+                {SEEDS.map((seed) => <opaline-avatar seed={seed} look={look} size={size} />)}
+              </div>
+            </div>
+          ))}
+        </section>
+      ))}
+    </main>
+    <script>
+      import '@inlaylab/opaline-element'
+    </script>
+  </body>
+</html>
