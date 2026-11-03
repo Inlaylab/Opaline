@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "dev": "turbo run build --filter=@inlaylab/opaline-element... && pnpm --filter ./apps/docs dev",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "size": "size-limit",

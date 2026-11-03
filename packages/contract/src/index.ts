@@ -97,6 +97,22 @@ export function runContract(adapter: Adapter): void {
     expect(plain.hasAttribute('role')).toBe(false)
   })
 
+  test(`${adapter.name}: the root carries no input attributes`, async () => {
+    // The seed is often an email; it must not leak into page markup through the root.
+    const props: Props = {
+      seed: 'ada@inlay.dev',
+      alt: 'Ada',
+      src: PIXEL,
+      look: 'gradient',
+      size: 48,
+      palette: 'cool',
+    }
+    const root = await adapter.render(props)
+    expect(root.hasAttribute('seed')).toBe(false)
+    expect(root.hasAttribute('alt')).toBe(false)
+    for (const name of Object.keys(props)) expect(root.hasAttribute(name)).toBe(false)
+  })
+
   test(`${adapter.name}: instance ids differ for the same avatar`, async () => {
     const a = await adapter.render({ seed: 'same', look: 'gradient' })
     const b = await adapter.render({ seed: 'same', look: 'gradient' })

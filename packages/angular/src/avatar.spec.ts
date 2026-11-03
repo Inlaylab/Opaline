@@ -41,6 +41,10 @@ runContract({
   name: 'angular',
   async render(props) {
     const host = document.createElement('op-avatar')
+    // Static attributes, as a template user writes them (`<op-avatar seed="..." alt="..." />`).
+    for (const [key, value] of Object.entries(props))
+      if (typeof value === 'string' || typeof value === 'number')
+        host.setAttribute(key, String(value))
     document.body.append(host)
     const ref = createComponent(OpalineAvatar, {
       environmentInjector: app.injector,
@@ -78,5 +82,29 @@ test('angular: works as the fallback of an Ivorie avatar', async () => {
   app.attachView(ref.hostView)
   await app.whenStable()
   expect(host.querySelector('iv-avatar-fallback op-avatar svg')).toBeTruthy()
+  ref.destroy()
+})
+
+@Component({
+  imports: [OpalineAvatar],
+  template: `<op-avatar seed="ada@inlay.dev" alt="Ada" [look]="look" />`,
+})
+class StaticAttributes {
+  look = STYLES.morph
+}
+
+test('angular: static template attributes do not stay on the root', async () => {
+  const host = document.createElement('div')
+  document.body.append(host)
+  const ref = createComponent(StaticAttributes, {
+    environmentInjector: app.injector,
+    hostElement: host,
+  })
+  app.attachView(ref.hostView)
+  await app.whenStable()
+  const root = host.querySelector<HTMLElement>('[data-opaline]')!
+  expect(root.getAttribute('aria-label')).toBe('Ada')
+  for (const name of ['seed', 'alt']) expect(root.hasAttribute(name)).toBe(false)
+  expect(host.innerHTML).not.toContain('ada@inlay.dev')
   ref.destroy()
 })

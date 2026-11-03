@@ -38,6 +38,20 @@ type ImageState = 'loading' | 'loaded' | 'error'
     '[attr.role]': 'alt() ? "img" : null',
     '[attr.aria-label]': 'alt() || null',
     '[attr.aria-hidden]': 'alt() ? null : "true"',
+    // Static template attributes (`seed="ada@inlay.dev"`) stay on the host; the seed is often an
+    // email. Clear them so the root carries only the markup contract, on the server too.
+    '[attr.seed]': 'null',
+    '[attr.look]': 'null',
+    '[attr.size]': 'null',
+    '[attr.src]': 'null',
+    '[attr.alt]': 'null',
+    '[attr.palette]': 'null',
+    '[attr.family]': 'null',
+    '[attr.face]': 'null',
+    '[attr.mood]': 'null',
+    '[attr.expression]': 'null',
+    '[attr.backdrop]': 'null',
+    '[attr.shape]': 'null',
   },
   template: `<span style="display:contents" [innerHTML]="svg()"></span>
     @if (src() && state() !== 'error') {
