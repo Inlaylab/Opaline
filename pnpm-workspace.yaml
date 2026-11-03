@@ -10,3 +10,4 @@ minimumReleaseAgeExclude:
   - '@vitest/pretty-format@5.1.0'
   - '@vitest/ui@5.1.0'
   - '@vitest/utils@5.1.0'
+  - '@inlaylab/ivorie@1.2.0'
