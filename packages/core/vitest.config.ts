@@ -14,7 +14,7 @@ export default defineConfig({
             provider: playwright(),
             headless: true,
             // CI covers all three engines; Firefox will not launch on some Windows dev machines.
-            instances: (process.env.CI
+            instances: (process.env.GITHUB_ACTIONS
               ? (['chromium', 'firefox', 'webkit'] as const)
               : (['chromium', 'webkit'] as const)
             ).map((browser) => ({ browser })),
