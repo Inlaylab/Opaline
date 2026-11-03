@@ -21,7 +21,7 @@
 
 ## Global Constraints
 
-- **Branch and release:** develop on `claude/zen-knuth-bp69qg`, one PR, release `0.3.0`. New packages join the changeset fixed group `["@inlaylab/opaline", "@inlaylab/opaline-*"]`; the `apps/ssr-*` packages are private and listed in `.changeset/config.json` `ignore`.
+- **Branch and release:** branch `feat/vue-svelte-ssr`, one PR, release `0.3.0`. New packages join the changeset fixed group `["@inlaylab/opaline", "@inlaylab/opaline-*"]`; the `apps/ssr-*` packages are private and listed in `.changeset/config.json` `ignore`.
 - **Commits:** Conventional Commits, no AI attribution lines (repo rule). Never publish.
 - **Wrapper markup contract:** identical to 0.2 (copy from the 0.2 plan "Global Constraints"). The svg is never removed; the `img` stays `hidden` until loaded; `alt` → `role="img"` + `aria-label`, otherwise `aria-hidden="true"`.
 - **Same-avatar IDs:** Vue `useId()` (3.5+). Svelte `$props.id()` (5.20+). Both match on server and client.
@@ -147,4 +147,4 @@
 - [ ] **Step 1:** Write the README sections and the changeset.
 - [ ] **Step 2:** Run `pnpm changeset version`. Expected: every public package at `0.3.0`, CHANGELOGs updated, sample apps untouched.
 - [ ] **Step 3:** Run `pnpm check && pnpm e2e`. Expected: all pass.
-- [ ] **Step 4:** Commit: `chore: release 0.3.0`. Push to `claude/zen-knuth-bp69qg`.
+- [ ] **Step 4:** Commit: `chore: release 0.3.0`. Push to `feat/vue-svelte-ssr`.
