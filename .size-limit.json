@@ -56,6 +56,13 @@
     "gzip": true
   },
   {
+    "name": "vue (own code)",
+    "path": "packages/vue/dist/index.js",
+    "ignore": ["vue", "@inlaylab/opaline"],
+    "limit": "1.5 KB",
+    "gzip": true
+  },
+  {
     "name": "angular (own code, partial-compiled FESM)",
     "path": "packages/angular/dist/fesm2022/inlaylab-opaline-angular.mjs",
     "ignore": ["@angular/core", "@angular/platform-browser", "@inlaylab/opaline"],
