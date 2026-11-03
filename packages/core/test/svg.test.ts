@@ -45,3 +45,8 @@ test('escapeXml strips XML-invalid control characters', () => {
   expect(escapeXml('x\u0001y\u001fz')).toBe('xyz')
   expect(escapeXml('a\tb\nc')).toBe('a\tb\nc')
 })
+
+test('instance suffixes are reduced to XML-safe characters', () => {
+  expect(createIds('abc', '«r1»')('g')).toBe('aabc-g-r1')
+  expect(createIds('abc', ':r2:')('g')).toBe('aabc-g-r2')
+})
