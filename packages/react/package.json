@@ -1,6 +1,6 @@
 {
   "name": "@inlaylab/opaline-react",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Seeded avatars for React: an RSC-safe Avatar component.",
   "license": "MIT",
   "repository": {

@@ -22,6 +22,8 @@ const INSTALL = [
   ['Web Component', 'pnpm add @inlaylab/opaline-element', `<script type="module">import '@inlaylab/opaline-element'</script>\n<opaline-avatar seed="ada@inlay.dev" look="morph"></opaline-avatar>`],
   ['React', 'pnpm add @inlaylab/opaline-react', `import { Avatar } from '@inlaylab/opaline-react'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<Avatar seed="ada@inlay.dev" look={morph} src={user.photo} alt="Ada" />`],
   ['Angular', 'pnpm add @inlaylab/opaline-angular', `import { OpalineAvatar } from '@inlaylab/opaline-angular'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<op-avatar seed="ada@inlay.dev" [look]="morph" [src]="user.photo" alt="Ada" />`],
+  ['Vue', 'pnpm add @inlaylab/opaline-vue', `import { Avatar } from '@inlaylab/opaline-vue'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<Avatar seed="ada@inlay.dev" :look="morph" :src="user.photo" alt="Ada" />`],
+  ['Svelte', 'pnpm add @inlaylab/opaline-svelte', `import { Avatar } from '@inlaylab/opaline-svelte'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<Avatar seed="ada@inlay.dev" look={morph} src={user.photo} alt="Ada" />`],
 ]
 ---
 
