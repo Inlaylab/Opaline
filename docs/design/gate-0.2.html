@@ -1,0 +1,1168 @@
+<title>Opaline Design Gate</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+/>
+<style>
+  /* Layout: a review sheet. Sticky control rail, then one section per thing to approve. */
+  :root {
+    --bg: #f5f4f7;
+    --surface: #ffffff;
+    --fg: #1d1b26;
+    --muted: #6b6878;
+    --line: #e2e0e8;
+    --accent: #33708a;
+    --accent-soft: #e3eef2;
+    --display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+    --body: 'Figtree', 'Segoe UI', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --bg: #15141b;
+      --surface: #1e1c26;
+      --fg: #ecebf2;
+      --muted: #a09cb0;
+      --line: #2e2b38;
+      --accent: #7fb6cc;
+      --accent-soft: #1f3540;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme='dark'] {
+    --bg: #15141b;
+    --surface: #1e1c26;
+    --fg: #ecebf2;
+    --muted: #a09cb0;
+    --line: #2e2b38;
+    --accent: #7fb6cc;
+    --accent-soft: #1f3540;
+    color-scheme: dark;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.55 var(--body);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-block: 40px 80px;
+    display: grid;
+    gap: 48px;
+  }
+  header {
+    display: grid;
+    gap: 10px;
+  }
+  .eyebrow {
+    font: 500 12px/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1 {
+    font: 700 clamp(32px, 5vw, 52px)/1.05 var(--display);
+    margin: 0;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  h2 {
+    font: 700 22px/1.2 var(--display);
+    margin: 0;
+  }
+  p {
+    margin: 0;
+    max-width: 65ch;
+  }
+  .lede {
+    color: var(--muted);
+    font-size: 17px;
+  }
+  section {
+    display: grid;
+    gap: 16px;
+  }
+  .sec-head {
+    display: grid;
+    gap: 4px;
+  }
+  .sec-head p {
+    color: var(--muted);
+  }
+
+  .rail {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    align-items: center;
+    padding: 12px 16px;
+    background: color-mix(in oklab, var(--surface) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: var(--bg);
+  }
+  .ctl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ctl > span {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    overflow: hidden;
+  }
+  .seg button {
+    font: 500 13px/1 var(--body);
+    color: var(--fg);
+    background: transparent;
+    border: 0;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .seg button + button {
+    border-left: 1px solid var(--line);
+  }
+  .seg button[aria-pressed='true'] {
+    background: var(--accent);
+    color: var(--surface);
+  }
+  .seg button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  select {
+    font: 500 13px/1 var(--body);
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 7px 10px;
+  }
+  button:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .grid {
+    display: grid;
+    gap: 14px 10px;
+    grid-template-columns: repeat(auto-fill, minmax(var(--cell), 1fr));
+  }
+  .cell {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    min-width: 0;
+  }
+  .cell svg {
+    display: block;
+  }
+  .cell small {
+    font: 400 10.5px/1.2 var(--mono);
+    color: var(--muted);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .grounds {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .ground {
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .ground.light {
+    background: #ffffff;
+    border: 1px solid #e6e4ec;
+  }
+  .ground.dark {
+    background: #121117;
+    border: 1px solid #2a2833;
+  }
+
+  .cards {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 12px 12px;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+  }
+  .card b {
+    font: 600 14px/1 var(--body);
+  }
+  .card .meta {
+    font: 400 11px/1.3 var(--mono);
+    color: var(--muted);
+    text-align: center;
+  }
+  .tri {
+    display: flex;
+    gap: 6px;
+  }
+
+  .pal {
+    display: grid;
+    gap: 10px;
+  }
+  .pal-row {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    align-items: center;
+    gap: 12px;
+  }
+  .pal-row code {
+    font: 500 12px/1 var(--mono);
+    color: var(--muted);
+  }
+  .pal-row div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .product {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 12px;
+  }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    min-width: 0;
+  }
+  .panel h3 {
+    font: 600 13px/1 var(--body);
+    margin: 0;
+    color: var(--muted);
+  }
+  .msg {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+  .msg svg {
+    border-radius: 50%;
+  }
+  .msg .who {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .msg .who span {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 12px;
+    margin-left: 6px;
+  }
+  .msg p {
+    font-size: 14px;
+  }
+  .stack {
+    display: flex;
+  }
+  .stack svg {
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--surface);
+    background: var(--surface);
+  }
+  .stack svg + svg {
+    margin-left: -10px;
+  }
+  .people {
+    display: grid;
+    gap: 10px;
+  }
+  .person {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .person span {
+    color: var(--muted);
+    font-size: 12px;
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .checks {
+    display: grid;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .checks li {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 8px;
+    max-width: 70ch;
+  }
+  .checks li::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    margin-top: 4px;
+    border: 1.5px solid var(--accent);
+    border-radius: 4px;
+  }
+  footer {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 700px) {
+    .grounds,
+    .product {
+      grid-template-columns: 1fr;
+    }
+    .pal-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Opaline · design gate 0.2 · throwaway sketch</div>
+    <h1>Aura, Morph and Gradient, before we lock the parts</h1>
+    <p class="lede">
+      Every avatar below comes from a seed through the same seeded random generator as the core
+      package. Approve the look, or point at what feels off. Nothing here ships as is.
+    </p>
+  </header>
+
+  <div class="rail" role="toolbar" aria-label="Sheet controls">
+    <div class="ctl">
+      <span>Style</span>
+      <div class="seg" id="style">
+        <button type="button" data-v="morph" aria-pressed="true">Morph</button>
+        <button type="button" data-v="gradient" aria-pressed="false">Gradient</button>
+        <button type="button" data-v="aura" aria-pressed="false">Aura</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Size</span>
+      <div class="seg" id="size">
+        <button type="button" data-v="24" aria-pressed="false">24</button>
+        <button type="button" data-v="48" aria-pressed="true">48</button>
+        <button type="button" data-v="128" aria-pressed="false">128</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Face</span>
+      <div class="seg" id="face">
+        <button type="button" data-v="on" aria-pressed="true">On</button>
+        <button type="button" data-v="off" aria-pressed="false">Off</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <label for="palette"
+        ><span
+          style="
+            font: 500 11px/1 var(--mono);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+          "
+          >Palette</span
+        ></label
+      >
+      <select id="palette">
+        <option value="vivid">vivid</option>
+        <option value="pastel">pastel</option>
+        <option value="electric">electric</option>
+        <option value="muted">muted</option>
+        <option value="warm">warm</option>
+        <option value="cool">cool</option>
+        <option value="mono">mono</option>
+      </select>
+    </div>
+    <div class="ctl">
+      <span>Backdrop</span>
+      <div class="seg" id="backdrop">
+        <button type="button" data-v="none" aria-pressed="true">None</button>
+        <button type="button" data-v="tint" aria-pressed="false">Tint</button>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <h2>100 seeds</h2>
+      <p>
+        Names, emails and IDs, as real apps pass them. Check 24px first: the face must still read as
+        a face.
+      </p>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>On light and dark grounds</h2>
+      <p>
+        Fixed white and near-black panels, whatever your theme. No avatar may vanish into either.
+      </p>
+    </div>
+    <div class="grounds">
+      <div class="ground light" id="g-light"></div>
+      <div class="ground dark" id="g-dark"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>12 expressions</h2>
+      <p>
+        Eyes, mouth, blush and brows come as a checked set. Users choose a mood, never single parts,
+        so odd faces cannot happen. Shown on three seeds each.
+      </p>
+    </div>
+    <div class="cards" id="expr"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Shape families</h2>
+      <p>
+        One continuous genome: lobe count, depth, wobble and squash. The family names exist only as
+        labels for the Studio.
+      </p>
+    </div>
+    <div class="cards" id="families"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Palettes</h2>
+      <p>Built in OKLCH, so every hue in a palette sits at the same perceived lightness.</p>
+    </div>
+    <div class="pal" id="palettes"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>In a product</h2>
+      <p>
+        Where these live most of the time: 32px in a thread, overlapping in a stack, small in a
+        list.
+      </p>
+    </div>
+    <div class="product">
+      <div class="panel" id="thread"><h3>Comments</h3></div>
+      <div class="panel">
+        <h3>Seen by</h3>
+        <div class="stack" id="stack"></div>
+        <h3>Members</h3>
+        <div class="people" id="people"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>What to judge</h2></div>
+    <ul class="checks">
+      <li>At 24px, every Morph and Gradient avatar shows two eyes and a mouth, not a smudge.</li>
+      <li>No face looks creepy or sad by accident. Name any seed that does.</li>
+      <li>Faces sit in the body of the shape, never on a thin lobe or touching an edge.</li>
+      <li>The two-dot catch-light reads as one recognizable Opaline eye.</li>
+      <li>Aura feels like milky glass, not a copy of a marble or sunset gradient.</li>
+      <li>Each palette works on both white and near-black.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Sketch for the 0.2 design gate. Seeds hash with xmur3 into sfc32, same as
+    <code>@inlaylab/opaline</code> 0.1. Shapes, faces and palettes here are proposals.
+  </footer>
+</div>
+
+<script>
+  // ---------- seeded core (same algorithms as packages/core) ----------
+  function xmur3(str) {
+    let h = 1779033703 ^ str.length
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353)
+      h = (h << 13) | (h >>> 19)
+    }
+    return () => {
+      h = Math.imul(h ^ (h >>> 16), 2246822507)
+      h = Math.imul(h ^ (h >>> 13), 3266489909)
+      return (h ^= h >>> 16) >>> 0
+    }
+  }
+  function sfc32(a, b, c, d) {
+    return () => {
+      a |= 0
+      b |= 0
+      c |= 0
+      d |= 0
+      const t = (((a + b) | 0) + d) | 0
+      d = (d + 1) | 0
+      a = b ^ (b >>> 9)
+      b = (c + (c << 3)) | 0
+      c = (c << 21) | (c >>> 11)
+      c = (c + t) | 0
+      return (t >>> 0) / 4294967296
+    }
+  }
+  const hash = (s) => xmur3(s)().toString(36).padStart(7, '0')
+  function createRng(seed) {
+    const h = xmur3(seed),
+      next = sfc32(h(), h(), h(), h())
+    for (let i = 0; i < 12; i++) next()
+    const float = (a, b) => a + next() * (b - a)
+    return {
+      next,
+      float,
+      int: (a, b) => Math.floor(float(a, b + 1)),
+      pick: (xs) => xs[Math.floor(next() * xs.length)],
+      fork: (l) => createRng(seed + '\u0000' + l),
+    }
+  }
+  const normalizeSeed = (s) => {
+    s = String(s).trim().normalize('NFC')
+    return /^[^\s@]+@[^\s@]+$/.test(s) ? s.toLowerCase() : s
+  }
+  const num = (n) => {
+    const r = Math.round(n * 100) / 100
+    return r === 0 ? '0' : r.toFixed(2).replace(/\.?0+$/, '')
+  }
+  const esc = (s) =>
+    s.replace(
+      /[&<>"']/g,
+      (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+    )
+  function el(tag, attrs = {}, kids) {
+    let o = '<' + tag
+    for (const k in attrs) {
+      const v = attrs[k]
+      if (v !== undefined) o += ` ${k}="${typeof v === 'number' ? num(v) : esc(v)}"`
+    }
+    return kids === undefined ? o + '/>' : `${o}>${kids}</${tag}>`
+  }
+
+  // ---------- OKLCH ----------
+  const fromLin = (c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)
+  function lchToLin({ l: L, c, h }) {
+    const a = c * Math.cos((h * Math.PI) / 180),
+      b = c * Math.sin((h * Math.PI) / 180)
+    const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3,
+      m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3,
+      s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3
+    return [
+      4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+      -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+      -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+    ]
+  }
+  const inGamut = (rgb) => rgb.every((v) => v >= -1e-4 && v <= 1 + 1e-4)
+  function lch(l, c, h) {
+    const col = { l, c, h: ((h % 360) + 360) % 360 }
+    let rgb = lchToLin(col)
+    if (!inGamut(rgb)) {
+      let lo = 0,
+        hi = c
+      for (let i = 0; i < 16; i++) {
+        const m = (lo + hi) / 2
+        if (inGamut(lchToLin({ ...col, c: m }))) lo = m
+        else hi = m
+      }
+      rgb = lchToLin({ ...col, c: lo })
+    }
+    return (
+      '#' +
+      rgb
+        .map((v) =>
+          Math.round(Math.min(1, Math.max(0, fromLin(v))) * 255)
+            .toString(16)
+            .padStart(2, '0'),
+        )
+        .join('')
+    )
+  }
+  let varN = 0
+  const cv = (hex) => `var(--avatar-c${++varN}, ${hex})`
+
+  // ---------- palettes ----------
+  const ANCHORS = [18, 42, 70, 145, 172, 205, 238, 268, 300, 335]
+  const PALETTES = {
+    vivid: { l: 0.74, c: 0.16, hues: ANCHORS },
+    pastel: { l: 0.87, c: 0.08, hues: ANCHORS },
+    electric: { l: 0.7, c: 0.25, hues: [0, 30, 140, 190, 255, 290, 320] },
+    muted: { l: 0.7, c: 0.055, hues: ANCHORS },
+    warm: { l: 0.76, c: 0.15, hues: [15, 30, 48, 65, 85] },
+    cool: { l: 0.72, c: 0.13, hues: [165, 190, 215, 240, 265, 285] },
+    mono: { l: 0.66, c: 0.035, hues: [262] },
+  }
+  function pickColor(rng, palette) {
+    const p = PALETTES[palette],
+      g = rng.fork('color')
+    const h = g.pick(p.hues) + g.float(-9, 9)
+    return { h, l: p.l + g.float(-0.03, 0.03), c: p.c, g }
+  }
+
+  // ---------- shape genome ----------
+  const FAMILIES = {
+    egg: { L: 1, amp: [0.05, 0.1], phase: () => Math.PI / 2 },
+    duo: { L: 2, amp: [0.07, 0.12] },
+    tri: { L: 3, amp: [0.08, 0.12], phase: () => -Math.PI / 2 },
+    cushion: { L: 4, amp: [0.035, 0.06], phase: () => Math.PI / 4 },
+    clover: { L: 4, amp: [0.15, 0.2] },
+    petal: { L: 5, amp: [0.13, 0.17] },
+  }
+  const FAMILY_NAMES = Object.keys(FAMILIES)
+  function genome(rng, family) {
+    const g = rng.fork('shape')
+    const fam = family || g.pick(FAMILY_NAMES)
+    const F = FAMILIES[fam]
+    const L = fam === 'petal' ? g.int(5, 6) : F.L
+    const amp = g.float(F.amp[0], F.amp[1])
+    const phase = (F.phase ? F.phase() : g.float(0, Math.PI * 2)) + g.float(-0.18, 0.18)
+    const wob = [2, 3, 5].map((k) => [k, g.float(-0.035, 0.035), g.float(0, Math.PI * 2)])
+    const sx = g.float(0.92, 1.08)
+    const N = 72,
+      pts = []
+    for (let i = 0; i < N; i++) {
+      const t = (i / N) * Math.PI * 2
+      let r = 1 + amp * Math.cos((L * (t - phase)) / (L === 1 ? 1 : 1))
+      for (const [k, a, p] of wob) if (k !== L) r += a * Math.cos(k * t + p)
+      pts.push([Math.cos(t) * r * sx, (Math.sin(t) * r) / sx])
+    }
+    // fit into 8..92
+    const xs = pts.map((p) => p[0]),
+      ys = pts.map((p) => p[1])
+    const minX = Math.min(...xs),
+      maxX = Math.max(...xs),
+      minY = Math.min(...ys),
+      maxY = Math.max(...ys)
+    const s = 84 / Math.max(maxX - minX, maxY - minY)
+    const ox = 50 - ((minX + maxX) / 2) * s,
+      oy = 50 - ((minY + maxY) / 2) * s
+    const poly = pts.map(([x, y]) => [x * s + ox, y * s + oy])
+    return { family: fam, lobes: L, poly, d: smoothPath(poly.filter((_, i) => i % 3 === 0)) }
+  }
+  function smoothPath(P) {
+    const n = P.length,
+      at = (i) => P[(i + n) % n]
+    let d = `M${num(P[0][0])} ${num(P[0][1])}`
+    for (let i = 0; i < n; i++) {
+      const p0 = at(i - 1),
+        p1 = at(i),
+        p2 = at(i + 1),
+        p3 = at(i + 2)
+      d += `C${num(p1[0] + (p2[0] - p0[0]) / 6)} ${num(p1[1] + (p2[1] - p0[1]) / 6)} ${num(p2[0] - (p3[0] - p1[0]) / 6)} ${num(p2[1] - (p3[1] - p1[1]) / 6)} ${num(p2[0])} ${num(p2[1])}`
+    }
+    return d + 'Z'
+  }
+  // Roughly the largest circle inside the shape: coarse grid, then a finer pass around the best point.
+  function inscribed(poly) {
+    const inside = (x, y) => {
+      let c = false
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const [xi, yi] = poly[i],
+          [xj, yj] = poly[j]
+        if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c
+      }
+      return c
+    }
+    const dist = (x, y) => {
+      let m = Infinity
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const [ax, ay] = poly[j],
+          [bx, by] = poly[i]
+        const dx = bx - ax,
+          dy = by - ay
+        const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy)))
+        m = Math.min(m, Math.hypot(x - ax - t * dx, y - ay - t * dy))
+      }
+      return m
+    }
+    let best = [50, 50, 0]
+    const scan = (x0, y0, span, steps) => {
+      for (let i = 0; i <= steps; i++)
+        for (let j = 0; j <= steps; j++) {
+          const x = x0 + (span * i) / steps,
+            y = y0 + (span * j) / steps
+          if (!inside(x, y)) continue
+          const r = dist(x, y)
+          if (r > best[2]) best = [x, y, r]
+        }
+    }
+    scan(10, 10, 80, 16)
+    scan(best[0] - 5, best[1] - 5, 10, 10)
+    return best
+  }
+
+  // ---------- face kit ----------
+  const EXPRESSIONS = {
+    beam: { mood: 'happy', eyes: ['dot', 'dot'], mouth: 'grin', blush: 1 },
+    content: { mood: 'happy', eyes: ['arc', 'arc'], mouth: 'smile', blush: 1 },
+    proud: { mood: 'happy', eyes: ['arc', 'arc'], mouth: 'grin', brow: 'raise' },
+    dreamy: { mood: 'calm', eyes: ['lid', 'lid'], mouth: 'small', blush: 1 },
+    hmm: { mood: 'calm', eyes: ['dot', 'dot'], mouth: 'flat', look: [1.6, 0], brow: 'flat' },
+    shy: { mood: 'calm', eyes: ['dot', 'dot'], mouth: 'small', look: [0, 1.4], blush: 1.5 },
+    sleepy: { mood: 'calm', eyes: ['lid', 'lid'], mouth: 'o' },
+    curious: {
+      mood: 'surprised',
+      eyes: ['round', 'round'],
+      mouth: 'o',
+      look: [1.8, -1],
+      brow: 'raise',
+    },
+    oh: { mood: 'surprised', eyes: ['round', 'round'], mouth: 'o' },
+    cheeky: { mood: 'playful', eyes: ['dot', 'arc'], mouth: 'tongue', blush: 1 },
+    wink: { mood: 'playful', eyes: ['round', 'arc'], mouth: 'smile' },
+    giggle: { mood: 'playful', eyes: ['arc', 'arc'], mouth: 'cat', blush: 1 },
+  }
+  const EXPR_NAMES = Object.keys(EXPRESSIONS)
+  const W = 2.6 // stroke width in face units
+  function catchLights(cx, cy, r) {
+    // Signature: one large and one small highlight, both toward the top-left.
+    return (
+      el('circle', { cx: cx - r * 0.32, cy: cy - r * 0.32, r: r * 0.34, fill: '#fff' }) +
+      el('circle', { cx: cx + r * 0.18, cy: cy - r * 0.55, r: r * 0.15, fill: '#fff' })
+    )
+  }
+  function eye(kind, x, look, ink) {
+    const [lx, ly] = look
+    if (kind === 'round')
+      return (
+        el('circle', { cx: x, cy: 0, r: 7.2, fill: '#fff' }) +
+        el('circle', { cx: x + lx, cy: ly, r: 4.4, fill: ink }) +
+        catchLights(x + lx, ly, 4.4)
+      )
+    if (kind === 'dot')
+      return (
+        el('circle', { cx: x + lx * 0.5, cy: ly * 0.5, r: 5.4, fill: ink }) +
+        catchLights(x + lx * 0.5, ly * 0.5, 5.4)
+      )
+    if (kind === 'arc')
+      return el('path', {
+        d: `M${x - 5} 2.2Q${x} -5.2 ${x + 5} 2.2`,
+        fill: 'none',
+        stroke: ink,
+        'stroke-width': W,
+        'stroke-linecap': 'round',
+      })
+    return el('path', {
+      d: `M${x - 5} -0.5Q${x} 4.5 ${x + 5} -0.5`,
+      fill: 'none',
+      stroke: ink,
+      'stroke-width': W,
+      'stroke-linecap': 'round',
+    }) // lid
+  }
+  function mouth(kind, ink, tongue) {
+    const line = (d) =>
+      el('path', {
+        d,
+        fill: 'none',
+        stroke: ink,
+        'stroke-width': W,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+      })
+    switch (kind) {
+      case 'smile':
+        return line('M-5 12Q0 17.5 5 12')
+      case 'small':
+        return line('M-3 12.5Q0 15.5 3 12.5')
+      case 'flat':
+        return line('M-2 13.5L4.5 12.8')
+      case 'cat':
+        return line('M-5.5 11.5Q-2.8 15.5 0 12.3Q2.8 15.5 5.5 11.5')
+      case 'o':
+        return el('ellipse', { cx: 0, cy: 13.5, rx: 2.6, ry: 3.1, fill: ink })
+      case 'grin':
+        return (
+          el('path', {
+            d: 'M-6.5 10.5Q0 11.5 6.5 10.5Q5.5 19 0 19Q-5.5 19 -6.5 10.5Z',
+            fill: ink,
+          }) + el('ellipse', { cx: 0, cy: 16.6, rx: 3.2, ry: 1.8, fill: tongue })
+        )
+      case 'tongue':
+        return (
+          line('M-5 12Q0 16.5 5 12') +
+          el('path', { d: 'M0.2 14.6Q1 19.5 3.6 18.6Q5.4 17.6 4.3 13.4Z', fill: tongue })
+        )
+    }
+  }
+  function face(rng, opts, cx, cy, rad, hue) {
+    const g = rng.fork('face')
+    const pool = opts.mood
+      ? EXPR_NAMES.filter((n) => EXPRESSIONS[n].mood === opts.mood)
+      : EXPR_NAMES
+    const name = opts.expression || g.pick(pool)
+    const E = EXPRESSIONS[name]
+    const ink = lch(0.24, 0.035, hue),
+      tongue = lch(0.68, 0.16, 15),
+      blush = lch(0.72, 0.15, 8)
+    const spread = 11 + g.float(-1, 1.2),
+      tilt = g.float(-7, 7)
+    const s = Math.max(0.5, Math.min(1.2, rad / 22))
+    const look = E.look || [0, 0]
+    let out = ''
+    if (E.blush)
+      out += [-1, 1]
+        .map((k) =>
+          el('ellipse', {
+            cx: k * (spread + 4.5),
+            cy: 6.5,
+            rx: 4.4,
+            ry: 2.5,
+            fill: blush,
+            opacity: 0.5 * E.blush,
+          }),
+        )
+        .join('')
+    out += eye(E.eyes[0], -spread, look, ink) + eye(E.eyes[1], spread, look, ink)
+    if (E.brow === 'raise')
+      out += [-1, 1]
+        .map((k) =>
+          el('path', {
+            d: `M${k * spread - 3.5} -11Q${k * spread} -13.5 ${k * spread + 3.5} -11`,
+            fill: 'none',
+            stroke: ink,
+            'stroke-width': 2,
+            'stroke-linecap': 'round',
+          }),
+        )
+        .join('')
+    if (E.brow === 'flat')
+      out += [-1, 1]
+        .map((k) =>
+          el('path', {
+            d: `M${k * spread - 3.5} -10.5L${k * spread + 3.5} -10.5`,
+            fill: 'none',
+            stroke: ink,
+            'stroke-width': 2,
+            'stroke-linecap': 'round',
+          }),
+        )
+        .join('')
+    out += mouth(E.mouth, ink, tongue)
+    return {
+      svg: el(
+        'g',
+        { transform: `translate(${num(cx)} ${num(cy)}) rotate(${num(tilt)}) scale(${num(s)})` },
+        out,
+      ),
+      expression: name,
+    }
+  }
+
+  // ---------- styles ----------
+  const SQUIRCLE = 'M50 0C88 0 100 12 100 50S88 100 50 100 0 88 0 50 12 0 50 0Z'
+  function sheen(id) {
+    // Opaline sheen: milky light from the top-left.
+    return el(
+      'radialGradient',
+      { id, cx: 0.3, cy: 0.2, r: 0.55 },
+      el('stop', { offset: 0, 'stop-color': '#fff', 'stop-opacity': 0.42 }) +
+        el('stop', { offset: 1, 'stop-color': '#fff', 'stop-opacity': 0 }),
+    )
+  }
+  function blob(g, id, hex, x, y, r) {
+    return el(
+      'radialGradient',
+      { id, cx: num(x), cy: num(y), r: num(r) },
+      el('stop', { offset: 0, 'stop-color': cv(hex) }) +
+        el('stop', { offset: 1, 'stop-color': hex, 'stop-opacity': 0 }),
+    )
+  }
+  function renderAvatar(styleName, opts) {
+    varN = 0
+    const seed = normalizeSeed(opts.seed)
+    const rng = createRng(seed)
+    const id = (
+      (p) => (n) =>
+        `a${p}-${n}`
+    )(hash(seed + '\u0000' + styleName + '\u0000' + JSON.stringify({ ...opts, seed: 0, size: 0 })))
+    const col = pickColor(rng, opts.palette || 'vivid')
+    const base = lch(col.l, col.c, col.h)
+    let defs = '',
+      body = '',
+      picks = { palette: opts.palette, hue: Math.round(col.h) }
+    if (opts.backdrop === 'tint' && styleName !== 'aura')
+      body += el('circle', { cx: 50, cy: 50, r: 50, fill: cv(lch(0.95, 0.03, col.h)) })
+
+    if (styleName === 'aura') {
+      const g = rng.fork('aura')
+      const shape = opts.shape || 'circle'
+      const d = shape === 'squircle' ? SQUIRCLE : 'M50 0A50 50 0 1 1 50 100A50 50 0 1 1 50 0Z'
+      const side = g.next() < 0.5 ? 1 : -1
+      const hues = [
+        col.h + side * g.float(45, 95),
+        col.h - side * g.float(25, 60),
+        col.h + 180 + g.float(-30, 30),
+      ]
+      const spots = hues.map((h, i) =>
+        blob(
+          g,
+          id('b' + i),
+          lch(col.l + g.float(-0.06, 0.08), col.c * g.float(0.9, 1.15), h),
+          g.float(0.1, 0.9),
+          g.float(0.1, 0.9),
+          g.float(0.45, 0.75),
+        ),
+      )
+      defs += spots.join('') + sheen(id('s'))
+      body +=
+        el('path', { d, fill: cv(base) }) +
+        hues.map((_, i) => el('path', { d, fill: `url(#${id('b' + i)})` })).join('') +
+        el('path', { d, fill: `url(#${id('s')})` }) +
+        (shape === 'circle'
+          ? el('circle', {
+              cx: 50,
+              cy: 50,
+              r: 48.6,
+              fill: 'none',
+              stroke: '#fff',
+              'stroke-opacity': 0.28,
+              'stroke-width': 1.6,
+            })
+          : '')
+      picks = { ...picks, shape }
+    } else {
+      const gen = genome(rng, opts.family)
+      if (styleName === 'gradient') {
+        const g = rng.fork('mesh')
+        const h2 = col.h + (g.next() < 0.5 ? 1 : -1) * g.float(50, 110),
+          h3 = col.h - g.float(30, 70)
+        defs +=
+          blob(
+            g,
+            id('m1'),
+            lch(col.l + 0.04, col.c * 1.1, h2),
+            g.float(0.15, 0.45),
+            g.float(0.1, 0.4),
+            g.float(0.6, 0.8),
+          ) +
+          blob(
+            g,
+            id('m2'),
+            lch(col.l - 0.04, col.c, h3),
+            g.float(0.55, 0.9),
+            g.float(0.6, 0.95),
+            g.float(0.55, 0.75),
+          ) +
+          sheen(id('s'))
+        body +=
+          el('path', { d: gen.d, fill: cv(base) }) +
+          el('path', { d: gen.d, fill: `url(#${id('m1')})` }) +
+          el('path', { d: gen.d, fill: `url(#${id('m2')})` }) +
+          el('path', { d: gen.d, fill: `url(#${id('s')})` })
+      } else {
+        body += el('path', { d: gen.d, fill: cv(base) })
+      }
+      picks = { ...picks, family: gen.family, lobes: gen.lobes }
+      if (opts.face !== false) {
+        const [x, y, r] = inscribed(gen.poly)
+        const f = face(rng, opts, x, y - r * 0.08, r, col.h)
+        body += f.svg
+        picks.expression = f.expression
+      }
+    }
+    const size = opts.size || 64
+    const svg = el(
+      'svg',
+      {
+        xmlns: 'http://www.w3.org/2000/svg',
+        viewBox: '0 0 100 100',
+        width: size,
+        height: size,
+        role: 'img',
+        'aria-label': opts.title || seed,
+      },
+      (defs ? `<defs>${defs}</defs>` : '') + body,
+    )
+    return { svg, picks }
+  }
+
+  // ---------- sheet ----------
+  const FIRST = [
+    'Ada',
+    'Grace',
+    'Linus',
+    'Margaret',
+    'Alan',
+    'Katherine',
+    'Mary',
+    'Amelia',
+    'Lucy',
+    'Maya',
+    'Sarah',
+    'Zoë',
+    'José',
+    'Søren',
+    'Nguyễn',
+    'Aiko',
+    'Min-jun',
+    'Olu',
+    'Priya',
+    'Mateo',
+    'Ines',
+    'Kofi',
+    'Hana',
+    'Ravi',
+    'Lena',
+  ]
+  const SEEDS = []
+  for (let i = 0; i < 100; i++) {
+    const n = FIRST[i % FIRST.length]
+    SEEDS.push(
+      i % 4 === 0
+        ? `${n.toLowerCase()}.${i}@inlay.dev`
+        : i % 4 === 1
+          ? `${n} ${String.fromCharCode(65 + (i % 26))}.`
+          : i % 4 === 2
+            ? `user_${(i * 7919).toString(36)}`
+            : `${n}${i}`,
+    )
+  }
+  const state = { style: 'morph', size: 48, face: true, palette: 'vivid', backdrop: 'none' }
+  const opt = (extra) => ({
+    palette: state.palette,
+    face: state.face,
+    backdrop: state.backdrop,
+    ...extra,
+  })
+  const tile = (seed, size, extra = {}, label = true) => {
+    const { svg, picks } = renderAvatar(extra.style || state.style, opt({ seed, size, ...extra }))
+    return `<div class="cell" title="${esc(seed)} · ${esc(JSON.stringify(picks))}">${svg}${label ? `<small>${esc(seed)}</small>` : ''}</div>`
+  }
+  const $ = (s) => document.getElementById(s)
+
+  function render() {
+    const s = state.size
+    $('grid').style.setProperty('--cell', s === 24 ? '28px' : s === 48 ? '76px' : '140px')
+    $('grid').innerHTML = SEEDS.map((seed) => tile(seed, s, {}, s !== 24)).join('')
+    $('g-light').innerHTML = SEEDS.slice(0, 18)
+      .map((x) => renderAvatar(state.style, opt({ seed: x, size: 40 })).svg)
+      .join('')
+    $('g-dark').innerHTML = SEEDS.slice(0, 18)
+      .map((x) => renderAvatar(state.style, opt({ seed: x, size: 40 })).svg)
+      .join('')
+    const exprStyle = state.style === 'aura' ? 'morph' : state.style
+    $('expr').innerHTML = EXPR_NAMES.map(
+      (n) =>
+        `<div class="card">${renderAvatar(exprStyle, opt({ seed: 'expr-' + n, size: 96, expression: n, face: true })).svg}<div class="tri">${['a', 'b', 'c'].map((k) => renderAvatar(exprStyle, opt({ seed: k + n, size: 32, expression: n, face: true })).svg).join('')}</div><b>${n}</b><div class="meta">${EXPRESSIONS[n].mood}</div></div>`,
+    ).join('')
+    $('families').innerHTML = FAMILY_NAMES.map(
+      (f) =>
+        `<div class="card">${renderAvatar(exprStyle, opt({ seed: 'fam-' + f, size: 96, family: f })).svg}<div class="tri">${['1', '2', '3'].map((k) => renderAvatar(exprStyle, opt({ seed: f + k, size: 32, family: f })).svg).join('')}</div><b>${f}</b><div class="meta">${f === 'petal' ? '5–6' : FAMILIES[f].L} lobe${FAMILIES[f].L > 1 || f === 'petal' ? 's' : ''}</div></div>`,
+    ).join('')
+    $('palettes').innerHTML = Object.keys(PALETTES)
+      .map(
+        (p) =>
+          `<div class="pal-row"><code>${p}</code><div>${SEEDS.slice(0, 10)
+            .map(
+              (x) =>
+                renderAvatar(state.style, {
+                  seed: x,
+                  size: 40,
+                  palette: p,
+                  face: state.face,
+                  backdrop: state.backdrop,
+                }).svg,
+            )
+            .join('')}</div></div>`,
+      )
+      .join('')
+    const thread = [
+      [
+        'Margaret Okafor',
+        '3 min',
+        'Pushed the new onboarding copy. Can someone check the Spanish strings?',
+      ],
+      ['José Ramírez', '2 min', 'On it. Two of them still say “cart” instead of “carrito”.'],
+      ['aiko@inlay.dev', 'now', 'Merged. Thanks both.'],
+    ]
+    $('thread').innerHTML =
+      '<h3>Comments</h3>' +
+      thread
+        .map(
+          ([w, t, m]) =>
+            `<div class="msg">${renderAvatar(state.style, opt({ seed: w, size: 32 })).svg}<div><div class="who">${esc(w)}<span>${t}</span></div><p>${esc(m)}</p></div></div>`,
+        )
+        .join('')
+    $('stack').innerHTML = SEEDS.slice(20, 27)
+      .map((x) => renderAvatar(state.style, opt({ seed: x, size: 36 })).svg)
+      .join('')
+    $('people').innerHTML = SEEDS.slice(40, 45)
+      .map(
+        (x, i) =>
+          `<div class="person">${renderAvatar(state.style, opt({ seed: x, size: 24 })).svg}${esc(x)}<span>${[12, 9, 7, 4, 1][i]} edits</span></div>`,
+      )
+      .join('')
+    document.querySelector('#face button[data-v="on"]').disabled = state.style === 'aura'
+    document.querySelector('#backdrop button[data-v="tint"]').disabled = state.style === 'aura'
+  }
+  function bindSeg(idName, key, map = (v) => v) {
+    $(idName).addEventListener('click', (e) => {
+      const b = e.target.closest('button')
+      if (!b || b.disabled) return
+      state[key] = map(b.dataset.v)
+      for (const x of $(idName).children) x.setAttribute('aria-pressed', String(x === b))
+      render()
+    })
+  }
+  bindSeg('style', 'style')
+  bindSeg('size', 'size', Number)
+  bindSeg('face', 'face', (v) => v === 'on')
+  bindSeg('backdrop', 'backdrop')
+  $('palette').addEventListener('change', (e) => {
+    state.palette = e.target.value
+    render()
+  })
+  render()
+</script>

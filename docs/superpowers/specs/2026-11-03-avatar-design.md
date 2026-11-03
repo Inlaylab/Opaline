@@ -114,7 +114,7 @@ createAvatar(aura, { seed, palette: 'cool', shape: 'squircle' }).toJSON()
 
 - **Seed.** The seed is trimmed, put in NFC form and lower-cased when it is an email. The xmur3 hash seeds an sfc32 PRNG.
 - **Pick order.** Each layer takes its picks in a fixed order, so adding an option never shifts the other picks.
-- **IDs.** Gradient IDs are prefixed with a hash of the seed, the style name and the resolved options. Two avatars with the same seed but different options can sit on one page without an ID clash. `Math.random` is never used.
+- **IDs.** Gradient IDs are prefixed with a hash of the seed, the style name and the resolved options. Two avatars with the same seed but different options can sit on one page without an ID clash. `Math.random` is never used. When one page shows the same avatar twice, the wrapper passes an `instance` option (React `useId`, an Angular root counter like Ivorie `IvIdGenerator`, an element counter). It is appended to every ID and is not part of the hash, so the picks never change.
 - **Escaping.** The seed and `alt` are escaped before they go into the SVG. Only our own parts go into the SVG.
 - **Component contract** (the same in every framework):
   - The generated SVG shows while `src` loads, and stays if `src` fails.
@@ -151,7 +151,7 @@ createAvatar(aura, { seed, palette: 'cool', shape: 'squircle' }).toJSON()
 ```
 packages/core       createAvatar, normalize, hash+PRNG, shape genome, inscribed center, face kit,
                     fills, finishes, OKLCH color, SVG builder, IDs, escaping, toJSON
-packages/styles     aura, morph, gradient, clay, persona (subpath exports)
+                    styles ship as subpaths of the core package: @inlaylab/opaline/aura, /morph, /gradient …
 packages/element    <opaline-avatar> custom element, no Lit
 packages/react      RSC-safe SVG + 'use client' image fallback
 packages/angular    standalone, signal inputs, zoneless, SSR-safe (ng-packagr)
@@ -201,3 +201,49 @@ registry/           shadcn registry + Ivorie CLI entry
 - How the inscribed center is approximated (a grid sample or a pole of inaccessibility), within the core budget.
 - The exact genome ranges and the expression geometry, tuned at the design gate.
 - Palette hex values, checked for contrast in light and dark.
+
+## Locked design (0.2 gate, approved 2026-11-03)
+
+The reference implementation is [docs/design/gate-0.2.html](../../design/gate-0.2.html). The core reproduces its geometry and numbers exactly, so 0.2 output looks like the approved sheet. That file is a sketch; the core is the source of truth once it ships.
+
+- **Shape genome.**
+  - 72 radial samples: `r = 1 + amp·cos(L·(t − phase)) + Σ wobble(k = 2, 3, 5, |a| ≤ 0.035)`, where a wobble term is skipped when its k equals L.
+  - x is scaled by `sx` (0.92–1.08) and y by `1/sx`. The shape is fit into 8..92.
+  - Every 3rd sample feeds a closed Catmull-Rom curve, which is turned into cubic Béziers.
+  - Families:
+
+    | Family  | L   | amp        | phase  |
+    | ------- | --- | ---------- | ------ |
+    | egg     | 1   | 0.05–0.1   | π/2    |
+    | duo     | 2   | 0.07–0.12  | seeded |
+    | tri     | 3   | 0.08–0.12  | −π/2   |
+    | cushion | 4   | 0.035–0.06 | π/4    |
+    | clover  | 4   | 0.15–0.2   | seeded |
+    | petal   | 5–6 | 0.13–0.17  | seeded |
+
+    Every phase gets ±0.18 of jitter.
+- **Face placement.**
+  - The inscribed center comes from a 16×16 grid over 10..90, then a 10×10 refine pass over ±5.
+  - The face is placed at `(x, y − 0.08·r)` with scale `clamp(r/22, 0.5, 1.2)`.
+  - Rotation is ±7°, and eye spread is `11 + (−1..1.2)`.
+- **Face parts.**
+  - Eyes: `round` (white r 7.2 with pupil r 4.4), `dot` (r 5.4), `arc`, `lid`.
+  - Mouths: `smile`, `small`, `flat`, `cat`, `o`, `grin` (with tongue), `tongue`.
+  - Brows: `raise` and `flat`. Blush: ellipses at opacity 0.5.
+  - Catch-lights: r 0.34 at (−0.32, −0.32), and r 0.15 at (0.18, −0.55), both times the pupil radius.
+  - Ink is `oklch(0.24 0.035 bodyHue)`. Tongue is `oklch(0.68 0.16 15)`. Blush is `oklch(0.72 0.15 8)`.
+- **Expressions and moods.**
+  - happy: beam, content, proud.
+  - calm: dreamy, hmm, shy, sleepy.
+  - surprised: curious, oh.
+  - playful: cheeky, wink, giggle.
+- **Palettes.**
+  - Each palette sets a lightness and chroma, plus a hue list. Picks get ±9° of hue jitter and ±0.03 of lightness jitter.
+  - Lightness and chroma: vivid 0.74/0.16, pastel 0.87/0.08, electric 0.7/0.25, muted 0.7/0.055, warm 0.76/0.15, cool 0.72/0.13, mono 0.66/0.035.
+  - The anchor hues and the per-palette hue lists are the ones in the sheet.
+- **Fills.**
+  - Morph uses a solid fill.
+  - Gradient puts two radial "mesh" spots over the base color (hues +50..110 and −30..70), then the sheen.
+  - Aura uses three radial spots, then the sheen, then a white rim at 0.28 opacity on circles. Aura's shape is `circle` or `squircle`.
+- **Opaline sheen** (new signature trait, on Gradient and Aura only): a white radial at (0.3, 0.2), r 0.55, opacity 0.42 to 0.
+- **Backdrop** `tint`: a circle in `oklch(0.95 0.03 bodyHue)`. It does not apply to Aura.
