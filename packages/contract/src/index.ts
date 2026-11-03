@@ -120,6 +120,13 @@ export function runContract(adapter: Adapter): void {
     expect(svgOf(root)).toBeTruthy()
   })
 
+  test(`${adapter.name}: src change resets the photo`, async () => {
+    let root = await adapter.render({ seed: 'a', src: BROKEN })
+    await new Promise((r) => setTimeout(r, 300))
+    root = await adapter.update(root, { seed: 'a', src: PIXEL })
+    await until(() => imgOf(root)?.hidden === false)
+  })
+
   test(`${adapter.name}: updates on change`, async () => {
     let root = await adapter.render({ seed: 'one' })
     const before = stripInstance(svgOf(root).outerHTML)
