@@ -1,7 +1,24 @@
 {
   "name": "@inlaylab/avatar-core",
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "Seeded, deterministic SVG avatars. Zero dependencies.",
+  "keywords": [
+    "avatar",
+    "svg",
+    "seed",
+    "deterministic",
+    "identicon",
+    "profile-picture"
+  ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inlaylab/avatar.git",
+    "directory": "packages/core"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "sideEffects": false,
   "exports": {

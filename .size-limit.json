@@ -1,0 +1,9 @@
+[
+  {
+    "name": "core",
+    "path": "packages/core/dist/index.js",
+    "import": "{ createAvatar }",
+    "limit": "3 KB",
+    "gzip": true
+  }
+]

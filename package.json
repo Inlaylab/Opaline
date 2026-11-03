@@ -9,12 +9,19 @@
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "size": "size-limit",
+    "check:pkg": "publint packages/core && attw --pack packages/core --profile esm-only",
+    "check": "pnpm build && pnpm test && pnpm lint && pnpm size && pnpm check:pkg"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@changesets/cli": "^3.0.3",
+    "@size-limit/preset-small-lib": "^14.3.0",
     "@types/node": "^24.19.2",
     "prettier": "^3.9.10",
+    "publint": "^0.3.25",
+    "size-limit": "^14.3.0",
     "tsdown": "^0.23.4",
     "turbo": "^2.11.10",
     "typescript": "~6.0.3",
