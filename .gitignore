@@ -7,3 +7,4 @@ coverage
 .vitest
 .astro
 .angular
+.svelte-kit
