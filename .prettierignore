@@ -8,3 +8,5 @@ CHANGELOG.md
 .svelte-kit
 .next
 next-env.d.ts
+.nuxt
+.output

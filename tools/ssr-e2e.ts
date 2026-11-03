@@ -43,7 +43,8 @@ export async function checkSsrApp({ start, port, cwd, env = {} }: Options): Prom
     const html = await waitForServer(url, () => server.exitCode === null)
 
     // Server HTML: two avatars, the named one carries the a11y contract, and no id repeats.
-    expect(html.match(/data-opaline=""/g)).toHaveLength(2)
+    // `data-opaline` and `data-opaline=""` are the same attribute; Vue writes the short form.
+    expect(html.match(/\sdata-opaline(?:=""|(?=[\s>]))/g)).toHaveLength(2)
     expect(html.match(/<svg/g)?.length).toBeGreaterThanOrEqual(2)
     expect(html).toMatch(/role="img"[^>]*aria-label="Ada"|aria-label="Ada"[^>]*role="img"/)
     const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])

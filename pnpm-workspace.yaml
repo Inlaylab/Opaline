@@ -12,6 +12,14 @@ minimumReleaseAgeExclude:
   - '@vitest/utils@5.1.0'
   - '@inlaylab/ivorie@1.2.0'
   - astro@7.4.5
+  - '@nuxt/kit@4.6.4'
+  - '@nuxt/nitro-server@4.6.4'
+  - '@nuxt/schema@4.6.4'
+  - '@nuxt/vite-builder@4.6.4'
+  - '@nuxt/vite-server@4.6.4'
+  - nitropack@2.13.6
+  - nuxt@4.6.4
+  - unrouting@0.3.2
 
 # Install scripts we do not need: esbuild ships per-platform binaries; the rest are optional caches.
 allowBuilds:

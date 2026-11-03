@@ -10,3 +10,5 @@ coverage
 .svelte-kit
 .next
 next-env.d.ts
+.nuxt
+.output
