@@ -47,5 +47,12 @@
     ],
     "limit": "1.5 KB",
     "gzip": true
+  },
+  {
+    "name": "react (own code)",
+    "path": "packages/react/dist/index.js",
+    "ignore": ["react", "react/jsx-runtime", "@inlaylab/opaline"],
+    "limit": "1.5 KB",
+    "gzip": true
   }
 ]
