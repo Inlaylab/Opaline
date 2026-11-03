@@ -1,5 +1,5 @@
 {
-  "name": "inlaylab-avatar",
+  "name": "opaline-monorepo",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.16.1",

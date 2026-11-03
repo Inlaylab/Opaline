@@ -17,5 +17,5 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm i --frozen-lockfile
-      - run: pnpm --filter @inlaylab/avatar-core exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm --filter @inlaylab/opaline exec playwright install --with-deps chromium firefox webkit
       - run: pnpm check

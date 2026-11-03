@@ -1,4 +1,4 @@
-# @inlaylab/avatar-core
+# @inlaylab/opaline
 
 ## 0.1.0
 

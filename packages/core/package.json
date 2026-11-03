@@ -1,5 +1,5 @@
 {
-  "name": "@inlaylab/avatar-core",
+  "name": "@inlaylab/opaline",
   "version": "0.1.0",
   "description": "Seeded, deterministic SVG avatars. Zero dependencies.",
   "keywords": [
@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Inlaylab/avatar.git",
+    "url": "git+https://github.com/Inlaylab/opaline.git",
     "directory": "packages/core"
   },
   "publishConfig": {

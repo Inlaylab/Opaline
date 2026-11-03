@@ -1,6 +1,6 @@
-# Inlaylab Avatar — design
+# Opaline — design
 
-Working name: `@inlaylab/avatar`. The final name comes before the first publish.
+Name: **Opaline**. Repo `Inlaylab/opaline`. Core package `@inlaylab/opaline`, others `@inlaylab/opaline-<framework>`. Custom element `<opaline-avatar>`.
 
 ## Intent
 
@@ -152,7 +152,7 @@ createAvatar(aura, { seed, palette: 'cool', shape: 'squircle' }).toJSON()
 packages/core       createAvatar, normalize, hash+PRNG, shape genome, inscribed center, face kit,
                     fills, finishes, OKLCH color, SVG builder, IDs, escaping, toJSON
 packages/styles     aura, morph, gradient, clay, persona (subpath exports)
-packages/element    custom element, no Lit
+packages/element    <opaline-avatar> custom element, no Lit
 packages/react      RSC-safe SVG + 'use client' image fallback
 packages/angular    standalone, signal inputs, zoneless, SSR-safe (ng-packagr)
 packages/vue        Vue 3
