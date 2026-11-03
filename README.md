@@ -10,8 +10,11 @@ Inlaylab names its projects after inlay materials. [Ivorie](https://github.com/I
 
 ## Status
 
-Work in progress (0.1 foundation). The design lives in [docs/superpowers/specs/2026-11-03-avatar-design.md](docs/superpowers/specs/2026-11-03-avatar-design.md).
+Work in progress (0.2: Aura, Morph and Gradient, with Web Component, React and Angular wrappers). The design lives in [docs/superpowers/specs/2026-11-03-avatar-design.md](docs/superpowers/specs/2026-11-03-avatar-design.md).
 
-| Package             | What                                 |
-| ------------------- | ------------------------------------ |
-| `@inlaylab/opaline` | Core: seed to SVG, zero dependencies |
+| Package                     | What                                                                           |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| `@inlaylab/opaline`         | Core: seed to SVG, zero dependencies. Styles at `/aura`, `/morph`, `/gradient` |
+| `@inlaylab/opaline-element` | `<opaline-avatar>` custom element, no framework                                |
+| `@inlaylab/opaline-react`   | React `Avatar`, server-component safe                                          |
+| `@inlaylab/opaline-angular` | Angular `op-avatar`, standalone, zoneless                                      |

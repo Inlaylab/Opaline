@@ -8,10 +8,8 @@ test('72 samples fit inside 8..92 with the long side at 84', () => {
     expect(poly).toHaveLength(72)
     const xs = poly.map((p) => p[0])
     const ys = poly.map((p) => p[1])
-    for (const v of [...xs, ...ys]) {
-      expect(v).toBeGreaterThanOrEqual(7.999)
-      expect(v).toBeLessThanOrEqual(92.001)
-    }
+    expect(Math.min(...xs, ...ys)).toBeGreaterThanOrEqual(7.999)
+    expect(Math.max(...xs, ...ys)).toBeLessThanOrEqual(92.001)
     const long = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys))
     expect(long).toBeCloseTo(84, 2)
   }
