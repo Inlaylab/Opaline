@@ -249,3 +249,61 @@ The reference implementation is [docs/design/gate-0.2.html](../../design/gate-0.
   - Aura uses three radial spots, then the sheen, then a white rim at 0.28 opacity on circles. Aura's shape is `circle` or `squircle`.
 - **Opaline sheen** (new signature trait, on Gradient and Aura only): a white radial at (0.3, 0.2), r 0.55, opacity 0.42 to 0.
 - **Backdrop** `tint`: a circle in `oklch(0.95 0.03 bodyHue)`. It does not apply to Aura.
+
+## Locked design (0.4 gate, approved 2026-11-03)
+
+The reference implementation is [docs/design/gate-0.4.html](../../design/gate-0.4.html). It builds on the 0.2 sheet, and everything in "Locked design (0.2 gate)" still holds. The core reproduces the new geometry and numbers below exactly. Where this section and the sketch differ, this section wins.
+
+### Approaches considered
+
+- **Sketch first, then core (chosen).** A throwaway sheet is approved, then the core copies its numbers. It is the process that worked for 0.2, and art changes are cheap before goldens exist.
+- **Core first** was rejected: every art change during review would churn tests and goldens.
+- **Two gates (finishes, then Clay)** was rejected: the phase plan has one 0.4 gate.
+
+### Finishes
+
+- `finish: 'flat' | 'soft' | 'gloss'` applies to Morph, Gradient and Clay. Aura ignores it.
+- Defaults: Morph and Gradient `flat`, so their 0.2 output is unchanged byte for byte. Clay `soft`.
+- With `soft` or `gloss`, Gradient drops the opaline sheen; the finish light replaces it. With `flat`, Gradient is exactly 0.2.
+- No finish takes a random draw. Finishes never touch a fork.
+- **`soft`** adds two gradients, painted over each finished part (same path, gradient fill):
+  - shade: radial at (0.66, 0.92), r 0.78, `oklch(0.3 0.06 bodyHue)` from opacity 0.42 to 0.
+  - light: radial at (0.3, 0.22), r 0.58, white from opacity 0.5 to 0.
+- **`gloss`** is `soft` plus, on the main body only:
+  - rim: the body path stroked at width 1.6 with a linear gradient (0,0)→(1,1), white from opacity 0.7 at 0 to 0 at 0.5.
+  - highlight: a white ellipse at opacity 0.85, centered at `(x + 0.3w, y + 0.19h)` of the body's bounding box, rx 0.1w, ry 0.05h, rotated −32°.
+  - glint: a white circle at opacity 0.7, at the highlight center plus `(0.13w, −0.03h)`, r 0.022w.
+
+### Clay
+
+- `clay` options: `body: 'jelly' | 'hood'`, `ears: 'cat' | 'bear' | 'bunny'`, plus the blob options (`family`, `expression`, `mood`, `face`, `palette`, `backdrop`, `finish`). Face is on by default.
+- **Pick order.** Clay uses a new fork named `clay`. Its draws are always taken, in this order, whether or not an option fixes the value: body (`next() < 0.5` → jelly), family (pick from egg, duo, cushion, tri), arm height, wave, left arm angle, right arm angle, ears. A set option then overrides the drawn value. This differs from the sketch, which skips draws for set options. The face uses the `face` fork as in 0.2.
+- Colors: body `base = oklch(l c h)` from the palette pick; parts use `dark = oklch(l − 0.07, c, h)`.
+- **`jelly`.**
+  - The genome (shape fork, families above) is scaled about the center: `x' = 50 + (x − 50)·0.78`, `y' = 53 + (y − 50)·0.8`, then smoothed as in 0.2.
+  - Arm height `ay = y + h·(0.56..0.68)` of the scaled body's bounding box. The arm anchors are the min and max x of the scaled samples within 5 of `ay`.
+  - Arms are ellipses rx 7.5, ry 5.2, filled `dark`, painted before the body. The left arm is at `(minX + 1, ay)`, rotated 18..34°.
+  - The right arm mirrors it at `(maxX − 1, ay)`, rotated −(18..34)°. When `wave` (`next() < 0.33`), it sits at `(maxX + 1, ay − 13)`, rotated −62°.
+  - With `soft` or `gloss`, each arm also gets the shade gradient. It gets no light, rim or highlight.
+  - The face uses the inscribed center of the scaled body.
+- **`hood`.**
+  - Hood: an ellipse at (50, 58), rx 39, ry 36, filled `base`, with the finish.
+  - Face opening: an ellipse at (50, 62), rx 25.5, ry 22.5, filled `oklch(0.95 0.025 bodyHue + 30)`, stroked `dark` at width 3.2.
+  - Face: a fixed center (50, 63) and radius 21, then the 0.2 placement rule.
+  - Ears are painted before the hood, in `dark`, each with an inner ear in `oklch(0.82 0.08 12)`:
+    - cat: outer path `M17 40L24 9Q26 4 31 7L48 24Z`, inner `M24 32L27 15Q28 12 31 14L40 23Z`. The right ear is mirrored about x = 50.
+    - bear: circles at (50 ± 27, 25), r 11; inner r 5.8.
+    - bunny: ellipses at (50 ± 14, 17), rx 7.5, ry 17, rotated ±12°; inner at (50 ± 14, 19), rx 3.6, ry 12.
+- `toJSON()` adds `body`, `finish`, and `family` and `wave` (jelly) or `ears` (hood).
+- Size budget: core + clay ≤ 8 KB gzip.
+
+### 500-avatar perf check
+
+- A Vitest bench in `packages/core` builds 500 Clay `gloss` avatars from 500 distinct seeds as SVG strings.
+- Target: under 100 ms on a mid-range laptop. The CI test fails above 250 ms, to allow for slow shared runners. (Builder's call; the user approved a 100 ms proposal.)
+- The sketch measured about 430 ms in a container; the core must do better. The likely costs are the inscribed-center scan and the OKLCH gamut search, so caching is allowed if output stays byte-identical.
+
+### Left to the builder
+
+- Where finish code lives (a shared `parts/finish.ts` is suggested), and how a style declares its default finish.
+- Golden fixtures for Clay, and for Morph and Gradient in `soft` and `gloss` (50 seeds each), with the same Node and browser parity as 0.2.
