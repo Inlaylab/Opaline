@@ -6,3 +6,5 @@ CHANGELOG.md
 .astro
 .angular
 .svelte-kit
+.next
+next-env.d.ts

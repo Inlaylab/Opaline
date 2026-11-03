@@ -8,3 +8,5 @@ coverage
 .astro
 .angular
 .svelte-kit
+.next
+next-env.d.ts

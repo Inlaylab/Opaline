@@ -7,7 +7,7 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": [],
+  "ignore": ["ssr-next"],
   "privatePackages": {
     "version": false,
     "tag": false

@@ -12,7 +12,8 @@
     "lint": "turbo run lint",
     "size": "size-limit",
     "check:pkg": "node tools/check-angular-partial.mjs && publint packages/core && attw --pack packages/core --profile esm-only && publint packages/element && attw --pack packages/element --profile esm-only && publint packages/react && attw --pack packages/react --profile esm-only && publint packages/vue && attw --pack packages/vue --profile esm-only && publint packages/svelte && publint packages/angular/dist --pack npm && attw --pack packages/angular/dist --profile esm-only",
-    "check": "pnpm build && pnpm test && pnpm lint && pnpm size && pnpm check:pkg"
+    "check": "pnpm build && pnpm test && pnpm lint && pnpm size && pnpm check:pkg && pnpm e2e",
+    "e2e": "turbo run e2e"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

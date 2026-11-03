@@ -1,0 +1,21 @@
+{
+  "name": "ssr-next",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "start": "next start",
+    "e2e": "vitest run"
+  },
+  "dependencies": {
+    "@inlaylab/opaline": "workspace:*",
+    "@inlaylab/opaline-react": "workspace:*",
+    "next": "^16.4.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "playwright": "^1.64.1"
+  }
+}
