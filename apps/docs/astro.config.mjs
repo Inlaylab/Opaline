@@ -1,3 +1,4 @@
 import { defineConfig } from 'astro/config'
 
-export default defineConfig({})
+// GitHub Pages serves the repo at /Opaline/.
+export default defineConfig({ site: 'https://inlaylab.github.io', base: '/Opaline' })

@@ -1,4 +1,5 @@
 ---
+import core from '../../../../packages/core/package.json'
 // The same 100 seeds as the approved design sheet (docs/design/gate-0.2.html).
 const FIRST = ['Ada', 'Grace', 'Linus', 'Margaret', 'Alan', 'Katherine', 'Mary', 'Amelia', 'Lucy', 'Maya', 'Sarah', 'Zoë', 'José', 'Søren', 'Nguyễn', 'Aiko', 'Min-jun', 'Olu', 'Priya', 'Mateo', 'Ines', 'Kofi', 'Hana', 'Ravi', 'Lena']
 const SEEDS = Array.from({ length: 100 }, (_, i) => {
@@ -11,13 +12,34 @@ const SEEDS = Array.from({ length: 100 }, (_, i) => {
         ? `user_${(i * 7919).toString(36)}`
         : `${n}${i}`
 })
-const LOOKS = [
-  { look: 'morph', note: 'Flat seeded blob with a face.' },
-  { look: 'gradient', note: 'Soft mesh fill, milky sheen, a face.' },
-  { look: 'aura', note: 'Faceless milky-glass orb.' },
-  { look: 'clay', note: 'Squishy clay figure: a jelly blob with arms, or a hood with ears.' },
+const LOOKS = ['morph', 'gradient', 'aura', 'clay']
+const EXPRESSIONS = ['beam', 'content', 'proud', 'dreamy', 'hmm', 'shy', 'sleepy', 'curious', 'oh', 'cheeky', 'wink', 'giggle']
+const PALETTES = ['vivid', 'pastel', 'electric', 'muted', 'warm', 'cool', 'mono']
+const TABS = [
+  ['core', 'Core'],
+  ['element', 'Web Component'],
+  ['react', 'React'],
+  ['vue', 'Vue'],
+  ['svelte', 'Svelte'],
+  ['angular', 'Angular'],
+  ['svg', 'SVG'],
+  ['json', 'JSON'],
 ]
-const SIZES = [24, 48, 128]
+const OPTIONS = [
+  ['seed', 'string | number | null', 'Any string: user ID, email, name. Emails are lower-cased; whitespace is trimmed.'],
+  ['size', 'number', 'Pixel size. Default 64.'],
+  ['palette', 'vivid · pastel · electric · muted · warm · cool · mono', 'Color family. Default vivid.'],
+  ['finish', 'flat · soft · gloss', 'Light and shade. Morph and Gradient default to flat, Clay to soft.'],
+  ['expression', 'beam · content · … · giggle', 'Fix the face. Or set mood: happy · calm · surprised · playful.'],
+  ['face', 'boolean', 'Morph, Gradient and Clay show a face unless false.'],
+  ['family', 'egg · duo · tri · cushion · clover · petal', 'Blob shape family.'],
+  ['body', 'jelly · hood', 'Clay only. With ears: cat · bear · bunny.'],
+  ['shape', 'circle · squircle', 'Aura only.'],
+  ['backdrop', 'none · tint', 'A soft circle behind the body.'],
+  ['src · alt', 'string', 'Wrappers only: a photo shown once it loads, and an accessible name.'],
+]
+const VERSION = core.version
+const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
 const INSTALL = [
   ['Core', 'pnpm add @inlaylab/opaline', `import { createAvatar } from '@inlaylab/opaline'\nimport { morph } from '@inlaylab/opaline/morph'\n\ncreateAvatar(morph, { seed: 'ada@inlay.dev' }).svg`],
   ['Web Component', 'pnpm add @inlaylab/opaline-element', `<script type="module">import '@inlaylab/opaline-element'</script>\n<opaline-avatar seed="ada@inlay.dev" look="morph"></opaline-avatar>`],
@@ -32,76 +54,216 @@ const INSTALL = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Opaline</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Figtree:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-    <style is:global>
-      :root {
-        --bg: #f5f4f7; --surface: #fff; --fg: #1d1b26; --muted: #6b6878; --line: #e2e0e8; --accent: #33708a;
-        --display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
-        --body: 'Figtree', 'Segoe UI', system-ui, sans-serif;
-        --mono: 'IBM Plex Mono', ui-monospace, monospace;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root { --bg: #15141b; --surface: #1e1c26; --fg: #ecebf2; --muted: #a09cb0; --line: #2e2b38; --accent: #7fb6cc; color-scheme: dark; }
-      }
-      * { box-sizing: border-box; }
-      body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); padding-inline: max(16px, env(safe-area-inset-left)); }
-      main { max-width: 1120px; margin: 0 auto; padding-block: 48px 96px; display: grid; gap: 56px; }
-      h1 { font: 700 clamp(40px, 7vw, 72px)/1 var(--display); margin: 0; letter-spacing: -0.02em; }
-      h2 { font: 700 26px/1.2 var(--display); margin: 0; }
-      h3 { font: 500 12px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0; }
-      p { margin: 0; max-width: 65ch; }
-      .lede { color: var(--muted); font-size: 18px; }
-      header { display: grid; gap: 14px; }
-      section { display: grid; gap: 18px; }
-      .install { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
-      .pkg { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; min-width: 0; }
-      .pkg b { font-weight: 600; }
-      pre { margin: 0; font: 12.5px/1.6 var(--mono); overflow-x: auto; color: var(--fg); }
-      .cmd { color: var(--accent); }
-      .row { display: flex; flex-wrap: wrap; gap: 8px; }
-      .row.s128 { gap: 14px; }
-    </style>
+    <title>Opaline · seeded avatars for every framework</title>
+    <meta name="description" content="Seeded SVG avatars for every framework. The same seed always gives the same avatar. Zero dependencies, MIT." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <script is:inline>
+      // Before paint: the saved theme, else the system one. Storage can throw in private mode.
+      ;(() => {
+        let t = null
+        try {
+          t = localStorage.getItem('opaline-theme')
+        } catch {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.dataset.theme = t
+      })()
+    </script>
   </head>
   <body>
-    <main>
-      <header>
-        <h1>Opaline</h1>
-        <p class="lede">Seeded avatars for every framework. The same seed always gives the same avatar. Zero dependencies, MIT for code and art.</p>
-      </header>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={BASE}><opaline-avatar seed="opaline" look="gradient" size="24"></opaline-avatar>Opaline</a>
+        <nav class="nav" aria-label="Sections">
+          <a href="#playground">Playground</a>
+          <a href="#gallery">Gallery</a>
+          <a href="#docs">Docs</a>
+        </nav>
+        <span class="spacer"></span>
+        <a class="btn" href="https://github.com/Inlaylab/Opaline">GitHub</a>
+        <button class="btn icon" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+        </button>
+      </div>
+    </header>
 
-      <section>
-        <h2>Install</h2>
-        <div class="install">
-          {INSTALL.map(([name, cmd, code]) => (
-            <div class="pkg">
-              <b>{name}</b>
-              <pre class="cmd">{cmd}</pre>
-              <pre>{code}</pre>
-            </div>
+    <main>
+      <div class="wrap hero">
+        <span class="badge">v{VERSION} · MIT · zero dependencies</span>
+        <h1>Seeded avatars for every framework.</h1>
+        <p>Pass a user ID, email or name. Get the same friendly avatar every time, as clean SVG that themes with CSS variables.</p>
+        <div class="hero-avatars">
+          {LOOKS.map((l) => (
+            <figure><span data-hero={l}></span><figcaption>{l}</figcaption></figure>
           ))}
+        </div>
+        <div class="hero-try">
+          <input class="input" id="hero-seed" value="ada@inlay.dev" aria-label="Try your name" placeholder="Type your name" />
+          <a class="btn primary" href="#playground">Customize</a>
+        </div>
+        <div class="hero-actions">
+          <span class="btn cmd" aria-label="Install command">npm i @inlaylab/opaline</span>
+          <a class="btn" href="#docs">Read the docs</a>
+        </div>
+      </div>
+
+      <section class="block" id="playground">
+        <div class="wrap">
+          <div class="sec-head">
+            <h2>Playground</h2>
+            <p>Every option, live. What you see is the library's own output; copy the code for your framework or download the SVG.</p>
+          </div>
+          <div class="pg">
+            <div class="card pg-controls" id="pg-controls">
+              <label class="field">Seed<input class="input" id="pg-seed" value="ada@inlay.dev" /></label>
+              <label class="field">Style
+                <select class="select" id="pg-style">{LOOKS.map((l) => <option value={l}>{l}</option>)}</select>
+              </label>
+              <label class="field" id="pg-finish-field">Finish
+                <select class="select" id="pg-finish"><option value="">default</option><option>flat</option><option>soft</option><option>gloss</option></select>
+              </label>
+              <label class="field">Palette
+                <select class="select" id="pg-palette"><option value="">vivid (default)</option>{PALETTES.slice(1).map((p) => <option>{p}</option>)}</select>
+              </label>
+              <label class="field" id="pg-expression-field">Expression
+                <select class="select" id="pg-expression"><option value="">seeded</option>{EXPRESSIONS.map((e) => <option>{e}</option>)}</select>
+              </label>
+              <label class="field" id="pg-body-field" hidden>Body
+                <select class="select" id="pg-body"><option value="">seeded</option><option>jelly</option><option>hood</option></select>
+              </label>
+              <label class="field" id="pg-shape-field" hidden>Shape
+                <select class="select" id="pg-shape"><option value="">circle (default)</option><option>squircle</option></select>
+              </label>
+              <label class="field">Size
+                <select class="select" id="pg-size"><option>32</option><option>48</option><option selected>64</option><option>96</option><option>128</option><option>256</option></select>
+              </label>
+            </div>
+            <div class="pg-main">
+              <div class="card pg-preview" id="pg-preview">
+                <div class="pane light" id="pg-light"></div>
+                <div class="pane dark" id="pg-dark"></div>
+              </div>
+              <div class="card code-card">
+                <div class="code-head">
+                  <div class="tabs" id="pg-tabs" role="tablist">
+                    {TABS.map(([id, label], i) => (
+                      <button class="tab" type="button" role="tab" data-tab={id} aria-selected={i === 0 ? 'true' : 'false'}>{label}</button>
+                    ))}
+                  </div>
+                  <button class="btn" id="pg-copy" type="button">Copy</button>
+                  <button class="btn" id="pg-download" type="button">SVG</button>
+                </div>
+                <pre class="code" id="pg-code"></pre>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {LOOKS.map(({ look, note }) => (
-        <section>
-          <div>
-            <h2>{look[0]!.toUpperCase() + look.slice(1)}</h2>
-            <p class="lede">{note}</p>
+      <section class="block" id="gallery">
+        <div class="wrap">
+          <div class="sec-head">
+            <h2>Gallery</h2>
+            <p>One hundred seeds: names, emails and IDs, the way real apps pass them.</p>
           </div>
-          {SIZES.map((size) => (
-            <div style="display:grid;gap:10px">
-              <h3>{size}px · 100 seeds</h3>
-              <div class={`row s${size}`}>
-                {SEEDS.map((seed) => <opaline-avatar seed={seed} look={look} size={size} />)}
-              </div>
+          <div class="chips" id="gallery-chips">
+            {LOOKS.map((l, i) => <button class="tab" type="button" data-look={l} aria-selected={i === 0 ? 'true' : 'false'}>{l}</button>)}
+          </div>
+          <div class="gallery" id="gallery-grid">
+            {SEEDS.map((seed) => <opaline-avatar seed={seed} look="morph" size="48" title={seed}></opaline-avatar>)}
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="docs">
+        <div class="wrap" style="display:grid;gap:40px">
+          <div>
+            <div class="sec-head">
+              <h2>Install</h2>
+              <p>One core with zero dependencies, and a thin native component for each framework. Styles are separate imports, so you ship only what you use.</p>
             </div>
-          ))}
-        </section>
-      ))}
+            <div class="grid2">
+              {INSTALL.map(([name, cmd, code]) => (
+                <div class="card pkg"><b>{name}</b><pre class="cmd">{cmd}</pre><pre>{code}</pre></div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div class="sec-head"><h2>Options</h2><p>Any option you set fixes that part; the seed fills in the rest.</p></div>
+            <div class="card table-wrap">
+              <table>
+                <thead><tr><th>Option</th><th>Values</th><th>What it does</th></tr></thead>
+                <tbody>{OPTIONS.map(([o, v, d]) => <tr><td><code>{o}</code></td><td>{v}</td><td>{d}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div class="sec-head">
+              <h2>Theming</h2>
+              <p>Colors come out as <code>var(--avatar-c1, #hex)</code>. Set the variables on any parent to follow your brand or dark mode. <code>--avatar-c1</code> is always the body.</p>
+            </div>
+            <div class="card theme-demo">
+              <opaline-avatar id="theme-avatar" seed="ada@inlay.dev" look="clay" size="96"></opaline-avatar>
+              <label class="field">--avatar-c1<input type="color" id="theme-c1" value="#7c3aed" /></label>
+              <label class="field">--avatar-c2<input type="color" id="theme-c2" value="#5b21b6" /></label>
+              <pre class="code" id="theme-css" style="padding:0"></pre>
+            </div>
+          </div>
+          <div>
+            <div class="sec-head">
+              <h2>Same seed, same avatar</h2>
+              <p>
+                The seed is normalized (trimmed, NFC, emails lower-cased) and hashed into a seeded generator; no <code>Math.random</code>, no dates. The same seed and options give the same picture on the server, in every browser and in every framework.
+                Gradient IDs are scoped per seed and options, and each component instance adds its own suffix, so two avatars on one page never clash.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
+
+    <footer>
+      <div class="wrap">
+        <span>Opaline by Inlaylab. MIT for code and art.</span>
+        <a href="https://github.com/Inlaylab/Opaline">github.com/Inlaylab/Opaline</a>
+      </div>
+    </footer>
+
     <script>
       import '@inlaylab/opaline-element'
+      import '../styles/site.css'
+      import { initPlayground } from '../scripts/playground.ts'
+
+      initPlayground()
+
+      document.getElementById('theme-toggle')!.addEventListener('click', () => {
+        const root = document.documentElement
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark'
+        root.dataset.theme = next
+        try {
+          localStorage.setItem('opaline-theme', next)
+        } catch {}
+      })
+
+      const chips = document.getElementById('gallery-chips')!
+      chips.addEventListener('click', (e) => {
+        const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-look]')
+        if (!b) return
+        for (const x of chips.children) x.setAttribute('aria-selected', String(x === b))
+        for (const a of document.querySelectorAll('#gallery-grid opaline-avatar')) a.setAttribute('look', b.dataset.look!)
+      })
+
+      const avatar = document.getElementById('theme-avatar')!
+      const css = document.getElementById('theme-css')!
+      const paint = () => {
+        const c1 = (document.getElementById('theme-c1') as HTMLInputElement).value
+        const c2 = (document.getElementById('theme-c2') as HTMLInputElement).value
+        avatar.style.setProperty('--avatar-c1', c1)
+        avatar.style.setProperty('--avatar-c2', c2)
+        css.textContent = `.avatar {\n  --avatar-c1: ${c1};\n  --avatar-c2: ${c2};\n}`
+      }
+      for (const id of ['theme-c1', 'theme-c2']) document.getElementById(id)!.addEventListener('input', paint)
+      paint()
     </script>
   </body>
 </html>
