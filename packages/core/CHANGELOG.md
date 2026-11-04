@@ -1,5 +1,11 @@
 # @inlaylab/opaline
 
+## 1.0.0
+
+### Major Changes
+
+- 1.0: stable output. The same seed and options now give a byte-identical SVG for every 1.x release, guarded by a checksum file in CI. Options set to their default give exactly the unset output, including gradient IDs, in every style. Every package now ships a README, the MIT license and full npm metadata.
+
 ## 0.4.0
 
 ### Minor Changes

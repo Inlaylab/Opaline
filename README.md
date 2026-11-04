@@ -10,7 +10,7 @@ Inlaylab names its projects after inlay materials. [Ivorie](https://github.com/I
 
 ## Status
 
-Work in progress (0.4: Aura, Morph, Gradient and Clay, with `flat`, `soft` and `gloss` finishes, and Web Component, React, Angular, Vue and Svelte wrappers). The design lives in [docs/superpowers/specs/2026-11-03-avatar-design.md](docs/superpowers/specs/2026-11-03-avatar-design.md).
+1.0: Aura, Morph, Gradient and Clay, with `flat`, `soft` and `gloss` finishes, and Web Component, React, Angular, Vue and Svelte wrappers. Output is stable for all of 1.x. Try it at [inlaylab.github.io/Opaline](https://inlaylab.github.io/Opaline/). The design lives in [docs/superpowers/specs/2026-11-03-avatar-design.md](docs/superpowers/specs/2026-11-03-avatar-design.md).
 
 | Package                     | What                                                                                    |
 | --------------------------- | --------------------------------------------------------------------------------------- |
@@ -20,6 +20,10 @@ Work in progress (0.4: Aura, Morph, Gradient and Clay, with `flat`, `soft` and `
 | `@inlaylab/opaline-angular` | Angular `op-avatar`, standalone, zoneless                                               |
 | `@inlaylab/opaline-vue`     | Vue 3 `Avatar`, SSR safe                                                                |
 | `@inlaylab/opaline-svelte`  | Svelte 5 `Avatar`, runes, SSR safe                                                      |
+
+### Same seed, same avatar
+
+From 1.0, the same seed and options give a byte-identical SVG in every 1.x release, on the server and in every browser. Options set to their default give exactly the unset output, and option order never matters. A checksum file in the core's tests guards this; changing the output needs a new major version.
 
 ### Clay and finishes
 

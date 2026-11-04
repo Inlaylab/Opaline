@@ -32,7 +32,7 @@ type Fill = (
 export function blobStyle(name: string, fill: Fill): Style<BlobOptions> {
   return {
     name,
-    defaults: { finish: 'flat' },
+    defaults: { finish: 'flat', palette: 'vivid', face: true, backdrop: 'none' },
     render(ctx, opts): Rendered {
       const finish = known(FINISHES, opts.finish) ?? 'flat'
       const palette = known(PALETTES, opts.palette) ?? 'vivid'

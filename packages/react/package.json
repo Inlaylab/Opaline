@@ -1,11 +1,28 @@
 {
   "name": "@inlaylab/opaline-react",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "Seeded avatars for React: an RSC-safe Avatar component.",
+  "keywords": [
+    "avatar",
+    "avatars",
+    "svg",
+    "seed",
+    "deterministic",
+    "identicon",
+    "profile-picture",
+    "placeholder",
+    "react",
+    "react-component",
+    "rsc"
+  ],
+  "homepage": "https://inlaylab.github.io/Opaline/",
+  "bugs": {
+    "url": "https://github.com/Inlaylab/Opaline/issues"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Inlaylab/opaline.git",
+    "url": "git+https://github.com/Inlaylab/Opaline.git",
     "directory": "packages/react"
   },
   "publishConfig": {

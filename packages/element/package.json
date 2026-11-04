@@ -1,11 +1,27 @@
 {
   "name": "@inlaylab/opaline-element",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "<opaline-avatar>: seeded avatars as a framework-free custom element.",
+  "keywords": [
+    "avatar",
+    "avatars",
+    "svg",
+    "seed",
+    "deterministic",
+    "identicon",
+    "profile-picture",
+    "placeholder",
+    "web-component",
+    "custom-element"
+  ],
+  "homepage": "https://inlaylab.github.io/Opaline/",
+  "bugs": {
+    "url": "https://github.com/Inlaylab/Opaline/issues"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Inlaylab/opaline.git",
+    "url": "git+https://github.com/Inlaylab/Opaline.git",
     "directory": "packages/element"
   },
   "publishConfig": {

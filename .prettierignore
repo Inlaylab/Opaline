@@ -11,3 +11,4 @@ next-env.d.ts
 .nuxt
 .output
 apps/ssr-sveltekit/build
+**/frozen-1.json

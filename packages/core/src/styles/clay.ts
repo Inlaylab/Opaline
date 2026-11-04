@@ -35,7 +35,7 @@ const rotate = (a: number, x: number, y: number) => `rotate(${num(a)} ${num(x)} 
 /** Squishy 3D clay figures: a `jelly` blob with nub arms, or a `hood` with animal ears. */
 export const clay: Style<ClayOptions> = {
   name: 'clay',
-  defaults: { finish: 'soft' },
+  defaults: { finish: 'soft', palette: 'vivid', face: true, backdrop: 'none' },
   render(ctx, opts): Rendered {
     const { rng, id } = ctx
     const palette = known(PALETTES, opts.palette) ?? 'vivid'
