@@ -10,16 +10,29 @@ Inlaylab names its projects after inlay materials. [Ivorie](https://github.com/I
 
 ## Status
 
-Work in progress (0.3: Aura, Morph and Gradient, with Web Component, React, Angular, Vue and Svelte wrappers). The design lives in [docs/superpowers/specs/2026-11-03-avatar-design.md](docs/superpowers/specs/2026-11-03-avatar-design.md).
+Work in progress (0.4: Aura, Morph, Gradient and Clay, with `flat`, `soft` and `gloss` finishes, and Web Component, React, Angular, Vue and Svelte wrappers). The design lives in [docs/superpowers/specs/2026-11-03-avatar-design.md](docs/superpowers/specs/2026-11-03-avatar-design.md).
 
-| Package                     | What                                                                           |
-| --------------------------- | ------------------------------------------------------------------------------ |
-| `@inlaylab/opaline`         | Core: seed to SVG, zero dependencies. Styles at `/aura`, `/morph`, `/gradient` |
-| `@inlaylab/opaline-element` | `<opaline-avatar>` custom element, no framework                                |
-| `@inlaylab/opaline-react`   | React `Avatar`, server-component safe                                          |
-| `@inlaylab/opaline-angular` | Angular `op-avatar`, standalone, zoneless                                      |
-| `@inlaylab/opaline-vue`     | Vue 3 `Avatar`, SSR safe                                                       |
-| `@inlaylab/opaline-svelte`  | Svelte 5 `Avatar`, runes, SSR safe                                             |
+| Package                     | What                                                                                    |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| `@inlaylab/opaline`         | Core: seed to SVG, zero dependencies. Styles at `/aura`, `/morph`, `/gradient`, `/clay` |
+| `@inlaylab/opaline-element` | `<opaline-avatar>` custom element, no framework                                         |
+| `@inlaylab/opaline-react`   | React `Avatar`, server-component safe                                                   |
+| `@inlaylab/opaline-angular` | Angular `op-avatar`, standalone, zoneless                                               |
+| `@inlaylab/opaline-vue`     | Vue 3 `Avatar`, SSR safe                                                                |
+| `@inlaylab/opaline-svelte`  | Svelte 5 `Avatar`, runes, SSR safe                                                      |
+
+### Clay and finishes
+
+```ts
+import { createAvatar } from '@inlaylab/opaline'
+import { clay } from '@inlaylab/opaline/clay'
+
+createAvatar(clay, { seed: 'ada@inlay.dev', body: 'hood', ears: 'bunny', finish: 'gloss' }).svg
+```
+
+- `body`: `jelly` (a blob with nub arms) or `hood` (a hood with `cat`, `bear` or `bunny` ears). Unset, the seed picks.
+- `finish`: `flat`, `soft` or `gloss`. Clay defaults to `soft`. Morph and Gradient take it too and default to `flat`, so their output is unchanged from 0.2.
+- Theme variables: `--avatar-c1` is the body, `--avatar-c2` the arms and ears, `--avatar-c3` the hood opening.
 
 ### Several Vue apps on one page
 

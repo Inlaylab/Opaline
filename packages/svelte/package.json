@@ -1,6 +1,6 @@
 {
   "name": "@inlaylab/opaline-svelte",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Seeded avatars for Svelte 5: an SSR-safe Avatar component.",
   "license": "MIT",
   "repository": {
