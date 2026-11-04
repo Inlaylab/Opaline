@@ -84,7 +84,7 @@ function render() {
   for (const el of document.querySelectorAll<HTMLElement>('[data-hero]'))
     el.innerHTML = createAvatar(STYLES[el.dataset.hero!]!, {
       seed,
-      size: 88,
+      size: 96,
       instance: 'h',
     }).svg
 }
