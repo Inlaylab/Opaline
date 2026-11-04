@@ -14,6 +14,8 @@ export type RenderContext = { rng: Rng; id: (name: string) => string; seed: stri
 export type Rendered = { defs?: string; body: string; picks: Record<string, unknown> }
 export type Style<O extends object = {}> = {
   name: string
+  /** Option values that mean "unset": they are left out of the ID scope, so setting one changes nothing. */
+  defaults?: Partial<O>
   render(ctx: RenderContext, options: O): Rendered
 }
 export type Avatar = {
@@ -39,6 +41,10 @@ export function createAvatar<O extends object>(style: Style<O>, options: BaseOpt
   if (!(Number.isFinite(size) && size > 0))
     throw new RangeError('size must be a positive finite number')
   const seed = normalizeSeed(rawSeed)
+  const defaults = (style.defaults ?? {}) as Record<string, unknown>
+  for (const k in defaults)
+    if ((rest as Record<string, unknown>)[k] === defaults[k])
+      delete (rest as Record<string, unknown>)[k]
   // Options are part of the ID scope, so the same seed with other options never shares defs.
   const id = createIds(
     hash(seed + '\u0000' + style.name + '\u0000' + stableStringify(rest)),

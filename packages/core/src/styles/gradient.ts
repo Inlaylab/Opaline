@@ -5,7 +5,9 @@ import { lch, sheen, spot } from './paint.ts'
 export type GradientOptions = BlobOptions
 
 /** Seeded blob with a soft mesh fill, the opaline sheen and a face. */
-export const gradient = blobStyle('gradient', ({ rng, id }, d, b, color) => {
+export const gradient = blobStyle('gradient', ({ rng, id }, d, b, color, finish) => {
+  // The finish light replaces the sheen; flat keeps 0.2 exactly.
+  const sheens = finish === 'flat' ? ['s'] : []
   const g = rng.fork('mesh')
   const h2 = b.h + (g.next() < 0.5 ? 1 : -1) * g.float(50, 110)
   const h3 = b.h - g.float(30, 70)
@@ -29,9 +31,9 @@ export const gradient = blobStyle('gradient', ({ rng, id }, d, b, color) => {
     g.float(0.55, 0.75),
   )
   return {
-    defs: s1 + s2 + sheen(id('s')),
+    defs: s1 + s2 + (sheens.length ? sheen(id('s')) : ''),
     body:
       el('path', { d, fill: base }) +
-      ['m1', 'm2', 's'].map((n) => el('path', { d, fill: `url(#${id(n)})` })).join(''),
+      ['m1', 'm2', ...sheens].map((n) => el('path', { d, fill: `url(#${id(n)})` })).join(''),
   }
 })
