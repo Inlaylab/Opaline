@@ -1,19 +1,28 @@
 {
   "name": "@inlaylab/opaline",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "Seeded, deterministic SVG avatars. Zero dependencies.",
   "keywords": [
     "avatar",
+    "avatars",
     "svg",
     "seed",
     "deterministic",
     "identicon",
-    "profile-picture"
+    "profile-picture",
+    "placeholder",
+    "generator",
+    "oklch",
+    "zero-dependency"
   ],
+  "homepage": "https://inlaylab.github.io/Opaline/",
+  "bugs": {
+    "url": "https://github.com/Inlaylab/Opaline/issues"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Inlaylab/opaline.git",
+    "url": "git+https://github.com/Inlaylab/Opaline.git",
     "directory": "packages/core"
   },
   "publishConfig": {
