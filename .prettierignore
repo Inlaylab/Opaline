@@ -1,0 +1,14 @@
+dist
+pnpm-lock.yaml
+CHANGELOG.md
+**/__golden__/**
+.superpowers
+.astro
+.angular
+.svelte-kit
+.next
+next-env.d.ts
+.nuxt
+.output
+apps/ssr-sveltekit/build
+**/frozen-1.json

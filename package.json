@@ -1,0 +1,32 @@
+{
+  "name": "opaline-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run build --filter=@inlaylab/opaline-element... && pnpm --filter ./apps/docs dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "size": "size-limit",
+    "check:pkg": "node tools/check-angular-partial.mjs && publint packages/core && attw --pack packages/core --profile esm-only && publint packages/element && attw --pack packages/element --profile esm-only && publint packages/react && attw --pack packages/react --profile esm-only && publint packages/vue && attw --pack packages/vue --profile esm-only && publint packages/svelte && publint packages/angular/dist --pack npm && attw --pack packages/angular/dist --profile esm-only",
+    "check": "pnpm build && pnpm test && pnpm lint && pnpm size && pnpm check:pkg && pnpm e2e && pnpm --filter @inlaylab/opaline test:perf",
+    "e2e": "turbo run e2e"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@changesets/cli": "^3.0.3",
+    "@size-limit/preset-small-lib": "^14.3.0",
+    "@types/node": "^24.19.2",
+    "prettier": "^3.9.10",
+    "publint": "^0.3.25",
+    "size-limit": "^14.3.0",
+    "tsdown": "^0.23.4",
+    "turbo": "^2.11.10",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  }
+}

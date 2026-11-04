@@ -1,0 +1,33 @@
+name: Release
+
+# Publishing to npm is always a deliberate, manual step: run this workflow from the Actions tab.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write # push the version tags changesets creates
+  id-token: write # npm provenance
+
+jobs:
+  publish:
+    # Only main is ever published.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm --filter @inlaylab/opaline exec playwright install --with-deps chromium firefox webkit
+      # Every check must pass before anything is published.
+      - run: pnpm check
+      - run: pnpm changeset publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'true'
+      - run: git push --tags

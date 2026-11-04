@@ -1,0 +1,15 @@
+node_modules
+dist
+.turbo
+coverage
+.superpowers
+*.log
+.vitest
+.astro
+.angular
+.svelte-kit
+.next
+next-env.d.ts
+.nuxt
+.output
+apps/ssr-sveltekit/build

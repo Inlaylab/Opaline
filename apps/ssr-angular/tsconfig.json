@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "types": ["node"],
+    "paths": {
+      "@inlaylab/opaline-angular": ["../../packages/angular/dist"]
+    }
+  },
+  "angularCompilerOptions": { "strictTemplates": true },
+  "files": ["src/main.ts", "src/main.server.ts", "src/server.ts"]
+}

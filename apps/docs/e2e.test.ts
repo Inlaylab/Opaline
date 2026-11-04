@@ -1,0 +1,177 @@
+import type { ChildProcess } from 'node:child_process'
+import { readdirSync, readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { createAvatar } from '@inlaylab/opaline'
+import { clay } from '@inlaylab/opaline/clay'
+import { chromium, type Browser, type BrowserContextOptions } from 'playwright'
+import { afterAll, beforeAll, expect, test } from 'vitest'
+import { runSync, startServer, stopServer } from '../../tools/spawn-server.ts'
+
+const cwd = fileURLToPath(new URL('.', import.meta.url))
+const PORT = 4320
+const URL_ = `http://localhost:${PORT}/Opaline/`
+let server: ChildProcess
+let browser: Browser
+
+// Astro runs preview as a daemon: stop any earlier one so the test never hits a stale build.
+const stopPreview = () =>
+  runSync('pnpm', ['exec', 'astro', 'preview', 'stop'], { cwd, stdio: 'ignore' })
+
+beforeAll(async () => {
+  stopPreview()
+  server = startServer('pnpm', ['exec', 'astro', 'preview', '--port', String(PORT)], {
+    cwd,
+    stdio: 'ignore',
+  })
+  const end = Date.now() + 30_000
+  for (;;) {
+    try {
+      if ((await fetch(URL_)).ok) break
+    } catch {}
+    if (Date.now() > end) throw new Error('preview did not start')
+    await new Promise((r) => setTimeout(r, 250))
+  }
+  browser = await chromium.launch()
+})
+
+afterAll(async () => {
+  await browser?.close()
+  stopServer(server)
+  stopPreview()
+})
+
+// Tests never touch the network: outside requests (the Google Fonts stylesheet) would make every
+// page load wait on the internet, which is slow or blocked on some machines.
+async function newContext(options?: BrowserContextOptions) {
+  const ctx = await browser.newContext(options)
+  await ctx.route(
+    (url) => url.hostname !== 'localhost',
+    (route) => route.abort(),
+  )
+  return ctx
+}
+const newPage = async (options?: BrowserContextOptions) => (await newContext(options)).newPage()
+
+const strip = (svg: string) => svg.replace(/a[0-9a-z]{7}-/g, 'ID-')
+
+test('the playground shows the core output for the chosen options', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.fill('#pg-seed', 'grace@inlay.dev')
+  await page.selectOption('#pg-style', 'clay')
+  await page.selectOption('#pg-finish', 'gloss')
+  const svg = await page
+    .locator('#pg-preview svg')
+    .first()
+    .evaluate((e) => e.outerHTML)
+  const expected = createAvatar(clay, { seed: 'grace@inlay.dev', finish: 'gloss', size: 160 }).svg
+  // Compare after serializing the expected markup in the page, the same way the preview is.
+  const serialized = await page.evaluate((s) => {
+    const t = document.createElement('template')
+    t.innerHTML = s
+    return t.innerHTML
+  }, expected)
+  expect(strip(svg)).toBe(strip(serialized))
+})
+
+test('user input is escaped, never rendered as markup', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.fill('#pg-seed', '<b>x</b>')
+  expect(await page.locator('#pg-preview b').count()).toBe(0)
+  expect(await page.locator('#pg-preview svg').count()).toBeGreaterThan(0)
+  await page.fill('#pg-seed', '')
+  expect(await page.locator('#pg-preview svg').count()).toBeGreaterThan(0)
+})
+
+test('copy puts the snippet on the clipboard', async () => {
+  const ctx = await newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
+  const page = await ctx.newPage()
+  await page.goto(URL_)
+  await page.fill('#pg-seed', 'copy-me')
+  await page.click('#pg-copy')
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('copy-me')
+  await ctx.close()
+})
+
+test('every snippet carries the exact seed, even with quotes, backslashes and braces', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  const seed = 'a"b\\c{x}{{y}}<i>'
+  await page.fill('#pg-seed', seed)
+  for (const tab of ['core', 'element', 'react', 'vue', 'svelte', 'angular']) {
+    await page.click(`[data-tab="${tab}"]`)
+    const code = (await page.locator('#pg-code').textContent())!
+    // Read the seed back the way each framework would.
+    const back = await page.evaluate(
+      ([tab, code]) => {
+        const decode = (s: string) => {
+          const t = document.createElement('textarea')
+          t.innerHTML = s
+          return t.value
+        }
+        const js = /("(?:[^"\\]|\\.)*")/.source
+        if (tab === 'element') {
+          const doc = new DOMParser().parseFromString(code.split('\n').pop()!, 'text/html')
+          return doc.querySelector('opaline-avatar')?.getAttribute('seed')
+        }
+        if (tab === 'core') return JSON.parse(code.match(new RegExp('"seed": ' + js))![1]!)
+        if (tab === 'react' || tab === 'svelte')
+          return JSON.parse(code.match(new RegExp('seed=\\{' + js + '\\}'))![1]!)
+        const attr = tab === 'vue' ? ':seed' : '\\[seed\\]'
+        let raw = code.match(new RegExp(attr + '="([^"]*)"'))![1]!
+        // Angular's template sits in a TS template literal: undo that layer first.
+        if (tab === 'angular') raw = raw.replace(/\\([`\\$])/g, '$1')
+        return JSON.parse(decode(raw))
+      },
+      [tab, code] as const,
+    )
+    expect(back, tab).toBe(seed)
+  }
+})
+
+test('the Angular snippet separates component code from the template', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.click('[data-tab="angular"]')
+  const code = (await page.locator('#pg-code').textContent())!
+  expect(code).toContain('imports: [OpalineAvatar]')
+  expect(code).toMatch(/protected readonly morph = morph/)
+  expect(code).toMatch(/template: `\s*<op-avatar/)
+})
+
+test('the theme toggle persists across reloads', async () => {
+  const page = await newPage({ colorScheme: 'light' })
+  await page.goto(URL_)
+  await page.click('#theme-toggle')
+  expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark')
+  await page.reload()
+  expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark')
+})
+
+test('style-specific controls hide for other styles', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.selectOption('#pg-style', 'morph')
+  expect(await page.locator('#pg-body-field').isVisible()).toBe(false)
+  await page.selectOption('#pg-style', 'clay')
+  expect(await page.locator('#pg-body-field').isVisible()).toBe(true)
+})
+
+test('no horizontal scroll at phone width', async () => {
+  const page = await newPage({ viewport: { width: 375, height: 800 } })
+  await page.goto(URL_)
+  const [sw, cw] = await page.evaluate(() => [
+    document.documentElement.scrollWidth,
+    document.documentElement.clientWidth,
+  ])
+  expect(sw).toBeLessThanOrEqual(cw)
+})
+
+test('built HTML only references assets under the Pages base', () => {
+  const html = readdirSync(`${cwd}dist`)
+    .filter((f) => f.endsWith('.html'))
+    .map((f) => readFileSync(`${cwd}dist/${f}`, 'utf8'))
+    .join('')
+  expect(html).not.toMatch(/(?:src|href)="\/(?!Opaline\/)[^/"]/)
+})
