@@ -178,15 +178,19 @@ registry/           shadcn registry + Ivorie CLI entry
 
 ## Phases
 
-| Release | Content                                                                                                                                                                                    |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 0.1     | Foundation: repo, CI, MIT license; core normalize, hash, PRNG, SVG builder, IDs, escaping, OKLCH; golden harness; size-limit                                                               |
-| 0.2     | Design gate. Shape genome, inscribed center, face kit, fills, `flat` finish. Aura, Morph, Gradient. Web Component, React, Angular, and the contract suite. Docs page with a 100-seed grid. |
-| 0.3     | Vue and Svelte. SSR sample apps: Next, Angular SSR, Nuxt, SvelteKit.                                                                                                                       |
-| 0.4     | Design gate. `soft`/`gloss` finishes. Clay `jelly` and `hood`. A 500-avatar perf check.                                                                                                    |
-| 0.5     | Design gate. Persona.                                                                                                                                                                      |
-| 0.6     | CLI, HTTP API, Docker.                                                                                                                                                                     |
-| 1.0     | Studio, shadcn and Ivorie registries, final name, freeze seed output.                                                                                                                      |
+| Version   | Scope                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------ |
+| 0.1–0.4   | Shipped: core, Aura, Morph, Gradient, Clay, finishes, all wrappers, SSR samples.           |
+| site      | Shipped: GitHub Pages site with a live playground (replaces the planned Studio).           |
+| 1.0       | Freeze seed output, package metadata, manual npm release.                                  |
+| after 1.0 | CLI, HTTP API and Docker; shadcn and Ivorie registries. Persona was dropped on 2026-11-04. |
+
+## Stable output (from 1.0)
+
+- The same seed and options give a byte-identical SVG in every 1.x release, on the server and in every browser.
+- Options set to their default give exactly the unset output, including gradient IDs. Option order never matters. A numeric seed equals its string form.
+- `packages/core/test/frozen-1.json` holds checksums for 4 styles × 25 option sets × 100 seeds. Any change fails CI; changing it needs a major version and `pnpm --filter @inlaylab/opaline freeze`.
+- What may differ between two copies of one avatar: the per-instance ID suffix that wrappers add so two copies on one page never clash. The picture is the same.
 
 ## Verification
 

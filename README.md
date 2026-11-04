@@ -21,6 +21,10 @@ Work in progress (0.4: Aura, Morph, Gradient and Clay, with `flat`, `soft` and `
 | `@inlaylab/opaline-vue`     | Vue 3 `Avatar`, SSR safe                                                                |
 | `@inlaylab/opaline-svelte`  | Svelte 5 `Avatar`, runes, SSR safe                                                      |
 
+### Same seed, same avatar
+
+From 1.0, the same seed and options give a byte-identical SVG in every 1.x release, on the server and in every browser. Options set to their default give exactly the unset output, and option order never matters. A checksum file in the core's tests guards this; changing the output needs a new major version.
+
 ### Clay and finishes
 
 ```ts
