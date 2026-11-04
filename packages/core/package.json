@@ -37,6 +37,10 @@
     "./aura": {
       "types": "./dist/aura.d.ts",
       "import": "./dist/aura.js"
+    },
+    "./clay": {
+      "types": "./dist/clay.d.ts",
+      "import": "./dist/clay.js"
     }
   },
   "files": [

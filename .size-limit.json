@@ -37,6 +37,16 @@
     "gzip": true
   },
   {
+    "name": "core + clay",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/clay.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/clay.js": "{ clay }"
+    },
+    "limit": "8 KB",
+    "gzip": true
+  },
+  {
     "name": "element (own code)",
     "path": "packages/element/dist/index.js",
     "ignore": [

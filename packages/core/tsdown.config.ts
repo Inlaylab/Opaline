@@ -6,6 +6,7 @@ export default defineConfig({
     morph: 'src/styles/morph.ts',
     gradient: 'src/styles/gradient.ts',
     aura: 'src/styles/aura.ts',
+    clay: 'src/styles/clay.ts',
   },
   format: 'esm',
   platform: 'neutral',
