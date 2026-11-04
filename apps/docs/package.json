@@ -6,12 +6,15 @@
     "build": "astro build",
     "dev": "astro dev",
     "preview": "astro preview",
-    "lint": "prettier --check . --ignore-path ../../.prettierignore"
+    "lint": "prettier --check . --ignore-path ../../.prettierignore",
+    "e2e": "vitest run"
   },
   "dependencies": {
-    "@inlaylab/opaline-element": "workspace:*"
+    "@inlaylab/opaline-element": "workspace:*",
+    "@inlaylab/opaline": "workspace:*"
   },
   "devDependencies": {
-    "astro": "^7.4.5"
+    "astro": "^7.4.5",
+    "playwright": "^1.64.1"
   }
 }
