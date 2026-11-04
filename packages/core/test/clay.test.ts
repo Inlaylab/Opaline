@@ -35,15 +35,16 @@ describe('pick order', () => {
 
 describe('geometry', () => {
   test('arms and ears stay inside the frame', () => {
+    // Collect, then assert once: one expect per number made this test slow on busy CI runners.
+    const outside: string[] = []
     for (const seed of seeds(300))
       for (const body of ['jelly', 'hood'] as const) {
         const svg = createAvatar(clay, { seed, body, finish: 'flat', face: false }).svg
         for (const m of svg.matchAll(/\b(?:cx|cy|d)="([^"]+)"/g))
-          for (const n of m[1]!.match(/-?\d+(?:\.\d+)?/g) ?? []) {
-            expect(Number(n)).toBeGreaterThanOrEqual(-1)
-            expect(Number(n)).toBeLessThanOrEqual(101)
-          }
+          for (const n of m[1]!.match(/-?\d+(?:\.\d+)?/g) ?? [])
+            if (Number(n) < -1 || Number(n) > 101) outside.push(`${seed}/${body}: ${n}`)
       }
+    expect(outside).toEqual([])
   })
 
   test('the jelly face has room: its scale never drops below the 15-unit radius', () => {

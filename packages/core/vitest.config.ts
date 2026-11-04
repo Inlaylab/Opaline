@@ -4,7 +4,14 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     projects: [
-      { test: { name: 'node', include: ['test/**/*.test.ts'] } },
+      {
+        test: {
+          name: 'node',
+          include: ['test/**/*.test.ts'],
+          // Timing runs alone (`test:perf`), never beside the parallel suites it would measure.
+          exclude: ['test/perf.test.ts'],
+        },
+      },
       {
         test: {
           name: 'browser',
