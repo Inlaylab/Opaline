@@ -84,6 +84,52 @@ test('copy puts the snippet on the clipboard', async () => {
   await ctx.close()
 })
 
+test('every snippet carries the exact seed, even with quotes, backslashes and braces', async () => {
+  const page = await browser.newPage()
+  await page.goto(URL_)
+  const seed = 'a"b\\c{x}{{y}}<i>'
+  await page.fill('#pg-seed', seed)
+  for (const tab of ['core', 'element', 'react', 'vue', 'svelte', 'angular']) {
+    await page.click(`[data-tab="${tab}"]`)
+    const code = (await page.locator('#pg-code').textContent())!
+    // Read the seed back the way each framework would.
+    const back = await page.evaluate(
+      ([tab, code]) => {
+        const decode = (s: string) => {
+          const t = document.createElement('textarea')
+          t.innerHTML = s
+          return t.value
+        }
+        const js = /("(?:[^"\\]|\\.)*")/.source
+        if (tab === 'element') {
+          const doc = new DOMParser().parseFromString(code.split('\n').pop()!, 'text/html')
+          return doc.querySelector('opaline-avatar')?.getAttribute('seed')
+        }
+        if (tab === 'core') return JSON.parse(code.match(new RegExp('"seed": ' + js))![1]!)
+        if (tab === 'react' || tab === 'svelte')
+          return JSON.parse(code.match(new RegExp('seed=\\{' + js + '\\}'))![1]!)
+        const attr = tab === 'vue' ? ':seed' : '\\[seed\\]'
+        let raw = code.match(new RegExp(attr + '="([^"]*)"'))![1]!
+        // Angular's template sits in a TS template literal: undo that layer first.
+        if (tab === 'angular') raw = raw.replace(/\\([`\\$])/g, '$1')
+        return JSON.parse(decode(raw))
+      },
+      [tab, code] as const,
+    )
+    expect(back, tab).toBe(seed)
+  }
+})
+
+test('the Angular snippet separates component code from the template', async () => {
+  const page = await browser.newPage()
+  await page.goto(URL_)
+  await page.click('[data-tab="angular"]')
+  const code = (await page.locator('#pg-code').textContent())!
+  expect(code).toContain('imports: [OpalineAvatar]')
+  expect(code).toMatch(/protected readonly morph = morph/)
+  expect(code).toMatch(/template: `\s*<op-avatar/)
+})
+
 test('the theme toggle persists across reloads', async () => {
   const page = await browser.newPage({ colorScheme: 'light' })
   await page.goto(URL_)
