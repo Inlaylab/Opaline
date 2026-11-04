@@ -305,6 +305,10 @@ The reference implementation is [docs/design/gate-0.4.html](../../design/gate-0.
 - Target: under 100 ms on a mid-range laptop. The CI test fails above 250 ms, to allow for slow shared runners. (Builder's call; the user approved a 100 ms proposal.)
 - The sketch measured about 430 ms in a container; the core must do better. The likely costs are the inscribed-center scan and the OKLCH gamut search, so caching is allowed if output stays byte-identical.
 
+### Wrappers (builder's call)
+
+0.4 brings Clay to every wrapper. The element accepts `look="clay"`, and every wrapper takes `finish`, `body` and `ears`. Clay joins the shared contract suite.
+
 ### Left to the builder
 
 - Where finish code lives (a shared `parts/finish.ts` is suggested), and how a style declares its default finish.
