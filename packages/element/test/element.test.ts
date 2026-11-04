@@ -39,3 +39,16 @@ test('element: unknown look falls back to morph', () => {
   document.body.innerHTML = '<opaline-avatar seed="a" look="constructor"></opaline-avatar>'
   expect(document.querySelector('opaline-avatar svg')).toBeTruthy()
 })
+
+test('element: unknown clay attribute values fall back without throwing', () => {
+  const strip = (s: string) => s.replace(/a[0-9a-z]{7}-[a-z0-9]+(-[\w-]+)?/g, 'ID')
+  const make = (attrs: string) => {
+    const host = document.createElement('div')
+    host.innerHTML = `<opaline-avatar seed="a" look="clay" ${attrs}></opaline-avatar>`
+    document.body.append(host)
+    const svg = host.querySelector('svg')!.outerHTML
+    host.remove()
+    return strip(svg)
+  }
+  expect(make('finish="shiny" body="cat" ears="dog"')).toBe(make(''))
+})

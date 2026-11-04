@@ -1,5 +1,6 @@
-import { createAvatar, type AuraOptions, type BlobOptions, type Style } from '@inlaylab/opaline'
+import { createAvatar, type AuraOptions, type ClayOptions, type Style } from '@inlaylab/opaline'
 import { aura } from '@inlaylab/opaline/aura'
+import { clay } from '@inlaylab/opaline/clay'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { morph } from '@inlaylab/opaline/morph'
 import { afterEach, expect, test } from 'vitest'
@@ -10,8 +11,8 @@ export type Props = {
   size?: number
   src?: string
   alt?: string
-  look?: 'morph' | 'gradient' | 'aura'
-} & BlobOptions &
+  look?: 'morph' | 'gradient' | 'aura' | 'clay'
+} & ClayOptions &
   AuraOptions
 
 export type Adapter = {
@@ -25,7 +26,12 @@ export type Adapter = {
   cleanup?(): void
 }
 
-export const STYLES: Record<NonNullable<Props['look']>, Style<any>> = { morph, gradient, aura }
+export const STYLES: Record<NonNullable<Props['look']>, Style<any>> = {
+  morph,
+  gradient,
+  aura,
+  clay,
+}
 
 // A real 1×1 PNG, and bytes that are not an image, so no test needs the network.
 export const PIXEL =
@@ -113,13 +119,27 @@ export function runContract(adapter: Adapter): void {
     for (const name of Object.keys(props)) expect(root.hasAttribute(name)).toBe(false)
   })
 
-  test(`${adapter.name}: instance ids differ for the same avatar`, async () => {
-    const a = await adapter.render({ seed: 'same', look: 'gradient' })
-    const b = await adapter.render({ seed: 'same', look: 'gradient' })
-    const ids = [...gradientIds(a), ...gradientIds(b)]
-    expect(ids.length).toBeGreaterThan(0)
-    expect(new Set(ids).size).toBe(ids.length)
-    expect(stripInstance(svgOf(a).outerHTML)).toBe(stripInstance(svgOf(b).outerHTML))
+  for (const look of ['gradient', 'clay'] as const)
+    test(`${adapter.name}: instance ids differ for the same ${look} avatar`, async () => {
+      const a = await adapter.render({ seed: 'same', look })
+      const b = await adapter.render({ seed: 'same', look })
+      const ids = [...gradientIds(a), ...gradientIds(b)]
+      expect(ids.length).toBeGreaterThan(0)
+      expect(new Set(ids).size).toBe(ids.length)
+      expect(stripInstance(svgOf(a).outerHTML)).toBe(stripInstance(svgOf(b).outerHTML))
+    })
+
+  test(`${adapter.name}: clay options reach the core`, async () => {
+    const props: Props = {
+      seed: 'b',
+      look: 'clay',
+      body: 'hood',
+      ears: 'bunny',
+      finish: 'gloss',
+      expression: 'wink',
+    }
+    const root = await adapter.render(props)
+    expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
   })
 
   test(`${adapter.name}: a failed src keeps the svg`, async () => {

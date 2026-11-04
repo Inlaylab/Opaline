@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Props } from '@inlaylab/opaline-contract'
   import { aura } from '@inlaylab/opaline/aura'
+  import { clay } from '@inlaylab/opaline/clay'
   import { gradient } from '@inlaylab/opaline/gradient'
   import { morph } from '@inlaylab/opaline/morph'
   import Avatar from '../src/lib/Avatar.svelte'
@@ -11,7 +12,7 @@
   export const state = $state({ props: initial })
   const view = $derived.by(() => {
     const { look = 'morph', ...rest } = state.props
-    return { look: { morph, gradient, aura }[look], ...rest }
+    return { look: { morph, gradient, aura, clay }[look], ...rest }
   })
 </script>
 

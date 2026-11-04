@@ -14,6 +14,9 @@ let app: ApplicationRef
 const refs = new Map<HTMLElement, ComponentRef<OpalineAvatar>>()
 
 const INPUTS = [
+  'finish',
+  'body',
+  'ears',
   'seed',
   'size',
   'src',

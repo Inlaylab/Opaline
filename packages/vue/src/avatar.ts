@@ -1,4 +1,4 @@
-import { createAvatar, type AuraOptions, type BlobOptions, type Style } from '@inlaylab/opaline'
+import { createAvatar, type AuraOptions, type ClayOptions, type Style } from '@inlaylab/opaline'
 import { computed, defineComponent, h, useId, type PropType } from 'vue'
 import { Photo } from './photo.ts'
 
@@ -11,7 +11,7 @@ export type AvatarProps = {
   src?: string
   /** Accessible name. Without it the avatar is decorative and hidden from assistive tech. */
   alt?: string
-} & BlobOptions &
+} & ClayOptions &
   AuraOptions
 
 export const Avatar = defineComponent({
@@ -30,7 +30,7 @@ export const Avatar = defineComponent({
     const svg = computed(
       () =>
         createAvatar(props.look, {
-          ...(attrs as BlobOptions & AuraOptions),
+          ...(attrs as ClayOptions & AuraOptions),
           seed: props.seed,
           size: props.size,
           instance,

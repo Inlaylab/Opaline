@@ -1,9 +1,10 @@
 import { createAvatar, escapeXml, type Style } from '@inlaylab/opaline'
 import { aura } from '@inlaylab/opaline/aura'
+import { clay } from '@inlaylab/opaline/clay'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { morph } from '@inlaylab/opaline/morph'
 
-const LOOKS: Record<string, Style<any>> = { morph, gradient, aura }
+const LOOKS: Record<string, Style<any>> = { morph, gradient, aura, clay }
 const ATTRS = [
   'seed',
   'look',
@@ -17,6 +18,9 @@ const ATTRS = [
   'expression',
   'backdrop',
   'shape',
+  'finish',
+  'body',
+  'ears',
 ] as const
 const IMG_STYLE =
   'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit'
@@ -64,6 +68,9 @@ export class OpalineAvatar extends HTMLElement {
         expression: get('expression'),
         backdrop: get('backdrop'),
         shape: get('shape'),
+        finish: get('finish'),
+        body: get('body'),
+        ears: get('ears'),
       } as never,
     ).svg
     const a11y = alt ? `role="img" aria-label="${escapeXml(alt)}"` : 'aria-hidden="true"'

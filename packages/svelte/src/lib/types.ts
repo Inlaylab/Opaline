@@ -1,4 +1,4 @@
-import type { AuraOptions, BlobOptions, Style } from '@inlaylab/opaline'
+import type { AuraOptions, ClayOptions, Style } from '@inlaylab/opaline'
 
 export type AvatarProps = {
   seed: string | number | null | undefined
@@ -9,5 +9,5 @@ export type AvatarProps = {
   src?: string
   /** Accessible name. Without it the avatar is decorative and hidden from assistive tech. */
   alt?: string
-} & BlobOptions &
+} & ClayOptions &
   AuraOptions

@@ -8,7 +8,10 @@
   },
   {
     "name": "core + morph",
-    "path": ["packages/core/dist/index.js", "packages/core/dist/morph.js"],
+    "path": [
+      "packages/core/dist/index.js",
+      "packages/core/dist/morph.js"
+    ],
     "import": {
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/morph.js": "{ morph }"
@@ -18,7 +21,10 @@
   },
   {
     "name": "core + gradient",
-    "path": ["packages/core/dist/index.js", "packages/core/dist/gradient.js"],
+    "path": [
+      "packages/core/dist/index.js",
+      "packages/core/dist/gradient.js"
+    ],
     "import": {
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/gradient.js": "{ gradient }"
@@ -28,7 +34,10 @@
   },
   {
     "name": "core + aura",
-    "path": ["packages/core/dist/index.js", "packages/core/dist/aura.js"],
+    "path": [
+      "packages/core/dist/index.js",
+      "packages/core/dist/aura.js"
+    ],
     "import": {
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/aura.js": "{ aura }"
@@ -38,7 +47,10 @@
   },
   {
     "name": "core + clay",
-    "path": ["packages/core/dist/index.js", "packages/core/dist/clay.js"],
+    "path": [
+      "packages/core/dist/index.js",
+      "packages/core/dist/clay.js"
+    ],
     "import": {
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/clay.js": "{ clay }"
@@ -53,7 +65,8 @@
       "@inlaylab/opaline",
       "@inlaylab/opaline/morph",
       "@inlaylab/opaline/gradient",
-      "@inlaylab/opaline/aura"
+      "@inlaylab/opaline/aura",
+      "@inlaylab/opaline/clay"
     ],
     "limit": "1.5 KB",
     "gzip": true
@@ -61,21 +74,32 @@
   {
     "name": "react (own code)",
     "path": "packages/react/dist/index.js",
-    "ignore": ["react", "react/jsx-runtime", "@inlaylab/opaline"],
+    "ignore": [
+      "react",
+      "react/jsx-runtime",
+      "@inlaylab/opaline"
+    ],
     "limit": "1.5 KB",
     "gzip": true
   },
   {
     "name": "vue (own code)",
     "path": "packages/vue/dist/index.js",
-    "ignore": ["vue", "@inlaylab/opaline"],
+    "ignore": [
+      "vue",
+      "@inlaylab/opaline"
+    ],
     "limit": "1.5 KB",
     "gzip": true
   },
   {
     "name": "angular (own code, partial-compiled FESM)",
     "path": "packages/angular/dist/fesm2022/inlaylab-opaline-angular.mjs",
-    "ignore": ["@angular/core", "@angular/platform-browser", "@inlaylab/opaline"],
+    "ignore": [
+      "@angular/core",
+      "@angular/platform-browser",
+      "@inlaylab/opaline"
+    ],
     "limit": "2 KB",
     "gzip": true
   }

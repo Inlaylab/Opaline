@@ -16,6 +16,8 @@ import {
   createAvatar,
   type AuraOptions,
   type BlobOptions,
+  type ClayOptions,
+  type Finish,
   type Expression,
   type Family,
   type Mood,
@@ -84,6 +86,9 @@ export class OpalineAvatar {
   readonly expression = input<Expression>()
   readonly backdrop = input<BlobOptions['backdrop']>()
   readonly shape = input<AuraOptions['shape']>()
+  readonly finish = input<Finish>()
+  readonly body = input<ClayOptions['body']>()
+  readonly ears = input<ClayOptions['ears']>()
 
   protected readonly state = signal<ImageState>('loading')
 
@@ -99,6 +104,9 @@ export class OpalineAvatar {
       expression: this.expression(),
       backdrop: this.backdrop(),
       shape: this.shape(),
+      finish: this.finish(),
+      body: this.body(),
+      ears: this.ears(),
     }).svg
     // Safe: the core escapes every input that reaches the SVG, and the default sanitizer strips SVG.
     return this.sanitizer.bypassSecurityTrustHtml(svg)
