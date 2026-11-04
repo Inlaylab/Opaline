@@ -1,6 +1,6 @@
 {
   "name": "@inlaylab/opaline-element",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "<opaline-avatar>: seeded avatars as a framework-free custom element.",
   "keywords": [
     "avatar",

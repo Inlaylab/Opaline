@@ -1,4 +1,10 @@
-import { createAvatar, type AuraOptions, type ClayOptions, type Style } from '@inlaylab/opaline'
+import {
+  createAvatar,
+  type AuraOptions,
+  type ClayOptions,
+  type InitialsOptions,
+  type Style,
+} from '@inlaylab/opaline'
 import { useId, type JSX } from 'react'
 import { Photo } from './photo.tsx'
 
@@ -12,7 +18,8 @@ export type AvatarProps = {
   /** Accessible name. Without it the avatar is decorative and hidden from assistive tech. */
   alt?: string
 } & ClayOptions &
-  AuraOptions
+  AuraOptions &
+  InitialsOptions
 
 /** Server-safe: without `src` it renders no client code at all. */
 export function Avatar({ look, size = 64, src, alt, ...options }: AvatarProps): JSX.Element {

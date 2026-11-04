@@ -1,6 +1,6 @@
 {
   "name": "@inlaylab/opaline-vue",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Seeded avatars for Vue 3: an SSR-safe Avatar component.",
   "keywords": [
     "avatar",

@@ -1,7 +1,14 @@
-import { createAvatar, type AuraOptions, type ClayOptions, type Style } from '@inlaylab/opaline'
+import {
+  createAvatar,
+  type AuraOptions,
+  type ClayOptions,
+  type InitialsOptions,
+  type Style,
+} from '@inlaylab/opaline'
 import { aura } from '@inlaylab/opaline/aura'
 import { clay } from '@inlaylab/opaline/clay'
 import { gradient } from '@inlaylab/opaline/gradient'
+import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
 import { afterEach, expect, test } from 'vitest'
 
@@ -11,9 +18,10 @@ export type Props = {
   size?: number
   src?: string
   alt?: string
-  look?: 'morph' | 'gradient' | 'aura' | 'clay'
+  look?: 'morph' | 'gradient' | 'aura' | 'clay' | 'initials'
 } & ClayOptions &
-  AuraOptions
+  AuraOptions &
+  InitialsOptions
 
 export type Adapter = {
   name: string
@@ -31,6 +39,7 @@ export const STYLES: Record<NonNullable<Props['look']>, Style<any>> = {
   gradient,
   aura,
   clay,
+  initials,
 }
 
 // A real 1×1 PNG, and bytes that are not an image, so no test needs the network.
@@ -140,6 +149,24 @@ export function runContract(adapter: Adapter): void {
     }
     const root = await adapter.render(props)
     expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
+  })
+
+  test(`${adapter.name}: initials with shape and text reach the core`, async () => {
+    for (const props of [
+      { seed: 'ada.lovelace@inlay.dev', look: 'initials', shape: 'square' },
+      { seed: 'b', look: 'initials', shape: 'ellipse', text: 'Op', palette: 'pastel' },
+    ] as Props[]) {
+      const root = await adapter.render(props)
+      expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
+    }
+  })
+
+  test(`${adapter.name}: shape reaches the core on every style`, async () => {
+    for (const look of ['morph', 'clay', 'aura'] as const) {
+      const props: Props = { seed: 'b', look, shape: 'squircle' }
+      const root = await adapter.render(props)
+      expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
+    }
   })
 
   test(`${adapter.name}: a failed src keeps the svg`, async () => {

@@ -15,9 +15,9 @@ avatar.svg // '<svg …>'
 avatar.toJSON() // { style: 'clay', seed: 'ada@inlay.dev', body: 'hood', … }
 ```
 
-Styles are separate imports, so you ship only what you use: `@inlaylab/opaline/morph`, `/gradient`, `/aura` and `/clay`.
+Styles are separate imports, so you ship only what you use: `@inlaylab/opaline/morph`, `/gradient`, `/aura`, `/clay` and `/initials`.
 
-Options: `seed`, `size`, `palette`, `finish`, `expression` or `mood`, `face`, `family`, `backdrop`, plus `shape` (Aura) and `body` and `ears` (Clay). Any option you set fixes that part; the seed fills in the rest.
+Options: `seed`, `size`, `palette`, `shape` (`circle`, `squircle`, `square` or `ellipse`, on every style), `finish`, `expression` or `mood`, `face`, `family`, `backdrop`, plus `body` and `ears` (Clay) and `text` (Initials). Any option you set fixes that part; the seed fills in the rest.
 
 Colors come out as `var(--avatar-c1, #hex)`, so you can theme avatars with CSS variables. `--avatar-c1` is always the body.
 

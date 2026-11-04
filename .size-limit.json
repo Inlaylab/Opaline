@@ -29,7 +29,7 @@
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/gradient.js": "{ gradient }"
     },
-    "limit": "5 KB",
+    "limit": "5.25 KB",
     "gzip": true
   },
   {
@@ -59,6 +59,19 @@
     "gzip": true
   },
   {
+    "name": "core + initials",
+    "path": [
+      "packages/core/dist/index.js",
+      "packages/core/dist/initials.js"
+    ],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/initials.js": "{ initials }"
+    },
+    "limit": "4 KB",
+    "gzip": true
+  },
+  {
     "name": "element (own code)",
     "path": "packages/element/dist/index.js",
     "ignore": [
@@ -66,7 +79,8 @@
       "@inlaylab/opaline/morph",
       "@inlaylab/opaline/gradient",
       "@inlaylab/opaline/aura",
-      "@inlaylab/opaline/clay"
+      "@inlaylab/opaline/clay",
+      "@inlaylab/opaline/initials"
     ],
     "limit": "1.5 KB",
     "gzip": true
@@ -100,7 +114,7 @@
       "@angular/platform-browser",
       "@inlaylab/opaline"
     ],
-    "limit": "2 KB",
+    "limit": "2.1 KB",
     "gzip": true
   }
 ]

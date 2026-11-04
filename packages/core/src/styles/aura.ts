@@ -1,13 +1,11 @@
 import type { Style } from '../create.ts'
 import { known } from '../parts/known.ts'
 import { PALETTES, pickBase, type PaletteName } from '../parts/palette.ts'
+import { rim, SHAPES, tile, type Shape } from '../parts/tile.ts'
 import { el } from '../svg.ts'
 import { colorVars, lch, sheen, spot } from './paint.ts'
 
-export type AuraOptions = { palette?: PaletteName; shape?: 'circle' | 'squircle' }
-
-const CIRCLE = 'M50 0A50 50 0 1 1 50 100A50 50 0 1 1 50 0Z'
-const SQUIRCLE = 'M50 0C88 0 100 12 100 50S88 100 50 100 0 88 0 50 12 0 50 0Z'
+export type AuraOptions = { palette?: PaletteName; shape?: Shape }
 
 /** Faceless milky-glass orb: three soft color spots, the sheen and a faint rim. */
 export const aura: Style<AuraOptions> = {
@@ -15,11 +13,11 @@ export const aura: Style<AuraOptions> = {
   defaults: { palette: 'vivid', shape: 'circle' },
   render({ rng, id }, opts) {
     const palette = known(PALETTES, opts.palette) ?? 'vivid'
-    const shape = opts.shape === 'squircle' ? 'squircle' : 'circle'
+    const shape = known(SHAPES, opts.shape) ?? 'circle'
     const b = pickBase(rng, palette)
     const g = rng.fork('aura')
     const color = colorVars()
-    const d = shape === 'squircle' ? SQUIRCLE : CIRCLE
+    const d = tile(shape)
     const side = g.next() < 0.5 ? 1 : -1
     const hues = [
       b.h + side * g.float(45, 95),
@@ -41,17 +39,7 @@ export const aura: Style<AuraOptions> = {
     const body =
       el('path', { d, fill: base }) +
       ['b0', 'b1', 'b2', 's'].map((n) => el('path', { d, fill: `url(#${id(n)})` })).join('') +
-      (shape === 'circle'
-        ? el('circle', {
-            cx: 50,
-            cy: 50,
-            r: 48.6,
-            fill: 'none',
-            stroke: '#fff',
-            'stroke-opacity': 0.28,
-            'stroke-width': 1.6,
-          })
-        : '')
+      rim(shape)
     return {
       defs: spots.join('') + sheen(id('s')),
       body,

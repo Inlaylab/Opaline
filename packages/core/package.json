@@ -1,6 +1,6 @@
 {
   "name": "@inlaylab/opaline",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Seeded, deterministic SVG avatars. Zero dependencies.",
   "keywords": [
     "avatar",
@@ -50,6 +50,10 @@
     "./clay": {
       "types": "./dist/clay.d.ts",
       "import": "./dist/clay.js"
+    },
+    "./initials": {
+      "types": "./dist/initials.d.ts",
+      "import": "./dist/initials.js"
     }
   },
   "files": [

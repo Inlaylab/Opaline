@@ -1,5 +1,11 @@
 # @inlaylab/opaline
 
+## 1.1.0
+
+### Minor Changes
+
+- New `initials` style (`@inlaylab/opaline/initials`): the person's initials on a seeded tile, taken from the seed or set with `text`. Every style now takes `shape`: `circle`, `squircle`, `square` or `ellipse`. Aura and Initials draw their tile in that shape; Morph, Gradient and Clay draw a tinted tile behind the character. Leaving `shape` unset gives exactly the 1.0 output.
+
 ## 1.0.0
 
 ### Major Changes

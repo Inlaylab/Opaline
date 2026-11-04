@@ -4,6 +4,7 @@ import { bbox, finishDefs, finishOver, FINISHES, shadeOnly } from '../parts/fini
 import { inscribed } from '../parts/inscribed.ts'
 import { known } from '../parts/known.ts'
 import { PALETTES, pickBase } from '../parts/palette.ts'
+import { backdrop, SHAPES } from '../parts/tile.ts'
 import {
   FAMILIES as ALL_FAMILIES,
   genome,
@@ -139,10 +140,10 @@ export const clay: Style<ClayOptions> = {
       picks.ears = ears
     }
 
-    if (opts.backdrop === 'tint')
-      out =
-        el('circle', { cx: 50, cy: 50, r: 50, fill: `var(--avatar-bg, ${lch(0.95, 0.03, b.h)})` }) +
-        out
+    const shape = known(SHAPES, opts.shape)
+    if (opts.backdrop === 'tint' || shape)
+      out = backdrop(shape, `var(--avatar-bg, ${lch(0.95, 0.03, b.h)})`) + out
+    if (shape) picks.shape = shape
     if (opts.face !== false) {
       const f = face(rng, { ...at, hue: b.h }, opts)
       out += f.svg

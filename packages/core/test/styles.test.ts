@@ -3,6 +3,7 @@ import { createAvatar } from '../src/index.ts'
 import { aura } from '../src/styles/aura.ts'
 import { gradient } from '../src/styles/gradient.ts'
 import { morph } from '../src/styles/morph.ts'
+import { clay } from '../src/styles/clay.ts'
 
 const bodyPath = (svg: string) => /<path d="(M[^"]+)"/.exec(svg)?.[1]
 
@@ -84,3 +85,83 @@ test('an unknown mood picks from all expressions', () => {
     free.expression,
   )
 })
+
+test('aura draws square and ellipse tiles and reports the shape', () => {
+  const first = (svg: string) => /<path d="([^"]+)"/.exec(svg)?.[1]
+  const circle = first(createAvatar(aura, { seed: 'a' }).svg)
+  const square = createAvatar(aura, { seed: 'a', shape: 'square' })
+  const ellipse = createAvatar(aura, { seed: 'a', shape: 'ellipse' })
+  expect(first(square.svg)).toBe('M0 0H100V100H0Z')
+  expect(first(ellipse.svg)).toMatch(/^M50 0A40 50 /)
+  expect(new Set([circle, first(square.svg), first(ellipse.svg)]).size).toBe(3)
+  expect(square.toJSON().shape).toBe('square')
+  expect(ellipse.toJSON().shape).toBe('ellipse')
+  expect(ellipse.svg).toContain('rx="38.6" ry="48.6"')
+  expect(square.svg).not.toContain('stroke-opacity')
+})
+
+test('aura falls back to the circle for an unknown shape', () => {
+  const strip = (s: string) => s.replace(/a[0-9a-z]{7}-/g, 'ID-')
+  for (const bad of ['nope', '__proto__', 'constructor'])
+    expect(strip(createAvatar(aura, { seed: 'a', shape: bad } as never).svg)).toBe(
+      strip(createAvatar(aura, { seed: 'a' }).svg),
+    )
+})
+
+const ids = (s: string) => s.replace(/a[0-9a-z]{7}-/g, 'ID-')
+const tint = /fill="var\(--avatar-bg, #[0-9a-f]{3,6}\)"/
+
+for (const style of [morph, gradient, clay]) {
+  test(`${style.name}: a set shape draws the tint tile in that shape, before the body`, () => {
+    const svg = createAvatar(style, { seed: 'a', shape: 'square' }).svg
+    expect(svg).toMatch(
+      /aria-hidden="true">(<defs>.*<\/defs>)?<path d="M0 0H100V100H0Z" fill="var\(--avatar-bg, #[0-9a-f]{6}\)"\/>/,
+    )
+    expect(createAvatar(style, { seed: 'a', shape: 'ellipse' }).svg).toContain(
+      '<path d="M50 0A40 50 0 1 1 50 100A40 50 0 1 1 50 0Z" fill="var(--avatar-bg,',
+    )
+    expect(createAvatar(style, { seed: 'a', shape: 'squircle' }).svg).toContain(
+      '<path d="M50 0C88 0 100 12 100 50S88 100 50 100 0 88 0 50 12 0 50 0Z" fill="var(--avatar-bg,',
+    )
+  })
+
+  test(`${style.name}: circle draws the 1.0 tint circle; no shape draws no tile`, () => {
+    const circle = createAvatar(style, { seed: 'a', shape: 'circle' })
+    expect(ids(circle.svg)).toBe(ids(createAvatar(style, { seed: 'a', backdrop: 'tint' }).svg))
+    expect(circle.toJSON().shape).toBe('circle')
+    expect(createAvatar(style, { seed: 'a' }).svg).not.toMatch(tint)
+  })
+
+  test(`${style.name}: backdrop none with a shape still draws the tile`, () => {
+    expect(createAvatar(style, { seed: 'a', shape: 'square', backdrop: 'none' }).svg).toBe(
+      createAvatar(style, { seed: 'a', shape: 'square' }).svg,
+    )
+  })
+
+  test(`${style.name}: a shape never moves the body or the other picks`, () => {
+    const plain = createAvatar(style, { seed: 'a' })
+    for (const shape of ['circle', 'squircle', 'square', 'ellipse'] as const) {
+      const a = createAvatar(style, { seed: 'a', shape })
+      const { shape: s, ...rest } = a.toJSON()
+      expect(s).toBe(shape)
+      expect(rest).toEqual(plain.toJSON())
+      expect(ids(a.svg).replace(/<(circle|path) [^>]*--avatar-bg[^>]*\/>/, '')).toBe(ids(plain.svg))
+    }
+  })
+
+  test(`${style.name}: an unknown shape draws no tile and never throws`, () => {
+    for (const bad of ['nope', '__proto__', 'constructor']) {
+      const a = createAvatar(style, { seed: 'a', shape: bad } as never)
+      expect(ids(a.svg)).toBe(ids(createAvatar(style, { seed: 'a' }).svg))
+      expect(a.toJSON()).not.toHaveProperty('shape')
+    }
+  })
+
+  test(`${style.name}: two shapes of one seed never share gradient IDs`, () => {
+    const prefix = (svg: string) => /id="(a[0-9a-z]+)-/.exec(svg)?.[1]
+    const a = prefix(createAvatar(style, { seed: 'a', shape: 'square', finish: 'gloss' }).svg)
+    const b = prefix(createAvatar(style, { seed: 'a', shape: 'ellipse', finish: 'gloss' }).svg)
+    expect(a).toBeDefined()
+    expect(a).not.toBe(b)
+  })
+}

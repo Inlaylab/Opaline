@@ -40,6 +40,7 @@
 | **Morph**    | `@inlaylab/opaline/morph`    | An organic blob with a face                                            |
 | **Gradient** | `@inlaylab/opaline/gradient` | Smooth shapes with expressive faces                                    |
 | **Clay**     | `@inlaylab/opaline/clay`     | Small characters: a jelly body, or a hood with cat, bear or bunny ears |
+| **Initials** | `@inlaylab/opaline/initials` | The person's initials on a seeded tile with the Opaline sheen          |
 
 ## Quick start
 
@@ -177,6 +178,29 @@ createAvatar(clay, { seed: 'ada@inlay.dev', body: 'hood', ears: 'bunny', finish:
 | `--avatar-c1` | The body          |
 | `--avatar-c2` | The arms and ears |
 | `--avatar-c3` | The hood opening  |
+
+## Initials and shapes
+
+New in 1.1. `initials` takes the letters from the seed: `ada.lovelace@inlay.dev` gives AL and `Zoë Nguyễn` gives ZN. Set `text` to show your own (up to 3 characters). Letters are SVG text in the system font, so every script works.
+
+```ts
+import { initials } from '@inlaylab/opaline/initials'
+
+createAvatar(initials, { seed: 'ada.lovelace@inlay.dev', shape: 'squircle' })
+createAvatar(initials, { seed: user.id, text: 'Op', palette: 'pastel' })
+```
+
+Every style takes `shape`: `circle`, `squircle`, `square` or `ellipse` (a tall 80×100 oval).
+
+- **Aura and Initials** draw their tile in that shape. They default to `circle`.
+- **Morph, Gradient and Clay** draw a soft tinted tile in that shape behind the character. Leave `shape` unset to keep them on a transparent background.
+
+```tsx
+<Avatar seed={user.email} look={clay} shape="square" />
+<opaline-avatar seed="ada@inlay.dev" look="initials" shape="ellipse"></opaline-avatar>
+```
+
+Leaving `shape` unset gives exactly the 1.0 output, so upgrading changes no avatar.
 
 ## Same seed, same avatar
 

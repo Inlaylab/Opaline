@@ -2,9 +2,12 @@ import { createAvatar, type Style } from '@inlaylab/opaline'
 import { aura } from '@inlaylab/opaline/aura'
 import { clay } from '@inlaylab/opaline/clay'
 import { gradient } from '@inlaylab/opaline/gradient'
+import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
 
-const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay }
+const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials }
+/** Styles that always fill a tile, so their shape defaults to circle and they have no face. */
+const TILED = new Set(['aura', 'initials'])
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 const val = (id: string) => $<HTMLInputElement | HTMLSelectElement>(id).value
 
@@ -18,13 +21,14 @@ function chosen(): { style: string; opts: Opts } {
     const v = val(id)
     if (v !== unset) opts[key] = v
   }
-  if (style !== 'aura') {
+  if (!TILED.has(style)) {
     set('finish', 'pg-finish')
     set('expression', 'pg-expression')
   }
   set('palette', 'pg-palette')
   if (style === 'clay') set('body', 'pg-body')
-  if (style === 'aura') set('shape', 'pg-shape')
+  set('shape', 'pg-shape')
+  if (style === 'initials' && val('pg-text').trim()) opts.text = val('pg-text')
   return { style, opts }
 }
 
@@ -40,7 +44,8 @@ const attrs = (opts: Opts, fmt: (k: string, v: string) => string) =>
 function snippet(fw: string, seed: string, style: string, opts: Opts, size: number): string {
   const imp = `import { ${style} } from '@inlaylab/opaline/${style}'`
   const sz = size === 64 ? '' : String(size)
-  const plain = (k: string, v: string) => `${k}="${v}"`
+  // `text` is typed by the user, so attribute values are escaped like the seed.
+  const plain = (k: string, v: string) => `${k}="${html(v)}"`
   switch (fw) {
     case 'element':
       return `<script type="module">import '@inlaylab/opaline-element'</script>\n\n<opaline-avatar seed="${html(seed)}" look="${style}"${sz ? ` size="${sz}"` : ''}${attrs(opts, plain)}></opaline-avatar>`
@@ -77,9 +82,13 @@ function render() {
         ? JSON.stringify(avatar.toJSON(), null, 2)
         : snippet(tab, seed, style, opts, size)
   $('pg-code').textContent = code
-  for (const id of ['pg-body-field', 'pg-shape-field'])
-    $(id).hidden = id === 'pg-body-field' ? style !== 'clay' : style !== 'aura'
-  for (const id of ['pg-finish-field', 'pg-expression-field']) $(id).hidden = style === 'aura'
+  $('pg-body-field').hidden = style !== 'clay'
+  $('pg-text-field').hidden = style !== 'initials'
+  for (const id of ['pg-finish-field', 'pg-expression-field']) $(id).hidden = TILED.has(style)
+  // The empty option is each style's own default: a circle tile, or no tile at all.
+  $('pg-shape').querySelector('option')!.textContent = TILED.has(style)
+    ? 'circle (default)'
+    : 'none (default)'
   // The hero follows the same seed in every style.
   for (const el of document.querySelectorAll<HTMLElement>('[data-hero]'))
     el.innerHTML = createAvatar(STYLES[el.dataset.hero!]!, {
@@ -102,6 +111,7 @@ export function initPlayground(): void {
   })
   for (const el of document.querySelectorAll('#pg-controls select'))
     el.addEventListener('change', render)
+  $('pg-text').addEventListener('input', render)
   $('pg-tabs').addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-tab]')
     if (!b) return

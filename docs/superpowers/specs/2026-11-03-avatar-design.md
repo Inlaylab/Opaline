@@ -26,7 +26,7 @@ The look must be intuitive, modern and clean. It takes ideas from the references
 - A hosted SaaS. We ship a self-hosted Docker API only.
 - A Figma plugin.
 - An end-user avatar editor.
-- Initials.
+- Initials. (Shipped in 1.1: see `2026-11-04-initials-shapes-design.md`.)
 - Ports to other languages.
 - Critter, which comes after 1.0.
 
@@ -83,7 +83,7 @@ The project fails, even if it works, if any of these happens:
 | Morph    | default on, `face: false` | Shape genome, solid fill, face kit                                                                        | ≤2 KB         |
 | Gradient | default on, `face: false` | Shape genome, mesh fill (layered radial gradients), face kit                                              | ≤2 KB         |
 
-Budgets are measured as `createAvatar` plus the style import, since the shape genome and face kit ship with the blob styles rather than the core entry. Limits: core 3 KB, core + Aura 4 KB, core + Morph 5 KB, core + Gradient 5 KB. The Angular wrapper is measured as partial-compiled code (2 KB); the other wrappers 1.5 KB.
+Budgets are measured as `createAvatar` plus the style import, since the shape genome and face kit ship with the blob styles rather than the core entry. Limits: core 3 KB, core + Aura 4 KB, core + Morph 5 KB, core + Gradient 5 KB (5.25 KB from 1.1). The Angular wrapper is measured as partial-compiled code (2 KB); the other wrappers 1.5 KB.
 | Clay | yes | `soft`/`gloss` finish. Bodies: `jelly` (genome plus nub arms), `hood` (animal-ear hood) | ≤8 KB |
 | Persona | yes | Parametric people: head, hair, brows, eyes, mouth, glasses, earrings, top. Circle backdrop with dots. Finish is `flat` or `soft`. | ≤20 KB |
 
@@ -96,7 +96,7 @@ Assumption: Morph and Gradient show a face by default. If they should be faceles
 - **Backdrop:** `none` | `solid` | `mesh` | `dots`.
 - **Fill:** `solid` | `mesh` | `shade`.
 - **Finish:** `flat` | `soft` | `gloss`. Gradients only, never SVG filters.
-- **Shape (clip):** `circle` | `squircle` | `square`.
+- **Shape:** `circle` | `squircle` | `square` | `ellipse`, on every style from 1.1. It sets the outline of the tile rather than clipping (see `2026-11-04-initials-shapes-design.md`).
 - **Presets** are named bundles of options. Palettes: `pastel`, `vivid`, `electric`, `muted`, `warm`, `cool`, `mono`, `theme`.
 
 ## API

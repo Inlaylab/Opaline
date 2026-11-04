@@ -7,6 +7,7 @@ export default defineConfig({
     gradient: 'src/styles/gradient.ts',
     aura: 'src/styles/aura.ts',
     clay: 'src/styles/clay.ts',
+    initials: 'src/styles/initials.ts',
   },
   format: 'esm',
   platform: 'neutral',

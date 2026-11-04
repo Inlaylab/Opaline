@@ -3,6 +3,8 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { createAvatar } from '@inlaylab/opaline'
 import { clay } from '@inlaylab/opaline/clay'
+import { initials } from '@inlaylab/opaline/initials'
+import { morph } from '@inlaylab/opaline/morph'
 import { chromium, type Browser, type BrowserContextOptions } from 'playwright'
 import { afterAll, beforeAll, expect, test } from 'vitest'
 import { runSync, startServer, stopServer } from '../../tools/spawn-server.ts'
@@ -72,6 +74,58 @@ test('the playground shows the core output for the chosen options', async () => 
     return t.innerHTML
   }, expected)
   expect(strip(svg)).toBe(strip(serialized))
+})
+
+async function previewMatches(page: import('playwright').Page, expected: string) {
+  const svg = await page
+    .locator('#pg-preview svg')
+    .first()
+    .evaluate((e) => e.outerHTML)
+  const serialized = await page.evaluate((s) => {
+    const t = document.createElement('template')
+    t.innerHTML = s
+    return t.innerHTML
+  }, expected)
+  expect(strip(svg)).toBe(strip(serialized))
+}
+
+test('the playground draws initials with a shape and custom text', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.fill('#pg-seed', 'grace hopper')
+  await page.selectOption('#pg-style', 'initials')
+  await page.selectOption('#pg-shape', 'square')
+  await previewMatches(
+    page,
+    createAvatar(initials, { seed: 'grace hopper', shape: 'square', size: 160 }).svg,
+  )
+  await page.fill('#pg-text', 'Op')
+  await previewMatches(
+    page,
+    createAvatar(initials, { seed: 'grace hopper', shape: 'square', text: 'Op', size: 160 }).svg,
+  )
+  expect(await page.locator('#pg-code').textContent()).toContain('"text": "Op"')
+})
+
+test('every style offers every shape', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.selectOption('#pg-style', 'morph')
+  expect(await page.locator('#pg-shape-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-shape option').allTextContents()).toEqual([
+    'none (default)',
+    'circle',
+    'squircle',
+    'square',
+    'ellipse',
+  ])
+  await page.selectOption('#pg-shape', 'ellipse')
+  await previewMatches(
+    page,
+    createAvatar(morph, { seed: 'ada@inlay.dev', shape: 'ellipse', size: 160 }).svg,
+  )
+  await page.selectOption('#pg-style', 'aura')
+  expect(await page.locator('#pg-shape option').first().textContent()).toBe('circle (default)')
 })
 
 test('user input is escaped, never rendered as markup', async () => {
@@ -156,6 +210,11 @@ test('style-specific controls hide for other styles', async () => {
   expect(await page.locator('#pg-body-field').isVisible()).toBe(false)
   await page.selectOption('#pg-style', 'clay')
   expect(await page.locator('#pg-body-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-text-field').isVisible()).toBe(false)
+  await page.selectOption('#pg-style', 'initials')
+  expect(await page.locator('#pg-text-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-finish-field').isVisible()).toBe(false)
+  expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
 })
 
 test('no horizontal scroll at phone width', async () => {

@@ -6,7 +6,7 @@ import { genome, type Family } from '../parts/shape.ts'
 import { known } from '../parts/known.ts'
 import { PALETTES } from '../parts/palette.ts'
 import { bbox, finishDefs, finishOver, FINISHES, type Finish } from '../parts/finish.ts'
-import { el } from '../svg.ts'
+import { backdrop, SHAPES, type Shape } from '../parts/tile.ts'
 import { colorVars, lch } from './paint.ts'
 
 export type BlobOptions = {
@@ -18,6 +18,8 @@ export type BlobOptions = {
   backdrop?: 'none' | 'tint'
   /** Light and shade over the body. Default `flat`. */
   finish?: Finish
+  /** Draws the tint backdrop in this outline. Unset: no tile unless `backdrop: 'tint'` (a circle). */
+  shape?: Shape
 }
 type Base = { h: number; l: number; c: number }
 type Fill = (
@@ -40,14 +42,9 @@ export function blobStyle(name: string, fill: Fill): Style<BlobOptions> {
       const shape = genome(ctx.rng, opts.family)
       const painted = fill(ctx, shape.d, base, colorVars(), finish)
       let body = painted.body + finishOver(finish, ctx.id, shape.d, bbox(shape.poly))
-      if (opts.backdrop === 'tint')
-        body =
-          el('circle', {
-            cx: 50,
-            cy: 50,
-            r: 50,
-            fill: `var(--avatar-bg, ${lch(0.95, 0.03, base.h)})`,
-          }) + body
+      const tile = known(SHAPES, opts.shape)
+      if (opts.backdrop === 'tint' || tile)
+        body = backdrop(tile, `var(--avatar-bg, ${lch(0.95, 0.03, base.h)})`) + body
       const picks: Record<string, unknown> = {
         palette,
         hue: Math.round(base.h),
@@ -55,6 +52,7 @@ export function blobStyle(name: string, fill: Fill): Style<BlobOptions> {
         lobes: shape.lobes,
       }
       if (finish !== 'flat') picks.finish = finish
+      if (tile) picks.shape = tile
       if (opts.face !== false) {
         const [x, y, r] = inscribed(shape.poly)
         const f = face(ctx.rng, { x, y, r, hue: base.h }, opts)

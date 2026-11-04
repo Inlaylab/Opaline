@@ -14,7 +14,6 @@ import {
 import { DomSanitizer, type SafeHtml } from '@angular/platform-browser'
 import {
   createAvatar,
-  type AuraOptions,
   type BlobOptions,
   type ClayOptions,
   type Finish,
@@ -22,6 +21,7 @@ import {
   type Family,
   type Mood,
   type PaletteName,
+  type Shape,
   type Style,
 } from '@inlaylab/opaline'
 import { OpalineIds } from './ids'
@@ -54,6 +54,10 @@ type ImageState = 'loading' | 'loaded' | 'error'
     '[attr.expression]': 'null',
     '[attr.backdrop]': 'null',
     '[attr.shape]': 'null',
+    '[attr.text]': 'null',
+    '[attr.finish]': 'null',
+    '[attr.body]': 'null',
+    '[attr.ears]': 'null',
   },
   template: `<span style="display:contents" [innerHTML]="svg()"></span>
     @if (src() && state() !== 'error') {
@@ -85,10 +89,12 @@ export class OpalineAvatar {
   readonly mood = input<Mood>()
   readonly expression = input<Expression>()
   readonly backdrop = input<BlobOptions['backdrop']>()
-  readonly shape = input<AuraOptions['shape']>()
+  readonly shape = input<Shape>()
   readonly finish = input<Finish>()
   readonly body = input<ClayOptions['body']>()
   readonly ears = input<ClayOptions['ears']>()
+  /** Initials only: letters to show instead of the ones from the seed. */
+  readonly text = input<string>()
 
   protected readonly state = signal<ImageState>('loading')
 
@@ -107,6 +113,7 @@ export class OpalineAvatar {
       finish: this.finish(),
       body: this.body(),
       ears: this.ears(),
+      text: this.text(),
     }).svg
     // Safe: the core escapes every input that reaches the SVG, and the default sanitizer strips SVG.
     return this.sanitizer.bypassSecurityTrustHtml(svg)

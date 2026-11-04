@@ -15,6 +15,6 @@ for (const [name, style, sets] of FROZEN)
     )
 writeFileSync(
   new URL('../test/frozen-1.json', import.meta.url),
-  JSON.stringify(out, null, 1) + '\n',
+  JSON.stringify(out, null, 2) + '\n',
 )
 console.log(`froze ${Object.keys(out).length} cases × ${FROZEN_SEEDS.length} seeds`)

@@ -2,6 +2,7 @@ import type { Style } from '../src/index.ts'
 import { aura } from '../src/styles/aura.ts'
 import { clay } from '../src/styles/clay.ts'
 import { gradient } from '../src/styles/gradient.ts'
+import { initials } from '../src/styles/initials.ts'
 import { morph } from '../src/styles/morph.ts'
 
 /** 100 seeds in the shapes real apps pass: emails, names, IDs, numbers, unicode. */
@@ -26,13 +27,21 @@ const blob = [
   { backdrop: 'tint' },
   { family: 'petal' },
   { face: false },
+  { shape: 'circle' },
+  { shape: 'squircle' },
+  { shape: 'square' },
+  { shape: 'ellipse' },
 ]
 
 /** Every style with the option sets whose output 1.x promises never to change. */
 export const FROZEN: readonly (readonly [string, Style<any>, readonly object[]])[] = [
   ['morph', morph, blob],
   ['gradient', gradient, blob],
-  ['aura', aura, [{}, { shape: 'squircle' }, { palette: 'mono' }]],
+  [
+    'aura',
+    aura,
+    [{}, { shape: 'squircle' }, { palette: 'mono' }, { shape: 'square' }, { shape: 'ellipse' }],
+  ],
   [
     'clay',
     clay,
@@ -43,6 +52,22 @@ export const FROZEN: readonly (readonly [string, Style<any>, readonly object[]])
       { body: 'hood' },
       { body: 'hood', ears: 'bunny' },
       { palette: 'warm' },
+      { shape: 'circle' },
+      { shape: 'squircle' },
+      { shape: 'square' },
+      { shape: 'ellipse' },
+    ],
+  ],
+  [
+    'initials',
+    initials,
+    [
+      {},
+      { shape: 'squircle' },
+      { shape: 'square' },
+      { shape: 'ellipse' },
+      { palette: 'pastel' },
+      { text: 'Op' },
     ],
   ],
 ]

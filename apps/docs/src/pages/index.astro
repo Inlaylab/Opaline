@@ -12,9 +12,10 @@ const SEEDS = Array.from({ length: 100 }, (_, i) => {
         ? `user_${(i * 7919).toString(36)}`
         : `${n}${i}`
 })
-const LOOKS = ['morph', 'gradient', 'aura', 'clay']
+const LOOKS = ['morph', 'gradient', 'aura', 'clay', 'initials']
 const EXPRESSIONS = ['beam', 'content', 'proud', 'dreamy', 'hmm', 'shy', 'sleepy', 'curious', 'oh', 'cheeky', 'wink', 'giggle']
 const PALETTES = ['vivid', 'pastel', 'electric', 'muted', 'warm', 'cool', 'mono']
+const SHAPES = ['circle', 'squircle', 'square', 'ellipse']
 const TABS = [
   ['core', 'Core'],
   ['element', 'Web Component'],
@@ -34,7 +35,8 @@ const OPTIONS = [
   ['face', 'boolean', 'Morph, Gradient and Clay show a face unless false.'],
   ['family', 'egg · duo · tri · cushion · clover · petal', 'Blob shape family.'],
   ['body', 'jelly · hood', 'Clay only. With ears: cat · bear · bunny.'],
-  ['shape', 'circle · squircle', 'Aura only.'],
+  ['shape', 'circle · squircle · square · ellipse', 'Every style. Aura and Initials default to circle; on the others it draws a tinted tile in that shape.'],
+  ['text', 'string', 'Initials only. Up to 3 letters shown as given; by default they come from the seed.'],
   ['backdrop', 'none · tint', 'A soft circle behind the body.'],
   ['src · alt', 'string', 'Wrappers only: a photo shown once it loads, and an accessible name.'],
 ]
@@ -121,7 +123,7 @@ const INSTALL = [
             <div class={`marquee-row${row ? ' rev' : ''}`}>
               {[0, 1].map(() => (
                 <div class="marquee-track">
-                  {SEEDS.slice(row * 24, row * 24 + 24).map((seed, i) => <opaline-avatar seed={seed} look={LOOKS[(i + row) % 4]} size="56"></opaline-avatar>)}
+                  {SEEDS.slice(row * 24, row * 24 + 24).map((seed, i) => <opaline-avatar seed={seed} look={LOOKS[(i + row) % LOOKS.length]} size="56"></opaline-avatar>)}
                 </div>
               ))}
             </div>
@@ -166,8 +168,11 @@ const INSTALL = [
               <label class="field" id="pg-body-field" hidden>Body
                 <select class="select" id="pg-body"><option value="">seeded</option><option>jelly</option><option>hood</option></select>
               </label>
-              <label class="field" id="pg-shape-field" hidden>Shape
-                <select class="select" id="pg-shape"><option value="">circle (default)</option><option>squircle</option></select>
+              <label class="field" id="pg-shape-field">Shape
+                <select class="select" id="pg-shape"><option value="">none (default)</option>{SHAPES.map((s) => <option>{s}</option>)}</select>
+              </label>
+              <label class="field" id="pg-text-field" hidden>Text
+                <input class="input" id="pg-text" placeholder="from the seed" maxlength="3" autocomplete="off" spellcheck="false" />
               </label>
               <label class="field">Size
                 <select class="select" id="pg-size"><option>32</option><option>48</option><option selected>64</option><option>96</option><option>128</option><option>256</option></select>

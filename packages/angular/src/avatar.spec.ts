@@ -28,6 +28,7 @@ const INPUTS = [
   'expression',
   'backdrop',
   'shape',
+  'text',
 ] as const
 
 async function apply(ref: ComponentRef<OpalineAvatar>, { look = 'morph', ...props }: Props) {
@@ -90,10 +91,17 @@ test('angular: works as the fallback of an Ivorie avatar', async () => {
 
 @Component({
   imports: [OpalineAvatar],
-  template: `<op-avatar seed="ada@inlay.dev" alt="Ada" [look]="look" />`,
+  template: `<op-avatar
+    seed="ada@inlay.dev"
+    alt="Ada"
+    finish="gloss"
+    body="hood"
+    ears="bunny"
+    [look]="look"
+  />`,
 })
 class StaticAttributes {
-  look = STYLES.morph
+  look = STYLES.clay
 }
 
 test('angular: static template attributes do not stay on the root', async () => {
@@ -107,7 +115,8 @@ test('angular: static template attributes do not stay on the root', async () => 
   await app.whenStable()
   const root = host.querySelector<HTMLElement>('[data-opaline]')!
   expect(root.getAttribute('aria-label')).toBe('Ada')
-  for (const name of ['seed', 'alt']) expect(root.hasAttribute(name)).toBe(false)
+  for (const name of ['seed', 'alt', 'finish', 'body', 'ears'])
+    expect(root.hasAttribute(name)).toBe(false)
   expect(host.innerHTML).not.toContain('ada@inlay.dev')
   ref.destroy()
 })
