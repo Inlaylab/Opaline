@@ -1,3 +1,4 @@
+import { bbox } from './finish.ts'
 import type { Point } from './shape.ts'
 
 /**
@@ -9,20 +10,15 @@ export function inscribed(poly: Point[]): [x: number, y: number, r: number] {
   // Flat edge data: this runs ~60k edge checks per avatar, so avoid tuple reads and repeat math.
   // Edge i runs from point j = i - 1 to point i: ax ay bx by dx dy len².
   const E = new Float64Array(n * 7)
-  let minX = Infinity,
-    maxX = -Infinity,
-    minY = Infinity,
-    maxY = -Infinity
+  const { x: minX, y: minY, w, h } = bbox(poly)
+  const maxX = minX + w
+  const maxY = minY + h
   for (let i = 0, j = n - 1; i < n; j = i++) {
     const [ax, ay] = poly[j]!
     const [bx, by] = poly[i]!
     const dx = bx - ax
     const dy = by - ay
     E.set([ax, ay, bx, by, dx, dy, dx * dx + dy * dy], i * 7)
-    if (bx < minX) minX = bx
-    if (bx > maxX) maxX = bx
-    if (by < minY) minY = by
-    if (by > maxY) maxY = by
   }
   // Squared distance to the boundary when inside (even-odd rule) and deeper than `floor`, else -1.
   // Stopping once the distance falls to `floor` cannot change the result: such a point never wins.

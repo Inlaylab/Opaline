@@ -20,15 +20,10 @@ const ENTITIES: Record<string, string> = {
   "'": '&#39;',
 }
 
-const NEEDS_ESCAPE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F&<>"']/
-
 export function escapeXml(s: string): string {
-  // Most values (path data, colors) need nothing; one test skips two replace passes.
-  if (!NEEDS_ESCAPE.test(s)) return s
-  // Control characters other than tab, LF and CR are invalid in XML 1.0.
-  return s
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
-    .replace(/[&<>"']/g, (c) => ENTITIES[c]!)
+  // One pass: entities for markup characters; control characters other than tab, LF and CR
+  // are invalid in XML 1.0, so they are dropped.
+  return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F&<>"']/g, (c) => ENTITIES[c] ?? '')
 }
 
 export function el(tag: string, attrs: Attrs = {}, children?: string): string {
