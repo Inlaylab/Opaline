@@ -5,7 +5,11 @@ export function num(n: number): string {
   const r = Math.round(n * 100) / 100
   if (r === 0) return '0'
   if (Math.abs(r) >= 1e21) return BigInt(r).toString()
-  return r.toFixed(2).replace(/\.?0+$/, '')
+  // Same as r.toFixed(2) with trailing zeros (and a bare dot) removed, without a regex.
+  const f = r.toFixed(2)
+  if (f.charCodeAt(f.length - 1) !== 48) return f
+  if (f.charCodeAt(f.length - 2) !== 48) return f.slice(0, -1)
+  return f.slice(0, -3)
 }
 
 const ENTITIES: Record<string, string> = {
@@ -16,7 +20,11 @@ const ENTITIES: Record<string, string> = {
   "'": '&#39;',
 }
 
+const NEEDS_ESCAPE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F&<>"']/
+
 export function escapeXml(s: string): string {
+  // Most values (path data, colors) need nothing; one test skips two replace passes.
+  if (!NEEDS_ESCAPE.test(s)) return s
   // Control characters other than tab, LF and CR are invalid in XML 1.0.
   return s
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
