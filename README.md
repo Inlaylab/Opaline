@@ -10,7 +10,7 @@ Inlaylab names its projects after inlay materials. [Ivorie](https://github.com/I
 
 ## Status
 
-Work in progress (0.4: Aura, Morph, Gradient and Clay, with `flat`, `soft` and `gloss` finishes, and Web Component, React, Angular, Vue and Svelte wrappers). The design lives in [docs/superpowers/specs/2026-11-03-avatar-design.md](docs/superpowers/specs/2026-11-03-avatar-design.md).
+1.0: Aura, Morph, Gradient and Clay, with `flat`, `soft` and `gloss` finishes, and Web Component, React, Angular, Vue and Svelte wrappers. Output is stable for all of 1.x. Try it at [inlaylab.github.io/Opaline](https://inlaylab.github.io/Opaline/). The design lives in [docs/superpowers/specs/2026-11-03-avatar-design.md](docs/superpowers/specs/2026-11-03-avatar-design.md).
 
 | Package                     | What                                                                                    |
 | --------------------------- | --------------------------------------------------------------------------------------- |

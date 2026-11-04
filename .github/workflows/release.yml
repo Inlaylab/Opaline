@@ -5,11 +5,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # push the version tags changesets creates
   id-token: write # npm provenance
 
 jobs:
   publish:
+    # Only main is ever published.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: npm
     steps:
@@ -28,3 +30,4 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'true'
+      - run: git push --tags

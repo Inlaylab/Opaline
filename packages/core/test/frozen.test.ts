@@ -18,7 +18,14 @@ for (const [name, style, sets] of FROZEN)
       expect(
         changed,
         `Output changed for ${key}. The same seed and options must give the same SVG for all of 1.x; ` +
-          `changing it is a breaking change that needs a major version and \`pnpm freeze\`.`,
+          `changing it is a breaking change that needs a major version and \`pnpm --filter @inlaylab/opaline freeze\`.`,
       ).toEqual([])
     })
   }
+
+test('the frozen cases still cover everything the manifest locks', () => {
+  // Removing or renaming a case, or dropping seeds, must not quietly shrink the guarantee.
+  const keys = FROZEN.flatMap(([name, , sets]) => sets.map((o) => `${name} ${JSON.stringify(o)}`))
+  expect(keys.sort()).toEqual(Object.keys(manifest).sort())
+  for (const k of keys) expect(manifest[k], k).toHaveLength(FROZEN_SEEDS.length)
+})

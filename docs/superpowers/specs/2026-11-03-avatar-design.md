@@ -189,7 +189,7 @@ registry/           shadcn registry + Ivorie CLI entry
 
 - The same seed and options give a byte-identical SVG in every 1.x release, on the server and in every browser.
 - Options set to their default give exactly the unset output, including gradient IDs. Option order never matters. A numeric seed equals its string form.
-- `packages/core/test/frozen-1.json` holds checksums for 4 styles × 25 option sets × 100 seeds. Any change fails CI; changing it needs a major version and `pnpm --filter @inlaylab/opaline freeze`.
+- `packages/core/test/frozen-1.json` holds checksums for 25 option sets across the 4 styles × 100 seeds (2,500 SVGs). Any change fails CI; changing it needs a major version and `pnpm --filter @inlaylab/opaline freeze`.
 - What may differ between two copies of one avatar: the per-instance ID suffix that wrappers add so two copies on one page never clash. The picture is the same.
 
 ## Verification
