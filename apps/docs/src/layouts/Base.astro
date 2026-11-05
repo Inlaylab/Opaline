@@ -1,7 +1,7 @@
 ---
 /** The page shell: head, floating header with theme toggle, footer. Every page shares it. */
-type Props = { title: string; description: string }
-const { title, description } = Astro.props
+type Props = { title: string; description: string; page?: 'home' | 'playground' | 'docs' | 'compare' }
+const { title, description, page = 'home' } = Astro.props
 const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
 ---
 
@@ -11,6 +11,9 @@ const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="icon" href={`${BASE}favicon.ico`} sizes="48x48" />
+    <link rel="icon" href={`${BASE}favicon.svg`} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={`${BASE}apple-touch-icon.png`} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" />
     <script is:inline>
@@ -29,12 +32,15 @@ const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
     <header class="site-header">
       <div class="bar">
         <a class="brand" href={BASE}><span>opaline</span><span class="brand-dot" aria-hidden="true"></span></a>
-        <nav class="nav" aria-label="Sections">
-          <a href={`${BASE}#playground`}>Playground</a>
-          <a class="wide" href={`${BASE}#gallery`}>Gallery</a>
-          <a class="wide" href={`${BASE}#demos`}>Demos</a>
-          <a href={`${BASE}#docs`}>Docs</a>
-          <a href={`${BASE}compare/`}>Compare</a>
+        <nav class="nav" aria-label="Main">
+          {[
+            ['playground', 'Playground', `${BASE}playground/`, ''],
+            ['docs', 'Docs', `${BASE}docs/`, ''],
+            ['demos', 'Demos', `${BASE}#demos`, 'wide'],
+            ['compare', 'Compare', `${BASE}compare/`, ''],
+          ].map(([id, label, href, cls]) => (
+            <a class={cls || undefined} href={href} aria-current={id === page ? 'page' : undefined}>{label}</a>
+          ))}
         </nav>
         <span class="spacer"></span>
         <a class="gh" href="https://github.com/Inlaylab/Opaline" target="_blank" rel="noreferrer" aria-label="GitHub repository">

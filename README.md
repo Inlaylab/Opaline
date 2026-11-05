@@ -9,7 +9,8 @@
 
 <p align="center">
   <a href="https://inlaylab.github.io/Opaline/"><b>Live demo</b></a> ·
-  <a href="#quick-start">Quick start</a> ·
+  <a href="https://inlaylab.github.io/Opaline/playground/">Playground</a> ·
+  <a href="https://inlaylab.github.io/Opaline/docs/">Docs</a> ·
   <a href="#frameworks">Frameworks</a> ·
   <a href="https://inlaylab.github.io/Opaline/compare/">Compare</a> ·
   <a href="docs/superpowers/specs/2026-11-03-avatar-design.md">Design spec</a>
@@ -242,7 +243,7 @@ Pass `vars: { '--avatar-c1': '#7c3aed' }` to bake theme colors into the image.
 
 ## Playground links
 
-Every playground setting lives in the address, so you can share a link to an exact avatar: [`?seed=grace+hopper&style=initials&shape=squircle`](https://inlaylab.github.io/Opaline/?seed=grace+hopper&style=initials&shape=squircle#playground). The site also has [demos](https://inlaylab.github.io/Opaline/#demos) (profile, feed, admin table, team) and a [comparison with DiceBear and Boring Avatars](https://inlaylab.github.io/Opaline/compare/).
+Every playground setting lives in the address, so you can share a link to an exact avatar: [`?seed=grace+hopper&style=initials&shape=squircle`](https://inlaylab.github.io/Opaline/playground/?seed=grace+hopper&style=initials&shape=squircle). The site also has [ten demos](https://inlaylab.github.io/Opaline/#demos) of real product screens, [step-by-step docs](https://inlaylab.github.io/Opaline/docs/) for every framework and a [comparison with DiceBear and Boring Avatars](https://inlaylab.github.io/Opaline/compare/).
 
 ## Same seed, same avatar
 
