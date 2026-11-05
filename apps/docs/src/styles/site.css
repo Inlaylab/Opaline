@@ -1,39 +1,65 @@
-/* shadcn-style tokens (zinc), light and dark. */
+/* Milk glass and indigo ink. The opal colors glow only behind avatars, never on text. */
 :root {
-  --background: #ffffff;
-  --foreground: #09090b;
+  --background: #f3f5f9;
+  --foreground: #1a1f33;
   --card: #ffffff;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --border: #e4e4e7;
-  --primary: #18181b;
-  --primary-foreground: #fafafa;
-  --ring: #a1a1aa;
+  --muted: #e7ebf2;
+  --muted-foreground: #586078;
+  --border: #dbe1ea;
+  --primary: #1a1f33;
+  --primary-foreground: #f3f5f9;
+  --ring: #7d8bd9;
   --tile-light: #ffffff;
-  --tile-dark: #09090b;
-  --radius: 0.625rem;
+  --tile-dark: #11141d;
+  --radius: 0.75rem;
   --accent-1: #8b5cf6;
   --accent-2: #ec4899;
   --accent-3: #f59e0b;
-  --soft: #fafafa;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.12);
-  --sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --opal-rose: #ffc6d6;
+  --opal-mint: #bdeedd;
+  --opal-sky: #c4d6ff;
+  --opal-honey: #ffe5ad;
+  --soft: #edf0f6;
+  --shadow: 0 1px 2px rgb(26 31 51 / 0.05), 0 12px 32px -16px rgb(26 31 51 / 0.18);
+  --sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --display: 'Fredoka', 'Figtree', ui-rounded, system-ui, sans-serif;
   --mono: 'Geist Mono', ui-monospace, monospace;
   color-scheme: light;
 }
 :root[data-theme='dark'] {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #0c0c0e;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --border: #27272a;
-  --primary: #fafafa;
-  --primary-foreground: #18181b;
-  --ring: #52525b;
-  --soft: #111113;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --background: #11141d;
+  --foreground: #e9ecf5;
+  --card: #171b27;
+  --muted: #222838;
+  --muted-foreground: #9aa2b8;
+  --border: #272e40;
+  --primary: #e9ecf5;
+  --primary-foreground: #11141d;
+  --ring: #8f9ce6;
+  --opal-rose: #6b3a52;
+  --opal-mint: #2c5a50;
+  --opal-sky: #34427a;
+  --opal-honey: #6a5530;
+  --soft: #141824;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(0 0 0 / 0.6);
   color-scheme: dark;
+}
+/* Rounded display type echoes the soft blob faces; Figtree keeps body text plain and readable. */
+h1,
+h2,
+h3,
+.brand {
+  font-family: var(--display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 * {
   box-sizing: border-box;
@@ -244,59 +270,41 @@ label.field {
   box-shadow: var(--shadow);
 }
 
-/* Hero */
+/* Hero: copy on the left, one big avatar glowing like opal glass on the right. */
 .hero {
   position: relative;
   overflow: hidden;
-  padding-block: 72px 40px;
   margin-top: -64px;
-  padding-top: 136px;
-}
-.hero-glow {
-  position: absolute;
-  inset: -20% -10% auto;
-  height: 620px;
-  background:
-    radial-gradient(
-      40% 50% at 30% 30%,
-      color-mix(in oklab, var(--accent-1) 45%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      35% 45% at 70% 25%,
-      color-mix(in oklab, var(--accent-2) 35%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      30% 40% at 50% 60%,
-      color-mix(in oklab, var(--accent-3) 30%, transparent),
-      transparent 70%
-    );
-  filter: blur(48px);
-  pointer-events: none;
+  padding: 128px 0 40px;
 }
 .hero-inner {
-  position: relative;
   display: grid;
-  gap: 24px;
-  justify-items: center;
-  text-align: center;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+.hero-copy {
+  display: grid;
+  gap: 22px;
+  justify-items: start;
 }
 .badge {
   display: inline-flex;
-  gap: 8px;
   align-items: center;
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 4px 12px;
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--muted-foreground);
-  background: color-mix(in oklab, var(--background) 70%, transparent);
+  background: var(--card);
   text-decoration: none;
   transition: border-color 0.2s;
 }
 .badge:hover {
   border-color: var(--ring);
+}
+.badge {
+  gap: 8px;
 }
 .badge .dot {
   width: 8px;
@@ -306,12 +314,223 @@ label.field {
 }
 .badge b {
   color: var(--foreground);
-  font-weight: 500;
+  font-weight: 600;
+}
+.grad {
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2) 55%, var(--accent-3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Room for descenders so the clip never cuts the g. */
+  padding-bottom: 0.08em;
+}
+.hero h1 {
+  margin: 0;
+  font-size: clamp(44px, 7.4vw, 92px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.hero p {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--muted-foreground);
+  font-size: 19px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.hero-try {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: min(100%, 460px);
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  cursor: text;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.hero-try:focus-within {
+  border-color: var(--ring);
+  box-shadow:
+    var(--shadow),
+    0 0 0 4px color-mix(in oklab, var(--ring) 22%, transparent);
+}
+.hero-try-icon {
+  flex: none;
+  margin-left: 10px;
+  color: var(--muted-foreground);
+}
+.hero-try .input {
+  border: 0;
+  background: transparent;
+  height: 44px;
+  font-size: 17px;
+  padding-inline: 4px;
+}
+.hero-try .input:focus-visible {
+  outline: none;
+}
+.hero-shuffle {
+  flex: none;
+  height: 40px;
+  border: 0;
+  background: var(--muted);
+}
+.hero-shuffle svg {
+  flex: none;
+}
+.hero-shuffle:hover {
+  background: color-mix(in oklab, var(--muted) 70%, var(--ring));
+}
+.hero-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.hero-stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+}
+/* Opal glass: soft color blooming from inside, lit from the upper left. */
+.opal {
+  position: absolute;
+  top: -6%;
+  width: min(100%, 460px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 30% 25%,
+      color-mix(in oklab, var(--card) 85%, transparent),
+      transparent 45%
+    ),
+    conic-gradient(
+      from 200deg,
+      var(--opal-sky),
+      var(--opal-mint),
+      var(--opal-honey),
+      var(--opal-rose),
+      var(--opal-sky)
+    );
+  filter: blur(36px);
+  opacity: 0.9;
+  animation: opal 18s linear infinite;
+  pointer-events: none;
+}
+@keyframes opal {
+  to {
+    rotate: 360deg;
+  }
+}
+.hero-face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(72vw, 300px);
+  aspect-ratio: 1;
+  border-radius: 34%;
+  background: color-mix(in oklab, var(--card) 55%, transparent);
+  border: 1px solid color-mix(in oklab, var(--card) 70%, transparent);
+  box-shadow: 0 40px 80px -40px rgb(26 31 51 / 0.45);
+  backdrop-filter: blur(12px);
+}
+.hero-face svg {
+  width: 80%;
+  height: auto;
+}
+.hero-looks {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.hero-looks button {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px 8px 4px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--muted-foreground);
+  font: 500 12.5px var(--sans);
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.hero-looks button:hover {
+  background: var(--muted);
+}
+.hero-looks button[aria-checked='true'] {
+  border-color: var(--border);
+  background: var(--soft);
+  color: var(--foreground);
+}
+.hero-looks button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.tile svg {
+  display: block;
+}
+@media (max-width: 860px) {
+  .hero {
+    padding-top: 104px;
+  }
+  .hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+  .hero-face {
+    width: min(56vw, 220px);
+  }
+  .opal {
+    width: min(90%, 320px);
+  }
+}
+@media (max-width: 400px) {
+  .shuffle-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .hero-shuffle {
+    width: 40px;
+    padding: 0;
+  }
+}
+@media (max-width: 480px) {
+  .hero-looks {
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+  .hero-looks button {
+    padding-inline: 4px;
+  }
+  .hero-looks .tile svg {
+    width: 44px;
+    height: 44px;
+  }
 }
 .btn.lg {
-  height: 44px;
-  padding-inline: 24px;
-  font-size: 15px;
+  height: 46px;
+  padding-inline: 22px;
+  font-size: 15.5px;
 }
 .btn.glass {
   background: color-mix(in oklab, var(--background) 70%, transparent);
@@ -321,12 +540,10 @@ label.field {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: min(100%, 400px);
-  padding: 4px 4px 4px 20px;
-  border: 1px solid var(--border);
+  width: min(100%, 360px);
+  padding: 4px 4px 4px 18px;
+  border: 1px dashed var(--border);
   border-radius: 999px;
-  background: color-mix(in oklab, var(--background) 70%, transparent);
-  backdrop-filter: blur(8px);
   text-align: left;
 }
 .install-bar .mono {
@@ -341,11 +558,12 @@ label.field {
   color: var(--muted-foreground);
   user-select: none;
 }
-.install-bar .btn {
+.install-bar .btn,
+.ship-install .btn {
   border: 0;
   background: transparent;
 }
-.install-bar .btn.copied {
+[data-copy].copied {
   color: #16a34a;
 }
 .grad-border {
@@ -355,105 +573,6 @@ label.field {
     linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3)) border-box;
   box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.35);
   border-radius: 28px;
-}
-.hero h1 {
-  margin: 0;
-  font-size: clamp(40px, 7vw, 76px);
-  line-height: 1.02;
-  letter-spacing: -0.05em;
-  font-weight: 600;
-  text-wrap: balance;
-}
-.grad {
-  background: linear-gradient(90deg, var(--accent-1), var(--accent-2) 55%, var(--accent-3));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.hero p {
-  margin: 0;
-  max-width: 54ch;
-  color: var(--muted-foreground);
-  font-size: 18px;
-}
-.hero-try {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: min(100%, 480px);
-  padding: 6px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--background);
-  box-shadow: var(--shadow);
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
-}
-.hero-try:focus-within {
-  border-color: var(--ring);
-  box-shadow:
-    var(--shadow),
-    0 0 0 4px color-mix(in oklab, var(--accent-1) 15%, transparent);
-}
-.hero-try-icon {
-  flex: none;
-  margin-left: 10px;
-  color: var(--muted-foreground);
-}
-.hero-try .input {
-  border: 0;
-  background: transparent;
-  height: 40px;
-  font-size: 16px;
-  padding-inline: 4px;
-}
-.hero-try .input:focus-visible {
-  outline: none;
-}
-.hero-try .btn {
-  height: 40px;
-}
-.hero-avatars {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 8px 0;
-}
-.hero-avatars figure {
-  margin: 0;
-  display: grid;
-  gap: 10px;
-  justify-items: center;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--muted-foreground);
-  text-transform: capitalize;
-}
-.tile {
-  display: grid;
-  place-items: center;
-  width: 128px;
-  height: 128px;
-  border-radius: 28px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  box-shadow: var(--shadow);
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1.2);
-}
-.tile svg {
-  display: block;
-}
-.hero-avatars figure:hover .tile {
-  transform: translateY(-4px) rotate(-3deg);
-}
-.hero-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 .cmd {
   font-family: var(--mono);
@@ -476,6 +595,142 @@ label.field {
 }
 .btn.ghost:hover {
   background: var(--muted);
+}
+
+/* Ship it: three real steps beside the code for each framework. */
+.ship-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 48px;
+  align-items: start;
+}
+.ship-steps {
+  margin: 20px 0 0;
+  padding-left: 1.3em;
+  display: grid;
+  gap: 10px;
+  color: var(--muted-foreground);
+}
+.ship-steps li::marker {
+  color: var(--foreground);
+  font-weight: 600;
+}
+/* Frosted glass over an opal wash, so the code card reads as a pane of opaline. */
+.ship {
+  position: relative;
+  overflow: hidden;
+}
+.ship::before {
+  content: '';
+  position: absolute;
+  inset: 10% -10% auto 35%;
+  height: 70%;
+  background: conic-gradient(
+    from 120deg,
+    var(--opal-sky),
+    var(--opal-mint),
+    var(--opal-honey),
+    var(--opal-rose),
+    var(--opal-sky)
+  );
+  filter: blur(70px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.ship .wrap {
+  position: relative;
+}
+.ship-code {
+  overflow: hidden;
+  border-color: color-mix(in oklab, var(--card) 60%, var(--border));
+  background: color-mix(in oklab, var(--card) 72%, transparent);
+  backdrop-filter: blur(18px) saturate(1.3);
+}
+.ship-code .tabs {
+  background: color-mix(in oklab, var(--muted) 70%, transparent);
+}
+.ship-install pre.code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.ship-code .code-head {
+  overflow-x: auto;
+}
+.ship-pane pre.code {
+  margin: 0;
+  overflow-x: auto;
+}
+.ship-install {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.ship-install pre.code {
+  flex: 1;
+  color: var(--muted-foreground);
+  min-width: 0;
+}
+@media (max-width: 860px) {
+  .ship-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+
+/* Closer: the same opal light, behind a glass slab. */
+.closer {
+  position: relative;
+  overflow: hidden;
+}
+.closer::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(90vw, 720px);
+  height: 320px;
+  translate: -50% -50%;
+  background: conic-gradient(
+    from 0deg,
+    var(--opal-rose),
+    var(--opal-honey),
+    var(--opal-mint),
+    var(--opal-sky),
+    var(--opal-rose)
+  );
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.8;
+}
+.closer-inner {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  width: min(100% - 32px, 760px);
+  padding: 48px 24px;
+  border: 1px solid color-mix(in oklab, var(--card) 60%, transparent);
+  border-radius: 36px;
+  background: color-mix(in oklab, var(--card) 55%, transparent);
+  backdrop-filter: blur(20px) saturate(1.3);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.closer h2 {
+  margin: 8px 0 0;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.closer p {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+.closer .hero-actions {
+  justify-content: center;
 }
 
 /* Marquee */
@@ -505,7 +760,8 @@ label.field {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .marquee-row {
+  .marquee-row,
+  .opal {
     animation: none;
   }
 }
@@ -519,7 +775,7 @@ section.block.features {
   max-width: 22ch;
   font-size: clamp(28px, 4vw, 40px);
   line-height: 1.1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.01em;
   font-weight: 600;
   text-wrap: balance;
 }
@@ -546,7 +802,7 @@ section.block.features {
 
 /* Sections */
 section.block {
-  padding-block: 88px;
+  padding-block: clamp(56px, 9vw, 88px);
   border-top: 1px solid var(--border);
 }
 .sec-head {
@@ -558,7 +814,7 @@ section.block {
   margin: 0;
   font-size: clamp(28px, 4vw, 40px);
   line-height: 1.1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.01em;
   font-weight: 600;
 }
 .eyebrow {
@@ -784,6 +1040,17 @@ footer .wrap {
   flex-wrap: wrap;
   justify-content: space-between;
 }
+.foot-nav {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.foot-nav a {
+  text-decoration: none;
+}
+.foot-nav a:hover {
+  color: var(--foreground);
+}
 
 @media (max-width: 820px) {
   .pg {
@@ -808,18 +1075,6 @@ footer .wrap {
   }
   .nav a {
     padding-inline: 7px;
-  }
-  .hero-avatars {
-    gap: 8px;
-  }
-  .tile {
-    width: 76px;
-    height: 76px;
-    border-radius: 20px;
-  }
-  .tile svg {
-    width: 60px;
-    height: 60px;
   }
   .pg-preview {
     grid-template-columns: 1fr;
@@ -1652,12 +1907,12 @@ footer .wrap {
   background:
     radial-gradient(
       60% 50% at 15% 0%,
-      color-mix(in oklab, var(--accent-1) 10%, transparent),
+      color-mix(in oklab, var(--opal-sky) 45%, transparent),
       transparent
     ),
     radial-gradient(
       50% 40% at 90% 10%,
-      color-mix(in oklab, var(--accent-2) 10%, transparent),
+      color-mix(in oklab, var(--opal-rose) 40%, transparent),
       transparent
     );
 }

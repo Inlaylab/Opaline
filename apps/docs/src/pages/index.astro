@@ -17,131 +17,207 @@ const SEEDS = Array.from({ length: 100 }, (_, i) => {
 const LOOKS = ['morph', 'gradient', 'aura', 'clay', 'initials']
 const VERSION = core.version
 const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
-const NEXT = [
-  ['playground/', 'Playground', 'Design an avatar, then copy the code for your framework or download SVG and PNG.'],
-  ['docs/', 'Docs', 'Step-by-step setup for React, Vue, Svelte, Angular, plain HTML and JavaScript.'],
-  ['compare/', 'Compare', 'How Opaline stacks up against DiceBear and Boring Avatars, honestly.'],
+// Shortest working code per framework; the docs page has the full setup.
+const SHIP = [
+  ['react', 'React', '@inlaylab/opaline @inlaylab/opaline-react', `import { Avatar } from '@inlaylab/opaline-react'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<Avatar seed={user.email} look={morph} />`],
+  ['vue', 'Vue', '@inlaylab/opaline @inlaylab/opaline-vue', `import { Avatar } from '@inlaylab/opaline-vue'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<Avatar :seed="user.email" :look="morph" />`],
+  ['svelte', 'Svelte', '@inlaylab/opaline @inlaylab/opaline-svelte', `import { Avatar } from '@inlaylab/opaline-svelte'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<Avatar seed={user.email} look={morph} />`],
+  ['angular', 'Angular', '@inlaylab/opaline @inlaylab/opaline-angular', `import { OpalineAvatar } from '@inlaylab/opaline-angular'\nimport { morph } from '@inlaylab/opaline/morph'\n\n<op-avatar [seed]="user.email" [look]="morph" />`],
+  ['element', 'HTML', '@inlaylab/opaline-element', `import '@inlaylab/opaline-element'\n\n<opaline-avatar seed="ada@inlay.dev" look="morph"></opaline-avatar>`],
 ]
+const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>'
 ---
 
-<Base title="Opaline · seeded avatars for every framework" description="Seeded SVG avatars for every framework. The same seed always gives the same avatar. Zero dependencies, MIT.">
-      <div class="hero">
-        <div class="hero-glow" aria-hidden="true"></div>
-        <div class="wrap hero-inner">
-          <a class="badge" href="https://github.com/Inlaylab" target="_blank" rel="noreferrer"><span class="dot"></span>Open source by <b>Inlaylab</b> · v{VERSION}</a>
-          <h1>Friendly avatars,<br /><span class="grad">from any string.</span></h1>
-          <p>Pass a user ID, email or name. Get the same delightful avatar every time, as clean SVG that themes with CSS variables, in every framework.</p>
-          <div class="hero-try">
-            <svg class="hero-try-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="8" r="4" /></svg>
-            <input class="input" id="hero-seed" value="ada@inlay.dev" aria-label="Try your name" placeholder="Type your name…" autocomplete="off" spellcheck="false" />
-            <a class="btn primary pill" id="hero-customize" href={`${BASE}playground/`}>Customize →</a>
-          </div>
-          <div class="hero-avatars">
-            {LOOKS.map((l) => (
-              <figure><span class="tile" data-hero={l}></span><figcaption>{l}</figcaption></figure>
-            ))}
-          </div>
-          <div class="hero-actions">
-            <a class="btn primary pill lg" href={`${BASE}docs/`}>Get started</a>
-            <a class="btn pill lg glass" href="#demos">See the demos</a>
-          </div>
-          <div class="install-bar">
-            <span class="mono"><span class="prompt">$ </span>npm i @inlaylab/opaline</span>
-            <button class="btn icon round" id="hero-copy" type="button" aria-label="Copy npm i @inlaylab/opaline"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg></button>
-          </div>
+<Base
+  title="Opaline: seeded SVG avatars for React, Vue, Svelte and Angular"
+  description="Give every user a friendly default avatar. Opaline turns a user ID, email or name into the same SVG avatar every time. Zero dependencies, SSR safe, MIT."
+>
+  <div class="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <a class="badge" href="https://github.com/Inlaylab" target="_blank" rel="noreferrer"><span class="dot"></span>Open source by <b>Inlaylab</b> · v{VERSION}</a>
+        <h1>Every user<br /><span class="grad">gets a face.</span></h1>
+        <p>Opaline turns a user ID, email or name into a friendly avatar. The same input draws the same face on every device, as clean SVG. Nothing is uploaded or stored.</p>
+        <div class="hero-try">
+          <svg class="hero-try-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="8" r="4" /></svg>
+          <input class="input" id="hero-seed" value="Starfire" placeholder="Type your name" aria-label="Type a name to draw its avatar" autocomplete="off" spellcheck="false" />
+          <button class="btn pill hero-shuffle" id="hero-shuffle" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" /></svg>
+            <span class="shuffle-text">Random hero</span>
+          </button>
         </div>
-        <div class="marquee" aria-hidden="true">
-          {[0, 1].map((row) => (
-            <div class={`marquee-row${row ? ' rev' : ''}`}>
-              {[0, 1].map(() => (
-                <div class="marquee-track">
-                  {SEEDS.slice(row * 24, row * 24 + 24).map((seed, i) => <opaline-avatar seed={seed} look={LOOKS[(i + row) % LOOKS.length]} size="56"></opaline-avatar>)}
-                </div>
-              ))}
-            </div>
-          ))}
+        <div class="hero-actions">
+          <a class="btn primary pill lg" id="hero-customize" href={`${BASE}playground/`}>Customize this avatar</a>
+          <a class="btn pill lg" href={`${BASE}docs/`}>Read the docs</a>
+        </div>
+        <div class="install-bar">
+          <span class="mono"><span class="prompt">$ </span>npm i @inlaylab/opaline</span>
+          <button class="btn icon round" type="button" data-copy="npm i @inlaylab/opaline" aria-label="Copy npm i @inlaylab/opaline" set:html={COPY_ICON} />
         </div>
       </div>
 
-      <section class="block features">
-        <div class="wrap">
-          <h2 class="lead-title">One seed in. The same face out, everywhere.</h2>
-          <ul class="facts">
-            <li><b>Deterministic</b><span>Same seed, same avatar: on the server, in every browser, in every framework.</span></li>
-            <li><b>Zero dependencies</b><span>A tiny core plus native wrappers. Import only the styles you ship.</span></li>
-            <li><b>Themeable</b><span>Colors are CSS variables, so avatars follow your brand and dark mode.</span></li>
-            <li><b>Every framework</b><span>React, Vue, Svelte, Angular, Web Components, or plain SVG strings.</span></li>
-          </ul>
+      <div class="hero-stage">
+        <div class="opal" aria-hidden="true"></div>
+        <div class="hero-face" id="hero-face" role="img" aria-label="Avatar for Starfire"></div>
+        <div class="hero-looks" role="radiogroup" aria-label="Avatar style">
+          {LOOKS.map((l, i) => (
+            <button type="button" role="radio" data-hero={l} aria-checked={l === 'gradient' ? 'true' : 'false'}>
+              <span class="tile"></span><span class="look-name">{l}</span>
+            </button>
+          ))}
         </div>
-      </section>
+      </div>
+    </div>
+    <div class="marquee" aria-hidden="true">
+      {[0, 1].map((row) => (
+        <div class={`marquee-row${row ? ' rev' : ''}`}>
+          {[0, 1].map(() => (
+            <div class="marquee-track">
+              {SEEDS.slice(row * 24, row * 24 + 24).map((seed, i) => <opaline-avatar seed={seed} look={LOOKS[(i + row) % LOOKS.length]} size="56"></opaline-avatar>)}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
 
-      <Demos />
-
-      <section class="block" id="gallery">
-        <div class="wrap">
-          <div class="sec-head">
-            <span class="eyebrow">Gallery</span>
-            <h2>One hundred seeds.</h2>
-            <p>Names, emails and IDs, the way real apps pass them. Hover to see the seed.</p>
-          </div>
-          <div class="chips segmented" id="gallery-chips">
-            {LOOKS.map((l, i) => <button class="tab" type="button" data-look={l} aria-selected={i === 0 ? 'true' : 'false'}>{l}</button>)}
-          </div>
-          <div class="gallery" id="gallery-grid">
-            {SEEDS.map((seed) => <opaline-avatar seed={seed} look="morph" size="56" title={seed}></opaline-avatar>)}
+  <section class="block ship" id="install">
+    <div class="wrap ship-grid">
+      <div class="sec-head">
+        <h2>Ship it in a minute.</h2>
+        <p>Install, import a style, pass a seed. Your signup flow never shows a grey silhouette again.</p>
+        <ol class="ship-steps">
+          <li>Install the package for your framework.</li>
+          <li>Import the component and one style.</li>
+          <li>Pass anything stable as the seed: an ID, an email or a name.</li>
+        </ol>
+      </div>
+      <div class="card code-card ship-code">
+        <div class="code-head">
+          <div class="tabs" role="tablist" aria-label="Framework" id="ship-tabs">
+            {SHIP.map(([id, label], i) => <button class="tab" type="button" role="tab" data-fw={id} aria-selected={i === 0 ? 'true' : 'false'}>{label}</button>)}
           </div>
         </div>
-      </section>
-
-      <section class="block">
-        <div class="wrap">
-          <div class="sec-head"><span class="eyebrow">Next steps</span><h2>Start building.</h2></div>
-          <div class="next-cards">
-            {NEXT.map(([href, title, desc]) => (
-              <a class="card next-card" href={BASE + href}>
-                <b>{title} <span aria-hidden="true">→</span></b>
-                <span class="muted">{desc}</span>
-              </a>
-            ))}
+        {SHIP.map(([id, , pkg, code], i) => (
+          <div class="ship-pane" data-fw-pane={id} hidden={i !== 0}>
+            <div class="ship-install">
+              <pre class="code">npm i {pkg}</pre>
+              <button class="btn icon round" type="button" data-copy={`npm i ${pkg}`} aria-label={`Copy npm i ${pkg}`} set:html={COPY_ICON} />
+            </div>
+            <pre class="code">{code}</pre>
           </div>
-        </div>
-      </section>
-    <script>
-      import { createAvatar, type Style } from '@inlaylab/opaline'
-      import { aura } from '@inlaylab/opaline/aura'
-      import { clay } from '@inlaylab/opaline/clay'
-      import { gradient } from '@inlaylab/opaline/gradient'
-      import { initials } from '@inlaylab/opaline/initials'
-      import { morph } from '@inlaylab/opaline/morph'
+        ))}
+      </div>
+    </div>
+  </section>
 
-      const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials }
-      const hero = document.getElementById('hero-seed') as HTMLInputElement
-      const customize = document.getElementById('hero-customize') as HTMLAnchorElement
-      const base = customize.getAttribute('href')!
-      // The hero shows the typed seed in every style; Customize opens the playground on it.
-      const paint = () => {
-        for (const el of document.querySelectorAll<HTMLElement>('[data-hero]'))
-          el.innerHTML = createAvatar(STYLES[el.dataset.hero!]!, { seed: hero.value, size: 96, instance: 'h' }).svg
-        customize.href = hero.value ? `${base}?seed=${encodeURIComponent(hero.value)}` : base
-      }
-      hero.addEventListener('input', paint)
+  <section class="block features">
+    <div class="wrap">
+      <h2 class="lead-title">One seed in. The same face out, everywhere.</h2>
+      <ul class="facts">
+        <li><b>Deterministic</b><span>Same seed, same avatar: on the server, in every browser, in every framework.</span></li>
+        <li><b>Zero dependencies</b><span>A tiny core plus native wrappers. Import only the styles you ship.</span></li>
+        <li><b>Themeable</b><span>Colors are CSS variables, so avatars follow your brand and dark mode.</span></li>
+        <li><b>SSR safe</b><span>Renders on the server in Next, Nuxt, SvelteKit and Angular, and hydrates without a flicker.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <Demos />
+
+  <section class="block" id="gallery">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>One hundred seeds.</h2>
+        <p>Names, emails and IDs, the way real apps pass them. Hover to see the seed.</p>
+      </div>
+      <div class="chips segmented" id="gallery-chips">
+        {LOOKS.map((l, i) => <button class="tab" type="button" data-look={l} aria-selected={i === 0 ? 'true' : 'false'}>{l}</button>)}
+      </div>
+      <div class="gallery" id="gallery-grid">
+        {SEEDS.map((seed) => <opaline-avatar seed={seed} look="morph" size="56" title={seed}></opaline-avatar>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="block closer">
+    <div class="wrap closer-inner">
+      <opaline-avatar-group look="morph" size="48" max="5" alt="">
+        {SEEDS.slice(40, 46).map((s) => <opaline-avatar seed={s}></opaline-avatar>)}
+      </opaline-avatar-group>
+      <h2>Give your users a face today.</h2>
+      <p>Free and open source. Code and art are MIT licensed.</p>
+      <div class="hero-actions">
+        <a class="btn primary pill lg" href={`${BASE}docs/`}>Get started</a>
+        <a class="btn pill lg" href={`${BASE}playground/`}>Open the playground</a>
+        <a class="btn pill lg" href={`${BASE}compare/`}>Compare libraries</a>
+      </div>
+    </div>
+  </section>
+  <script>
+    import { createAvatar, type Style } from '@inlaylab/opaline'
+    import { aura } from '@inlaylab/opaline/aura'
+    import { clay } from '@inlaylab/opaline/clay'
+    import { gradient } from '@inlaylab/opaline/gradient'
+    import { initials } from '@inlaylab/opaline/initials'
+    import { morph } from '@inlaylab/opaline/morph'
+    import { randomHero } from '../scripts/heroes'
+
+    const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials }
+    const hero = document.getElementById('hero-seed') as HTMLInputElement
+    const face = document.getElementById('hero-face')!
+    const customize = document.getElementById('hero-customize') as HTMLAnchorElement
+    const base = customize.getAttribute('href')!
+    let look = 'gradient'
+    // The big face and the style buttons follow the typed seed; Customize opens the playground on it.
+    const paint = () => {
+      const seed = hero.value
+      face.innerHTML = createAvatar(STYLES[look]!, { seed, size: 240, instance: 'f' }).svg
+      face.setAttribute('aria-label', `Avatar for ${seed || 'an empty seed'}`)
+      for (const el of document.querySelectorAll<HTMLElement>('[data-hero] .tile'))
+        el.innerHTML = createAvatar(STYLES[el.parentElement!.dataset.hero!]!, { seed, size: 56, instance: 'h' }).svg
+      const q = new URLSearchParams()
+      if (seed) q.set('seed', seed)
+      if (look !== 'morph') q.set('style', look)
+      customize.href = q.size ? `${base}?${q}` : base
+    }
+    hero.addEventListener('input', paint)
+    document.getElementById('hero-shuffle')!.addEventListener('click', () => {
+      hero.value = randomHero(hero.value)
       paint()
+    })
+    document.querySelector('.hero-looks')!.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-hero]')
+      if (!b) return
+      look = b.dataset.hero!
+      for (const x of b.parentElement!.children) x.setAttribute('aria-checked', String(x === b))
+      paint()
+    })
+    paint()
 
-      const heroCopy = document.getElementById('hero-copy')!
-      heroCopy.addEventListener('click', async () => {
+    for (const btn of document.querySelectorAll<HTMLElement>('[data-copy]'))
+      btn.addEventListener('click', async () => {
         try {
-          await navigator.clipboard.writeText('npm i @inlaylab/opaline')
-          heroCopy.classList.add('copied')
-          setTimeout(() => heroCopy.classList.remove('copied'), 1400)
+          await navigator.clipboard.writeText(btn.dataset.copy!)
+          btn.classList.add('copied')
+          setTimeout(() => btn.classList.remove('copied'), 1400)
         } catch {}
       })
 
-      const chips = document.getElementById('gallery-chips')!
-      chips.addEventListener('click', (e) => {
-        const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-look]')
-        if (!b) return
-        for (const x of chips.children) x.setAttribute('aria-selected', String(x === b))
-        for (const a of document.querySelectorAll('#gallery-grid opaline-avatar')) a.setAttribute('look', b.dataset.look!)
-      })
-    </script>
+    const tabs = document.getElementById('ship-tabs')!
+    tabs.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-fw]')
+      if (!b) return
+      for (const x of tabs.children) x.setAttribute('aria-selected', String(x === b))
+      for (const p of document.querySelectorAll<HTMLElement>('[data-fw-pane]')) p.hidden = p.dataset.fwPane !== b.dataset.fw
+    })
+
+    const chips = document.getElementById('gallery-chips')!
+    chips.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-look]')
+      if (!b) return
+      for (const x of chips.children) x.setAttribute('aria-selected', String(x === b))
+      for (const a of document.querySelectorAll('#gallery-grid opaline-avatar')) a.setAttribute('look', b.dataset.look!)
+    })
+  </script>
 </Base>

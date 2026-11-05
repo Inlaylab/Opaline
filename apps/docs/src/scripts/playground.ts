@@ -5,25 +5,14 @@ import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
 import { toPng } from '@inlaylab/opaline/png'
+import { randomHero } from './heroes'
 
 const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials }
 /** Styles that always fill a tile, so their shape defaults to circle and they have no face. */
 const TILED = new Set(['aura', 'initials'])
-const SAMPLE_SEEDS = [
-  'ada@inlay.dev',
-  'Grace Hopper',
-  'linus.okafor@example.com',
-  'Zoë Nguyễn',
-  'user_8f3k2',
-  'Søren Kierkegaard',
-  'Priya Raman',
-  'mateo.rossi@inlay.dev',
-  'Aiko Tanaka',
-  'Kofi Mensah',
-]
 /** Every control, by name. Its value is `#pg-<name>` (input or select) or the checked `pg-<name>` radio. */
 const FIELDS = ['seed', 'style', 'finish', 'palette', 'expression', 'body', 'shape', 'text', 'size']
-const DEFAULTS: Record<string, string> = { seed: 'ada@inlay.dev', style: 'morph', size: '64' }
+const DEFAULTS: Record<string, string> = { seed: 'Starfire', style: 'morph', size: '64' }
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 const control = (name: string) => {
@@ -206,9 +195,7 @@ export function initPlayground(): void {
   controls.addEventListener('input', render)
   controls.addEventListener('change', render)
   $('pg-shuffle').addEventListener('click', () => {
-    const now = field('seed')
-    const pool = SAMPLE_SEEDS.filter((s) => s !== now)
-    setField('seed', pool[Math.floor(Math.random() * pool.length)]!)
+    setField('seed', randomHero(field('seed')))
     render()
   })
   $('pg-reset').addEventListener('click', () => {

@@ -128,7 +128,7 @@ test('every style offers every shape', async () => {
   await pick(page, 'shape', 'squircle')
   await previewMatches(
     page,
-    createAvatar(morph, { seed: 'ada@inlay.dev', shape: 'squircle', size: 176 }).svg,
+    createAvatar(morph, { seed: 'Starfire', shape: 'squircle', size: 176 }).svg,
   )
   await pick(page, 'style', 'aura')
   expect(await page.locator('#pg-shape-default').textContent()).toBe('Circle')

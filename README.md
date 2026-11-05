@@ -35,7 +35,7 @@
 
 ## Styles
 
-<img src="docs/assets/styles.png" alt="Aura, Morph, Gradient and Clay avatar styles" width="100%">
+<img src="docs/assets/styles.png" alt="Aura, Morph, Gradient, Clay and Initials avatar styles" width="100%">
 
 | Style        | Import                       | Looks like                                                             |
 | ------------ | ---------------------------- | ---------------------------------------------------------------------- |
@@ -241,9 +241,16 @@ const buffer = new Resvg(forRaster(createAvatar(clay, { seed }), { size: 512 }))
 
 Pass `vars: { '--avatar-c1': '#7c3aed' }` to bake theme colors into the image.
 
-## Playground links
+## The site
 
-Every playground setting lives in the address, so you can share a link to an exact avatar: [`?seed=grace+hopper&style=initials&shape=squircle`](https://inlaylab.github.io/Opaline/playground/?seed=grace+hopper&style=initials&shape=squircle). The site also has [ten demos](https://inlaylab.github.io/Opaline/#demos) of real product screens, [step-by-step docs](https://inlaylab.github.io/Opaline/docs/) for every framework and a [comparison with DiceBear and Boring Avatars](https://inlaylab.github.io/Opaline/compare/).
+[inlaylab.github.io/Opaline](https://inlaylab.github.io/Opaline/) is built with Astro from `apps/docs`.
+
+- **Home.** Type a name and watch five styles redraw it, or press **Random hero** for a Marvel or DC name. **Customize this avatar** opens the playground on that seed and style. Below that: per-framework install snippets, [ten demos](https://inlaylab.github.io/Opaline/#demos) of real product screens and a gallery of 100 seeds.
+- **[Playground](https://inlaylab.github.io/Opaline/playground/).** Pick a style, colors and shape, then copy the code for your framework or download SVG and PNG. Every setting lives in the address, so you can share a link to an exact avatar: [`?seed=grace+hopper&style=initials&shape=squircle`](https://inlaylab.github.io/Opaline/playground/?seed=grace+hopper&style=initials&shape=squircle).
+- **[Docs](https://inlaylab.github.io/Opaline/docs/).** Step-by-step setup for every framework.
+- **[Compare](https://inlaylab.github.io/Opaline/compare/).** How Opaline stacks up against DiceBear and Boring Avatars.
+
+Every page ships a canonical URL, Open Graph and Twitter tags and JSON-LD. `public/sitemap.xml` lists the four pages and `public/og.png` is the share image.
 
 ## Same seed, same avatar
 
@@ -273,7 +280,7 @@ Run them all with `pnpm build && pnpm e2e`.
 
 ```sh
 pnpm install
-pnpm dev     # docs site with live reload
+pnpm dev     # build the packages, then run the docs site with live reload
 pnpm check   # build, test, lint, size, package checks, e2e and perf
 ```
 

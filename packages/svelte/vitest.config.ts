@@ -7,6 +7,9 @@ export default defineConfig({
   plugins: [svelte()],
   test: {
     include: ['test/**/*.test.ts'],
+    // The first SSR test cold-compiles the harness through Vite; under a parallel `turbo` run that
+    // can pass the 15s browser default.
+    testTimeout: 60_000,
     browser: {
       enabled: true,
       provider: playwright(),

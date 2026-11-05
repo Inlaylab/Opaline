@@ -19,7 +19,9 @@ test('toPng defaults to the avatar size and paints the tile', async () => {
   const svg = createAvatar(initials, { seed: 'grace hopper', size: 48 }).svg
   const bitmap = await createImageBitmap(await toPng(svg))
   expect(bitmap.width).toBe(48)
-  const canvas = new OffscreenCanvas(48, 48)
+  // A DOM canvas, not OffscreenCanvas: older WebKit builds lack the latter.
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 48
   const ctx = canvas.getContext('2d')!
   ctx.drawImage(bitmap, 0, 0)
   // The center of a circle tile is opaque; the corner outside it is transparent.
