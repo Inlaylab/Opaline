@@ -1,5 +1,15 @@
 # @inlaylab/opaline-angular
 
+## 1.1.1
+
+### Patch Changes
+
+- New `OpalineAvatarGroup` (`<op-avatar-group>`): overlapping avatars with a `+N` chip past `max`. `max` and `size` also take static attributes.
+- Initials are easier to read: the letters are now a deep shade of the tile's own hue, chosen to clear WCAG AA (4.5:1) on every palette. White letters on 1.1.0's bright tiles were as low as 1.9:1. Only the letter color changes, and pastel tiles keep their 1.1.0 output. `--avatar-fg` still overrides it.
+- Hotfix: remove the `ellipse` shape. `shape` takes `circle`, `squircle` or `square`. `shape: 'ellipse'` now falls back like any unknown value: a circle on Aura and Initials, and no tile on Morph, Gradient and Clay. 1.0 output is unchanged.
+- Updated dependencies
+  - @inlaylab/opaline@1.1.1
+
 ## 1.1.0
 
 ### Minor Changes

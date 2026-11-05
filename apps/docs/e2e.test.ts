@@ -117,12 +117,11 @@ test('every style offers every shape', async () => {
     'circle',
     'squircle',
     'square',
-    'ellipse',
   ])
-  await page.selectOption('#pg-shape', 'ellipse')
+  await page.selectOption('#pg-shape', 'squircle')
   await previewMatches(
     page,
-    createAvatar(morph, { seed: 'ada@inlay.dev', shape: 'ellipse', size: 160 }).svg,
+    createAvatar(morph, { seed: 'ada@inlay.dev', shape: 'squircle', size: 160 }).svg,
   )
   await page.selectOption('#pg-style', 'aura')
   expect(await page.locator('#pg-shape option').first().textContent()).toBe('circle (default)')
@@ -217,20 +216,114 @@ test('style-specific controls hide for other styles', async () => {
   expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
 })
 
-test('no horizontal scroll at phone width', async () => {
-  const page = await newPage({ viewport: { width: 375, height: 800 } })
-  await page.goto(URL_)
-  const [sw, cw] = await page.evaluate(() => [
-    document.documentElement.scrollWidth,
-    document.documentElement.clientWidth,
-  ])
-  expect(sw).toBeLessThanOrEqual(cw)
-})
+/**
+ * Fonts never load in tests, so text falls back to a system font, and that differs by machine.
+ * DejaVu Sans is wide and ships on GitHub's Ubuntu runners: forcing it here makes a layout that
+ * only fits with a narrow local font fail on every machine, not just in CI.
+ */
+async function expectNoHorizontalScroll(path: string) {
+  for (const width of [375, 320])
+    for (const font of [null, 'DejaVu Sans']) {
+      const page = await newPage({ viewport: { width, height: 800 } })
+      await page.goto(URL_ + path)
+      if (font) await page.addStyleTag({ content: `* { font-family: '${font}' !important }` })
+      const [sw, cw] = await page.evaluate(() => [
+        document.documentElement.scrollWidth,
+        document.documentElement.clientWidth,
+      ])
+      expect(sw, `${width}px, ${font ?? 'default font'}`).toBeLessThanOrEqual(cw)
+      await page.context().close()
+    }
+}
+
+test('no horizontal scroll at phone width', () => expectNoHorizontalScroll(''))
 
 test('built HTML only references assets under the Pages base', () => {
-  const html = readdirSync(`${cwd}dist`)
-    .filter((f) => f.endsWith('.html'))
-    .map((f) => readFileSync(`${cwd}dist/${f}`, 'utf8'))
-    .join('')
+  const pages = readdirSync(`${cwd}dist`, { recursive: true, encoding: 'utf8' }).filter((f) =>
+    f.endsWith('.html'),
+  )
+  expect(pages).toContain('compare/index.html')
+  const html = pages.map((f) => readFileSync(`${cwd}dist/${f}`, 'utf8')).join('')
   expect(html).not.toMatch(/(?:src|href)="\/(?!Opaline\/)[^/"]/)
 })
+
+test('a shared link opens the playground on that exact avatar', async () => {
+  const page = await newPage()
+  await page.goto(`${URL_}?seed=grace+hopper&style=initials&shape=squircle&text=Op#playground`)
+  expect(await page.inputValue('#pg-style')).toBe('initials')
+  expect(await page.inputValue('#hero-seed')).toBe('grace hopper')
+  await previewMatches(
+    page,
+    createAvatar(initials, { seed: 'grace hopper', shape: 'squircle', text: 'Op', size: 160 }).svg,
+  )
+})
+
+test('the address bar follows the controls, and Share copies it', async () => {
+  const ctx = await newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
+  const page = await ctx.newPage()
+  await page.goto(URL_)
+  // Defaults leave the address clean.
+  expect(new URL(page.url()).search).toBe('')
+  await page.fill('#pg-seed', 'a&b c')
+  await page.selectOption('#pg-style', 'clay')
+  await page.selectOption('#pg-finish', 'gloss')
+  const params = new URL(page.url()).searchParams
+  expect(Object.fromEntries(params)).toEqual({ seed: 'a&b c', style: 'clay', finish: 'gloss' })
+  await page.click('#pg-share')
+  const shared = new URL(await page.evaluate(() => navigator.clipboard.readText()))
+  expect(shared.hash).toBe('#playground')
+  expect(shared.searchParams.get('seed')).toBe('a&b c')
+  // The copied link restores the same state in a fresh page.
+  const again = await ctx.newPage()
+  await again.goto(shared.href)
+  expect(await again.inputValue('#pg-finish')).toBe('gloss')
+  await previewMatches(again, createAvatar(clay, { seed: 'a&b c', finish: 'gloss', size: 160 }).svg)
+  await ctx.close()
+})
+
+test('unknown link values are ignored', async () => {
+  const page = await newPage()
+  await page.goto(`${URL_}?style=constructor&size=99999&palette=%3Cb%3E`)
+  expect(await page.inputValue('#pg-style')).toBe('morph')
+  expect(await page.inputValue('#pg-size')).toBe('64')
+  expect(await page.inputValue('#pg-palette')).toBe('')
+})
+
+test('PNG downloads a real PNG at the chosen size', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.fill('#pg-seed', 'png me')
+  await page.selectOption('#pg-size', '128')
+  const [download] = await Promise.all([page.waitForEvent('download'), page.click('#pg-png')])
+  expect(download.suggestedFilename()).toBe('png_me.png')
+  const bytes = readFileSync((await download.path())!)
+  expect([...bytes.subarray(0, 8)]).toEqual([137, 80, 78, 71, 13, 10, 26, 10])
+  // Width and height sit in the IHDR chunk, right after the signature.
+  expect([bytes.readUInt32BE(16), bytes.readUInt32BE(20)]).toEqual([128, 128])
+})
+
+test('the demos render avatars and groups with +N chips', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  const demos = page.locator('#demos')
+  expect(await demos.locator('opaline-avatar svg').count()).toBeGreaterThan(10)
+  expect(await demos.locator('[data-opaline-more]').allTextContents()).toEqual(['+5', '+3'])
+  expect(await demos.locator('.admin-table tbody tr').count()).toBe(4)
+})
+
+test('the compare page lists all three libraries and links home', async () => {
+  const page = await newPage()
+  await page.goto(`${URL_}compare/`)
+  expect(await page.locator('.compare-table thead th').allTextContents()).toEqual([
+    '',
+    'Opaline',
+    'DiceBear',
+    'Boring Avatars',
+  ])
+  expect(await page.locator('.compare-table tbody tr').count()).toBeGreaterThan(8)
+  await page.click('.nav a[href$="#playground"]')
+  await page.waitForURL(/\/Opaline\/#playground$/)
+})
+
+test('no horizontal scroll on the compare page at phone width', () =>
+  expectNoHorizontalScroll('compare/'))

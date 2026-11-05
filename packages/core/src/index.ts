@@ -1,4 +1,12 @@
-export { adjust, cssVar, hexToOklch, oklchToHex, resolveVars, type Oklch } from './color.ts'
+export {
+  adjust,
+  contrast,
+  cssVar,
+  hexToOklch,
+  oklchToHex,
+  resolveVars,
+  type Oklch,
+} from './color.ts'
 export {
   createAvatar,
   type Avatar,
@@ -7,6 +15,7 @@ export {
   type Rendered,
   type Style,
 } from './create.ts'
+export { avatarGroup, type GroupLayout, type GroupMember } from './group.ts'
 export { createIds } from './ids.ts'
 export { createRng, hash, type Rng } from './prng.ts'
 export { normalizeSeed } from './seed.ts'

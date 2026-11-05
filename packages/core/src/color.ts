@@ -71,6 +71,20 @@ export function adjust(hex: string, d: { l?: number; c?: number; h?: number }): 
   })
 }
 
+/** WCAG 2 relative luminance of a hex color. */
+function luminance(hex: string): number {
+  let h = hex.replace('#', '')
+  if (h.length === 3) h = h.replace(/./g, '$&$&')
+  const [r, g, b] = [0, 2, 4].map((i) => toLinear(parseInt(h.slice(i, i + 2), 16) / 255)) as Rgb
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** WCAG 2 contrast ratio between two hex colors, from 1 (none) to 21 (black on white). */
+export function contrast(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [number, number]
+  return (hi + 0.05) / (lo + 0.05)
+}
+
 export function cssVar(index: number, hex: string): string {
   return `var(--avatar-c${index}, ${hex})`
 }

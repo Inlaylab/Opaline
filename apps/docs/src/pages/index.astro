@@ -1,5 +1,7 @@
 ---
 import core from '../../../../packages/core/package.json'
+import Base from '../layouts/Base.astro'
+import Demos from '../components/Demos.astro'
 // The same 100 seeds as the approved design sheet (docs/design/gate-0.2.html).
 const FIRST = ['Ada', 'Grace', 'Linus', 'Margaret', 'Alan', 'Katherine', 'Mary', 'Amelia', 'Lucy', 'Maya', 'Sarah', 'Zoë', 'José', 'Søren', 'Nguyễn', 'Aiko', 'Min-jun', 'Olu', 'Priya', 'Mateo', 'Ines', 'Kofi', 'Hana', 'Ravi', 'Lena']
 const SEEDS = Array.from({ length: 100 }, (_, i) => {
@@ -15,7 +17,7 @@ const SEEDS = Array.from({ length: 100 }, (_, i) => {
 const LOOKS = ['morph', 'gradient', 'aura', 'clay', 'initials']
 const EXPRESSIONS = ['beam', 'content', 'proud', 'dreamy', 'hmm', 'shy', 'sleepy', 'curious', 'oh', 'cheeky', 'wink', 'giggle']
 const PALETTES = ['vivid', 'pastel', 'electric', 'muted', 'warm', 'cool', 'mono']
-const SHAPES = ['circle', 'squircle', 'square', 'ellipse']
+const SHAPES = ['circle', 'squircle', 'square']
 const TABS = [
   ['core', 'Core'],
   ['element', 'Web Component'],
@@ -35,13 +37,30 @@ const OPTIONS = [
   ['face', 'boolean', 'Morph, Gradient and Clay show a face unless false.'],
   ['family', 'egg · duo · tri · cushion · clover · petal', 'Blob shape family.'],
   ['body', 'jelly · hood', 'Clay only. With ears: cat · bear · bunny.'],
-  ['shape', 'circle · squircle · square · ellipse', 'Every style. Aura and Initials default to circle; on the others it draws a tinted tile in that shape.'],
+  ['shape', 'circle · squircle · square', 'Every style. Aura and Initials default to circle; on the others it draws a tinted tile in that shape.'],
   ['text', 'string', 'Initials only. Up to 3 letters shown as given; by default they come from the seed.'],
   ['backdrop', 'none · tint', 'A soft circle behind the body.'],
   ['src · alt', 'string', 'Wrappers only: a photo shown once it loads, and an accessible name.'],
+  ['members · max', 'array · number', 'Avatar groups only: who to show, and how many before the +N chip.'],
 ]
 const VERSION = core.version
-const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
+const GROUP_CODE = `<opaline-avatar-group look="clay" size="40" max="4" alt="Project members">
+  <opaline-avatar seed="ada@inlay.dev" src="/ada.jpg" alt="Ada"></opaline-avatar>
+  <opaline-avatar seed="grace@inlay.dev"></opaline-avatar>
+  …
+</opaline-avatar-group>
+
+// React, Vue and Svelte: <AvatarGroup>, Angular: <op-avatar-group>
+<AvatarGroup look={clay} members={['ada@inlay.dev', { seed: 'grace', src, alt: 'Grace' }]} max={4} />`
+const PNG_BROWSER = `import { toPng } from '@inlaylab/opaline/png'
+
+const png = await toPng(createAvatar(clay, { seed }), { size: 512 })
+// A Blob: upload it, or URL.createObjectURL(png) to show or download it.`
+const PNG_SERVER = `import { forRaster } from '@inlaylab/opaline/png'
+import { Resvg } from '@resvg/resvg-js'
+
+const svg = forRaster(createAvatar(clay, { seed }), { size: 512 })
+const png = new Resvg(svg).render().asPng() // a Buffer`
 const INSTALL = [
   ['Core', 'pnpm add @inlaylab/opaline', `import { createAvatar } from '@inlaylab/opaline'\nimport { morph } from '@inlaylab/opaline/morph'\n\ncreateAvatar(morph, { seed: 'ada@inlay.dev' }).svg`],
   ['Web Component', 'pnpm add @inlaylab/opaline-element', `<script type="module">import '@inlaylab/opaline-element'</script>\n<opaline-avatar seed="ada@inlay.dev" look="morph"></opaline-avatar>`],
@@ -52,47 +71,7 @@ const INSTALL = [
 ]
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Opaline · seeded avatars for every framework</title>
-    <meta name="description" content="Seeded SVG avatars for every framework. The same seed always gives the same avatar. Zero dependencies, MIT." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" />
-    <script is:inline>
-      // Before paint: the saved theme, else the system one. Storage can throw in private mode.
-      ;(() => {
-        let t = null
-        try {
-          t = localStorage.getItem('opaline-theme')
-        } catch {}
-        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-        document.documentElement.dataset.theme = t
-      })()
-    </script>
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="bar">
-        <a class="brand" href={BASE}><span>opaline</span><span class="brand-dot" aria-hidden="true"></span></a>
-        <nav class="nav" aria-label="Sections">
-          <a href="#playground">Playground</a>
-          <a class="wide" href="#gallery">Gallery</a>
-          <a href="#docs">Docs</a>
-        </nav>
-        <span class="spacer"></span>
-        <a class="gh" href="https://github.com/Inlaylab/Opaline" target="_blank" rel="noreferrer" aria-label="GitHub repository">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.56-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z" /></svg><span>GitHub</span>
-        </a>
-        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
-          <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
-          <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
-        </button>
-      </div>
-    </header>
-
-    <main>
+<Base title="Opaline · seeded avatars for every framework" description="Seeded SVG avatars for every framework. The same seed always gives the same avatar. Zero dependencies, MIT.">
       <div class="hero">
         <div class="hero-glow" aria-hidden="true"></div>
         <div class="wrap hero-inner">
@@ -148,7 +127,7 @@ const INSTALL = [
           <div class="sec-head">
             <span class="eyebrow">Playground</span>
             <h2>Make it yours.</h2>
-            <p>Every option, live. What you see is the library's own output; copy the code for your framework or download the SVG.</p>
+            <p>Every option, live. What you see is the library's own output; copy the code for your framework, download an SVG or PNG, or share a link to exactly this avatar.</p>
           </div>
           <div class="pg">
             <div class="card pg-controls" id="pg-controls">
@@ -175,7 +154,7 @@ const INSTALL = [
                 <input class="input" id="pg-text" placeholder="from the seed" maxlength="3" autocomplete="off" spellcheck="false" />
               </label>
               <label class="field">Size
-                <select class="select" id="pg-size"><option>32</option><option>48</option><option selected>64</option><option>96</option><option>128</option><option>256</option></select>
+                <select class="select" id="pg-size"><option>32</option><option>48</option><option selected>64</option><option>96</option><option>128</option><option>256</option><option>512</option></select>
               </label>
             </div>
             <div class="pg-main">
@@ -192,6 +171,8 @@ const INSTALL = [
                   </div>
                   <button class="btn" id="pg-copy" type="button">Copy</button>
                   <button class="btn" id="pg-download" type="button">SVG</button>
+                  <button class="btn" id="pg-png" type="button">PNG</button>
+                  <button class="btn" id="pg-share" type="button">Share</button>
                 </div>
                 <pre class="code" id="pg-code"></pre>
               </div>
@@ -215,6 +196,8 @@ const INSTALL = [
           </div>
         </div>
       </section>
+
+      <Demos />
 
       <section class="block" id="docs">
         <div class="wrap docs-stack">
@@ -241,6 +224,31 @@ const INSTALL = [
           </div>
           <div>
             <div class="sec-head">
+              <h2>Avatar groups</h2>
+              <p>Overlapping avatars with a <code>+N</code> chip, in every framework. Members are seeds, or <code>{'{ seed, src, alt }'}</code> for a photo and a name. Set <code>--avatar-ring</code> to your background color; <code>--avatar-more-bg</code> and <code>--avatar-more-fg</code> color the chip.</p>
+            </div>
+            <div class="card theme-demo group-demo">
+              <opaline-avatar-group look="clay" size="40" max="4" alt="Project members">
+                {SEEDS.slice(0, 9).map((seed) => <opaline-avatar seed={seed}></opaline-avatar>)}
+              </opaline-avatar-group>
+              <opaline-avatar-group look="initials" size="40" max="3" shape="squircle" alt="Reviewers">
+                {['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Margaret Hamilton'].map((seed) => <opaline-avatar seed={seed}></opaline-avatar>)}
+              </opaline-avatar-group>
+              <pre class="code" style="padding:0">{GROUP_CODE}</pre>
+            </div>
+          </div>
+          <div>
+            <div class="sec-head">
+              <h2>PNG</h2>
+              <p>For places that take no SVG: profile photo uploads, social cards, push notifications. <code>toPng</code> renders in the browser with no dependencies. On the server, <code>forRaster</code> bakes the colors in for a rasterizer such as resvg.</p>
+            </div>
+            <div class="grid2">
+              <div class="card pkg"><b>Browser</b><pre>{PNG_BROWSER}</pre></div>
+              <div class="card pkg"><b>Server</b><pre>{PNG_SERVER}</pre></div>
+            </div>
+          </div>
+          <div>
+            <div class="sec-head">
               <h2>Theming</h2>
               <p>Colors come out as <code>var(--avatar-c1, #hex)</code>. Set the variables on any parent to follow your brand or dark mode. <code>--avatar-c1</code> is always the body.</p>
             </div>
@@ -262,18 +270,7 @@ const INSTALL = [
           </div>
         </div>
       </section>
-    </main>
-
-    <footer>
-      <div class="wrap">
-        <span>Opaline by Inlaylab. MIT for code and art.</span>
-        <a href="https://github.com/Inlaylab/Opaline">github.com/Inlaylab/Opaline</a>
-      </div>
-    </footer>
-
     <script>
-      import '@inlaylab/opaline-element'
-      import '../styles/site.css'
       import { initPlayground } from '../scripts/playground.ts'
 
       initPlayground()
@@ -287,7 +284,7 @@ const INSTALL = [
         },
         { rootMargin: '-45% 0px -50% 0px' },
       )
-      for (const id of ['playground', 'gallery', 'docs']) spy.observe(document.getElementById(id)!)
+      for (const id of ['playground', 'gallery', 'demos', 'docs']) spy.observe(document.getElementById(id)!)
 
       const heroCopy = document.getElementById('hero-copy')!
       heroCopy.addEventListener('click', async () => {
@@ -295,15 +292,6 @@ const INSTALL = [
           await navigator.clipboard.writeText('npm i @inlaylab/opaline')
           heroCopy.classList.add('copied')
           setTimeout(() => heroCopy.classList.remove('copied'), 1400)
-        } catch {}
-      })
-
-      document.getElementById('theme-toggle')!.addEventListener('click', () => {
-        const root = document.documentElement
-        const next = root.dataset.theme === 'dark' ? 'light' : 'dark'
-        root.dataset.theme = next
-        try {
-          localStorage.setItem('opaline-theme', next)
         } catch {}
       })
 
@@ -327,5 +315,4 @@ const INSTALL = [
       for (const id of ['theme-c1', 'theme-c2']) document.getElementById(id)!.addEventListener('input', paint)
       paint()
     </script>
-  </body>
-</html>
+</Base>

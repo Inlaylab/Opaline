@@ -96,7 +96,7 @@ Assumption: Morph and Gradient show a face by default. If they should be faceles
 - **Backdrop:** `none` | `solid` | `mesh` | `dots`.
 - **Fill:** `solid` | `mesh` | `shade`.
 - **Finish:** `flat` | `soft` | `gloss`. Gradients only, never SVG filters.
-- **Shape:** `circle` | `squircle` | `square` | `ellipse`, on every style from 1.1. It sets the outline of the tile rather than clipping (see `2026-11-04-initials-shapes-design.md`).
+- **Shape:** `circle` | `squircle` | `square`, on every style from 1.1 (`ellipse` shipped in 1.1.0 and was removed in 1.1.1). It sets the outline of the tile rather than clipping (see `2026-11-04-initials-shapes-design.md`).
 - **Presets** are named bundles of options. Palettes: `pastel`, `vivid`, `electric`, `muted`, `warm`, `cool`, `mono`, `theme`.
 
 ## API

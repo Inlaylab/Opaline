@@ -172,3 +172,15 @@ export const initials: Style<InitialsOptions>
 - Where in each style's render the tile and backdrop code goes, and how it is factored with Aura.
 - Exact font-size tuning, within ±4 of the values above, if a visual check shows the letters off-centre.
 - Playground layout details.
+
+## Amendment: 1.1.1 removes `ellipse`
+
+- `ellipse` is removed as a hotfix in 1.1.1, so the shapes are `circle`, `squircle` and `square`.
+- 1.1.0 was never published to npm, so no installed avatar changes and the 1.x freeze holds.
+- `shape: 'ellipse'` is now an unknown value. It falls back like any other unknown string: a circle on Aura and Initials, and no tile on Morph, Gradient and Clay. It never throws.
+- The five `{ shape: 'ellipse' }` frozen cases leave `frozen-1.json`. Every other checksum, including all 25 from 1.0, is unchanged.
+- The sections above describe 1.1.0 as designed and are kept as written.
+
+## Amendment: 1.1.1 darkens the letters
+
+- Initials letters are now a deep shade of the tile's hue that clears WCAG AA on every palette. See [the 1.1.1 spec](2026-11-05-groups-png-legibility-design.md) for the rule and the freeze exception.

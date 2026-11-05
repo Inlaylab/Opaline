@@ -9,13 +9,13 @@ export default defineConfig({
           name: 'node',
           include: ['test/**/*.test.ts'],
           // Timing runs alone (`test:perf`), never beside the parallel suites it would measure.
-          exclude: ['test/perf.test.ts'],
+          exclude: ['test/perf.test.ts', 'test/png.test.ts'],
         },
       },
       {
         test: {
           name: 'browser',
-          include: ['test/golden.test.ts', 'test/golden-styles.test.ts'],
+          include: ['test/golden.test.ts', 'test/golden-styles.test.ts', 'test/png.test.ts'],
           browser: {
             enabled: true,
             provider: playwright(),

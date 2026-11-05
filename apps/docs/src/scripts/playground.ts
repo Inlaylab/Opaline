@@ -4,6 +4,7 @@ import { clay } from '@inlaylab/opaline/clay'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
+import { toPng } from '@inlaylab/opaline/png'
 
 const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials }
 /** Styles that always fill a tile, so their shape defaults to circle and they have no face. */
@@ -12,6 +13,66 @@ const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as 
 const val = (id: string) => $<HTMLInputElement | HTMLSelectElement>(id).value
 
 type Opts = Record<string, string | number | undefined>
+
+/** URL parameter → control. Only these are read back from a shared link. */
+const PARAMS: Record<string, string> = {
+  seed: 'pg-seed',
+  style: 'pg-style',
+  finish: 'pg-finish',
+  palette: 'pg-palette',
+  expression: 'pg-expression',
+  body: 'pg-body',
+  shape: 'pg-shape',
+  text: 'pg-text',
+  size: 'pg-size',
+}
+const DEFAULTS: Record<string, string> = { seed: 'ada@inlay.dev', style: 'morph', size: '64' }
+
+/** Fills the controls from `?seed=…&style=…`. Unknown values are ignored, never injected. */
+function readLink(): void {
+  const params = new URLSearchParams(location.search)
+  for (const [key, id] of Object.entries(PARAMS)) {
+    const v = params.get(key)
+    if (v === null) continue
+    const el = $<HTMLInputElement | HTMLSelectElement>(id)
+    if (el instanceof HTMLSelectElement) {
+      if ([...el.options].some((o) => o.value === v)) el.value = v
+    } else el.value = v.slice(0, el.maxLength > 0 ? el.maxLength : 200)
+  }
+  $<HTMLInputElement>('hero-seed').value = val('pg-seed')
+}
+
+/** The link to exactly this avatar: only what differs from the defaults, so links stay short. */
+function link(): string {
+  const params = new URLSearchParams()
+  const { style, opts } = chosen()
+  const all: Record<string, string> = { seed: val('pg-seed'), style, size: val('pg-size') }
+  for (const [k, v] of Object.entries(opts)) all[k] = String(v)
+  for (const key of Object.keys(PARAMS))
+    if (all[key] !== undefined && all[key] !== (DEFAULTS[key] ?? '')) params.set(key, all[key]!)
+  const q = params.toString()
+  return `${location.pathname}${q ? `?${q}` : ''}${location.hash}`
+}
+
+const fileName = (ext: string) =>
+  `${(val('pg-seed') || 'avatar').replace(/[^\w.-]+/g, '_').slice(0, 60)}.${ext}`
+
+function download(blob: Blob, name: string): void {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = name
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+/** Shows `text` on a button for a moment, then its label again. */
+function flash(id: string, text: string): void {
+  const b = $(id)
+  const label = b.dataset.label ?? (b.dataset.label = b.textContent ?? '')
+  b.textContent = text
+  setTimeout(() => (b.textContent = label), 1400)
+}
 
 /** The options the user set, leaving out defaults so snippets stay short. */
 function chosen(): { style: string; opts: Opts } {
@@ -89,6 +150,9 @@ function render() {
   $('pg-shape').querySelector('option')!.textContent = TILED.has(style)
     ? 'circle (default)'
     : 'none (default)'
+  // The address bar always holds a link to what is on screen.
+  if (link() !== location.pathname + location.search + location.hash)
+    history.replaceState(history.state, '', link())
   // The hero follows the same seed in every style.
   for (const el of document.querySelectorAll<HTMLElement>('[data-hero]'))
     el.innerHTML = createAvatar(STYLES[el.dataset.hero!]!, {
@@ -121,22 +185,33 @@ export function initPlayground(): void {
     render()
   })
   $('pg-copy').addEventListener('click', async () => {
-    const b = $('pg-copy')
     try {
       await navigator.clipboard.writeText($('pg-code').textContent ?? '')
-      b.textContent = 'Copied'
+      flash('pg-copy', 'Copied')
     } catch {
-      b.textContent = 'Copy failed'
+      flash('pg-copy', 'Copy failed')
     }
-    setTimeout(() => (b.textContent = 'Copy'), 1400)
   })
-  $('pg-download').addEventListener('click', () => {
-    const url = URL.createObjectURL(new Blob([lastSvg], { type: 'image/svg+xml' }))
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${(val('pg-seed') || 'avatar').replace(/[^\w.-]+/g, '_').slice(0, 60)}.svg`
-    a.click()
-    setTimeout(() => URL.revokeObjectURL(url), 1000)
+  $('pg-share').addEventListener('click', async () => {
+    const url = new URL(link(), location.href)
+    url.hash = 'playground'
+    try {
+      await navigator.clipboard.writeText(url.href)
+      flash('pg-share', 'Link copied')
+    } catch {
+      flash('pg-share', 'Copy failed')
+    }
   })
+  $('pg-download').addEventListener('click', () =>
+    download(new Blob([lastSvg], { type: 'image/svg+xml' }), fileName('svg')),
+  )
+  $('pg-png').addEventListener('click', async () => {
+    try {
+      download(await toPng(lastSvg), fileName('png'))
+    } catch {
+      flash('pg-png', 'PNG failed')
+    }
+  })
+  readLink()
   render()
 }

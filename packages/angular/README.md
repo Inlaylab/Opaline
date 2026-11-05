@@ -23,7 +23,13 @@ export class UserAvatar {
 }
 ```
 
-Inputs: `seed`, `look`, `size`, `src`, `alt`, `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body` and `ears`. Works with Angular 22 and inside Ivorie's `<iv-avatar-fallback>`.
+Inputs: `seed`, `look`, `size`, `src`, `alt`, `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body`, `ears` and `text`. Works with Angular 22 and inside Ivorie's `<iv-avatar-fallback>`.
+
+Groups: `OpalineAvatarGroup` (`<op-avatar-group>`) overlaps avatars and adds a `+N` chip past `max`. Inputs: `members` (seeds or `{ seed, src, alt }`), `look`, `max`, `size`, `alt`, `palette`, `shape` and `finish`.
+
+```html
+<op-avatar-group [members]="people" [look]="clay" max="4" alt="Project members" />
+```
 
 Same seed, same avatar: from 1.0, the same seed and options give a byte-identical SVG in every 1.x release.
 

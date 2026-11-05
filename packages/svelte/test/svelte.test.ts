@@ -1,14 +1,22 @@
-import { expectedSvg, runContract, type Props } from '@inlaylab/opaline-contract'
+import {
+  expectedSvg,
+  runContract,
+  runGroupContract,
+  type GroupProps,
+  type Props,
+} from '@inlaylab/opaline-contract'
 import { morph } from '@inlaylab/opaline/morph'
 import { flushSync, hydrate, mount, unmount } from 'svelte'
 import { commands } from 'vitest/browser'
 import { expect, test } from 'vitest'
 import Avatar from '../src/lib/Avatar.svelte'
+import GroupHarness from './GroupHarness.svelte'
 import Harness from './Harness.svelte'
 
 declare module 'vitest/browser' {
   interface BrowserCommands {
     ssrRender(props: Props): Promise<string>
+    ssrRenderGroup(props: GroupProps): Promise<string>
   }
 }
 
@@ -82,4 +90,36 @@ test('svelte: a missing seed renders as the empty seed', () => {
   flushSync()
   expect(stripInstance(target.querySelector('svg')!.outerHTML)).toBe(expectedSvg({ seed: '' }))
   unmount(app)
+})
+
+const groups: ReturnType<typeof mount>[] = []
+
+runGroupContract({
+  name: 'svelte',
+  async render(props) {
+    const target = container()
+    groups.push(mount(GroupHarness, { target, props }))
+    flushSync()
+    return target.querySelector<HTMLElement>('[data-opaline-group]')!
+  },
+  cleanup() {
+    for (const g of groups.splice(0)) unmount(g)
+  },
+})
+
+test('svelte group: server markup hydrates without changes', async () => {
+  const props: GroupProps = {
+    members: ['ada', { seed: 'grace', alt: 'Grace' }, 'linus'],
+    max: 2,
+    look: 'clay',
+  }
+  const html = await commands.ssrRenderGroup(props)
+  expect(html).toContain('+1')
+  const target = container()
+  target.innerHTML = html
+  catchHydration(() => {
+    groups.push(hydrate(GroupHarness, { target, props }))
+    flushSync()
+  })
+  expect(target.querySelectorAll('[data-opaline-member]')).toHaveLength(2)
 })

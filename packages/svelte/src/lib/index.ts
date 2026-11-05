@@ -1,2 +1,3 @@
 export { default as Avatar } from './Avatar.svelte'
-export type { AvatarProps } from './types.js'
+export { default as AvatarGroup } from './AvatarGroup.svelte'
+export type { AvatarGroupProps, AvatarProps } from './types.js'
