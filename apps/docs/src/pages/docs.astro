@@ -1,0 +1,347 @@
+---
+import Base from '../layouts/Base.astro'
+
+const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
+
+type Framework = {
+  id: string
+  label: string
+  pkg: string
+  imports: string
+  render: string
+  renderNote: string
+  photo: string
+  group: string
+}
+const FRAMEWORKS: Framework[] = [
+  {
+    id: 'react',
+    label: 'React',
+    pkg: '@inlaylab/opaline @inlaylab/opaline-react',
+    imports: `import { Avatar } from '@inlaylab/opaline-react'\nimport { clay } from '@inlaylab/opaline/clay'`,
+    render: `export function UserAvatar({ user }) {\n  return <Avatar seed={user.email} look={clay} size={48} />\n}`,
+    renderNote: 'Works in Server Components. Without a photo it ships no client code at all.',
+    photo: `<Avatar seed={user.email} look={clay} src={user.photoUrl} alt={user.name} />`,
+    group: `import { AvatarGroup } from '@inlaylab/opaline-react'\n\n<AvatarGroup\n  look={clay}\n  members={team.map((u) => ({ seed: u.email, src: u.photoUrl, alt: u.name }))}\n  max={4}\n  alt="Project members"\n/>`,
+  },
+  {
+    id: 'vue',
+    label: 'Vue',
+    pkg: '@inlaylab/opaline @inlaylab/opaline-vue',
+    imports: `import { Avatar } from '@inlaylab/opaline-vue'\nimport { clay } from '@inlaylab/opaline/clay'`,
+    render: `<script setup>\nimport { Avatar } from '@inlaylab/opaline-vue'\nimport { clay } from '@inlaylab/opaline/clay'\n\ndefineProps(['user'])\n</script>\n\n<template>\n  <Avatar :seed="user.email" :look="clay" :size="48" />\n</template>`,
+    renderNote: "SSR safe with Nuxt. Mounting several Vue apps on one page? Give each its own prefix: app.config.idPrefix = 'sidebar'.",
+    photo: `<Avatar :seed="user.email" :look="clay" :src="user.photoUrl" :alt="user.name" />`,
+    group: `<script setup>\nimport { AvatarGroup } from '@inlaylab/opaline-vue'\n</script>\n\n<template>\n  <AvatarGroup :look="clay" :members="team.map((u) => u.email)" :max="4" alt="Project members" />\n</template>`,
+  },
+  {
+    id: 'svelte',
+    label: 'Svelte',
+    pkg: '@inlaylab/opaline @inlaylab/opaline-svelte',
+    imports: `import { Avatar } from '@inlaylab/opaline-svelte'\nimport { clay } from '@inlaylab/opaline/clay'`,
+    render: `<script>\n  import { Avatar } from '@inlaylab/opaline-svelte'\n  import { clay } from '@inlaylab/opaline/clay'\n\n  let { user } = $props()\n</script>\n\n<Avatar seed={user.email} look={clay} size={48} />`,
+    renderNote: 'Svelte 5 with runes. SSR safe with SvelteKit.',
+    photo: `<Avatar seed={user.email} look={clay} src={user.photoUrl} alt={user.name} />`,
+    group: `<script>\n  import { AvatarGroup } from '@inlaylab/opaline-svelte'\n</script>\n\n<AvatarGroup look={clay} members={team.map((u) => u.email)} max={4} alt="Project members" />`,
+  },
+  {
+    id: 'angular',
+    label: 'Angular',
+    pkg: '@inlaylab/opaline @inlaylab/opaline-angular',
+    imports: `import { OpalineAvatar } from '@inlaylab/opaline-angular'\nimport { clay } from '@inlaylab/opaline/clay'`,
+    render: `import { Component, input } from '@angular/core'\nimport { OpalineAvatar } from '@inlaylab/opaline-angular'\nimport { clay } from '@inlaylab/opaline/clay'\n\n@Component({\n  selector: 'app-user-avatar',\n  imports: [OpalineAvatar],\n  template: \`<op-avatar [seed]="email()" [look]="clay" [size]="48" />\`,\n})\nexport class UserAvatar {\n  readonly email = input.required<string>()\n  protected readonly clay = clay\n}`,
+    renderNote: 'Standalone, zoneless and SSR safe, with signal inputs. Angular 22.',
+    photo: `<op-avatar [seed]="user.email" [look]="clay" [src]="user.photoUrl" [alt]="user.name" />`,
+    group: `import { OpalineAvatarGroup } from '@inlaylab/opaline-angular'\n\n// in the component's imports: [OpalineAvatarGroup]\n<op-avatar-group [members]="emails" [look]="clay" max="4" alt="Project members" />`,
+  },
+  {
+    id: 'element',
+    label: 'HTML',
+    pkg: '@inlaylab/opaline-element',
+    imports: `// once, anywhere in your app's JavaScript\nimport '@inlaylab/opaline-element'`,
+    render: `<opaline-avatar seed="ada@inlay.dev" look="clay" size="48"></opaline-avatar>`,
+    renderNote: 'A plain custom element: works with any framework or none. Styles are picked by name with look.',
+    photo: `<opaline-avatar seed="ada@inlay.dev" look="clay" src="/photos/ada.jpg" alt="Ada Lovelace"></opaline-avatar>`,
+    group: `<opaline-avatar-group look="clay" size="40" max="4" alt="Project members">\n  <opaline-avatar seed="ada@inlay.dev"></opaline-avatar>\n  <opaline-avatar seed="grace@inlay.dev"></opaline-avatar>\n  <opaline-avatar seed="linus@inlay.dev"></opaline-avatar>\n</opaline-avatar-group>`,
+  },
+  {
+    id: 'core',
+    label: 'JavaScript',
+    pkg: '@inlaylab/opaline',
+    imports: `import { createAvatar } from '@inlaylab/opaline'\nimport { clay } from '@inlaylab/opaline/clay'`,
+    render: `const { svg } = createAvatar(clay, { seed: user.email, size: 48 })\n\n// svg is a plain string: put it in HTML, an email, or a response\nres.type('image/svg+xml').send(svg)`,
+    renderNote: 'Zero dependencies. Runs in Node, Deno, Bun, workers and browsers.',
+    photo: `// The core draws the avatar only. Show a photo on top of it in your own markup,\n// or use one of the components, which do this for you.`,
+    group: `import { avatarGroup } from '@inlaylab/opaline'\n\nconst { shown, rest, css } = avatarGroup(team, { max: 4, size: 40 })\n// shown: the avatars to draw, rest: the +N count, css: inline styles for each part`,
+  },
+]
+const MANAGERS = [
+  ['npm', 'npm i'],
+  ['pnpm', 'pnpm add'],
+  ['yarn', 'yarn add'],
+  ['bun', 'bun add'],
+]
+const STYLES = [
+  ['clay', 'Clay', 'Little characters: a jelly body, or a hood with cat, bear or bunny ears.'],
+  ['morph', 'Morph', 'An organic blob with a face.'],
+  ['gradient', 'Gradient', 'Smooth shapes with expressive faces.'],
+  ['aura', 'Aura', 'A glowing orb of blended color.'],
+  ['initials', 'Initials', 'Readable letters on a seeded tile.'],
+]
+const OPTIONS = [
+  ['seed', 'string · number · null', 'Any string: user ID, email, name. Emails are lower-cased; whitespace is trimmed.'],
+  ['size', 'number', 'Pixel size. Default 64 (40 in groups).'],
+  ['palette', 'vivid · pastel · electric · muted · warm · cool · mono', 'Color family. Default vivid.'],
+  ['shape', 'circle · squircle · square', 'Every style. Aura and Initials default to circle; on the others it adds a tinted tile.'],
+  ['finish', 'flat · soft · gloss', 'Light and shade. Morph and Gradient default to flat, Clay to soft.'],
+  ['expression', 'beam · content · … · giggle', 'Fix the face. Or set mood: happy · calm · surprised · playful.'],
+  ['face', 'boolean', 'Morph, Gradient and Clay show a face unless false.'],
+  ['family', 'egg · duo · tri · cushion · clover · petal', 'Morph and Gradient blob shape.'],
+  ['body · ears', 'jelly · hood · cat · bear · bunny', 'Clay only. Ears go with the hood.'],
+  ['text', 'string', 'Initials only. Up to 3 letters, shown as given.'],
+  ['backdrop', 'none · tint', 'A soft circle behind the body.'],
+  ['src · alt', 'string', 'Components only: a photo shown once it loads, and an accessible name.'],
+  ['members · max', 'array · number', 'Groups only: who to show, and how many before the +N chip.'],
+]
+const TOC = [
+  ['quick-start', 'Quick start'],
+  ['styles', 'Styles'],
+  ['options', 'Options'],
+  ['photos', 'Photos and names'],
+  ['initials', 'Initials and shapes'],
+  ['groups', 'Avatar groups'],
+  ['png', 'PNG export'],
+  ['theming', 'Theming'],
+  ['ssr', 'Server rendering'],
+  ['stability', 'Same seed, same avatar'],
+]
+const PNG_BROWSER = `import { toPng } from '@inlaylab/opaline/png'\n\nconst png = await toPng(createAvatar(clay, { seed }), { size: 512 })\n// a Blob: upload it, or URL.createObjectURL(png) to show or download it`
+const PNG_SERVER = `import { forRaster } from '@inlaylab/opaline/png'\nimport { Resvg } from '@resvg/resvg-js'\n\nconst svg = forRaster(createAvatar(clay, { seed }), { size: 512 })\nconst png = new Resvg(svg).render().asPng() // a Buffer`
+const fw0 = FRAMEWORKS[0]!.id
+---
+
+<Base page="docs" title="Docs · Opaline" description="Install Opaline and render your first avatar in React, Vue, Svelte, Angular, plain HTML or JavaScript, step by step.">
+  <div class="wrap page-head">
+    <div>
+      <span class="eyebrow">Docs</span>
+      <h1>Add avatars in three steps</h1>
+      <p>Pick your framework, install one package and render. Everything else on this page is optional.</p>
+    </div>
+  </div>
+
+  <div class="wrap docs-layout">
+    <nav class="toc" aria-label="On this page">
+      <span class="toc-title">On this page</span>
+      {TOC.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
+    </nav>
+
+    <div class="docs-content">
+      <section id="quick-start" class="doc-sec">
+        <h2>Quick start</h2>
+        <div class="fw-picker segmented" role="tablist" aria-label="Framework" id="fw-picker">
+          {FRAMEWORKS.map((f) => <button class="tab" type="button" role="tab" data-pick={f.id} aria-selected={f.id === fw0 ? 'true' : 'false'}>{f.label}</button>)}
+        </div>
+
+        {FRAMEWORKS.map((f) => (
+          <ol class="steps" data-fw={f.id} hidden={f.id !== fw0}>
+            <li>
+              <h3>Install</h3>
+              <div class="pm-tabs" role="tablist" aria-label="Package manager">
+                {MANAGERS.map(([pm], i) => <button type="button" role="tab" data-pm={pm} aria-selected={i === 0 ? 'true' : 'false'}>{pm}</button>)}
+              </div>
+              <div class="codeblock"><pre data-install={f.pkg}>npm i {f.pkg}</pre><button class="copy" type="button">Copy</button></div>
+            </li>
+            <li>
+              <h3>Import a style</h3>
+              <p>Styles are separate imports, so you ship only the ones you use. Swap <code>clay</code> for <code>morph</code>, <code>gradient</code>, <code>aura</code> or <code>initials</code>.</p>
+              <div class="codeblock"><pre>{f.imports}</pre><button class="copy" type="button">Copy</button></div>
+            </li>
+            <li>
+              <h3>Render it</h3>
+              <p>Pass anything stable as the seed: a user ID, email or name.</p>
+              <div class="codeblock"><pre>{f.render}</pre><button class="copy" type="button">Copy</button></div>
+              <p class="note">{f.renderNote}</p>
+              <div class="result">
+                <opaline-avatar seed="ada@inlay.dev" look="clay" size="48"></opaline-avatar>
+                <span class="muted">That's it. <a href={`${BASE}playground/`}>Design yours in the playground →</a></span>
+              </div>
+            </li>
+          </ol>
+        ))}
+      </section>
+
+      <section id="styles" class="doc-sec">
+        <h2>Styles</h2>
+        <p>Five looks, one API. Each is its own import path: <code>@inlaylab/opaline/&lt;style&gt;</code>.</p>
+        <div class="style-grid">
+          {STYLES.map(([id, name, desc]) => (
+            <div class="card style-tile">
+              <div class="style-tile-avatars">
+                {['ada@inlay.dev', 'Grace Hopper', 'linus.okafor'].map((seed) => <opaline-avatar seed={seed} look={id} size="44"></opaline-avatar>)}
+              </div>
+              <b>{name}</b>
+              <span class="muted">{desc}</span>
+              <code>@inlaylab/opaline/{id}</code>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="options" class="doc-sec">
+        <h2>Options</h2>
+        <p>Set an option to fix that part; the seed fills in the rest. An option set to its default gives exactly the same avatar as leaving it out.</p>
+        <div class="card table-wrap">
+          <table>
+            <thead><tr><th>Option</th><th>Values</th><th>What it does</th></tr></thead>
+            <tbody>{OPTIONS.map(([o, v, d]) => <tr><td><code>{o}</code></td><td>{v}</td><td>{d}</td></tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="photos" class="doc-sec">
+        <h2>Photos and names</h2>
+        <p>Pass <code>src</code> and the photo appears once it loads. If it fails, the generated avatar stays, so nobody sees a broken image. Pass <code>alt</code> to give the avatar an accessible name; without it, the avatar is decorative and hidden from screen readers.</p>
+        {FRAMEWORKS.map((f) => <div class="codeblock" data-fw={f.id} hidden={f.id !== fw0}><pre>{f.photo}</pre><button class="copy" type="button">Copy</button></div>)}
+      </section>
+
+      <section id="initials" class="doc-sec">
+        <h2>Initials and shapes</h2>
+        <p><code>initials</code> takes the letters from the seed (<code>ada.lovelace@inlay.dev</code> gives AL) or from <code>text</code>. The letters are a deep shade of the tile's color and clear WCAG AA contrast on every palette. Every style takes <code>shape</code>.</p>
+        <div class="card demo-row">
+          {['circle', 'squircle', 'square'].map((shape) => (
+            <figure><opaline-avatar seed="ada.lovelace@inlay.dev" look="initials" shape={shape} size="56"></opaline-avatar><figcaption>{shape}</figcaption></figure>
+          ))}
+          {['pastel', 'warm', 'cool'].map((palette) => (
+            <figure><opaline-avatar seed="Grace Hopper" look="initials" palette={palette} shape="squircle" size="56"></opaline-avatar><figcaption>{palette}</figcaption></figure>
+          ))}
+          <figure><opaline-avatar seed="acme" look="initials" text="Op" size="56"></opaline-avatar><figcaption>text="Op"</figcaption></figure>
+        </div>
+      </section>
+
+      <section id="groups" class="doc-sec">
+        <h2>Avatar groups</h2>
+        <p>Overlapping avatars with a <code>+N</code> chip for everyone past <code>max</code>. Set <code>--avatar-ring</code> to your background color; <code>--avatar-more-bg</code> and <code>--avatar-more-fg</code> color the chip.</p>
+        <div class="card demo-row group-demo">
+          <opaline-avatar-group look="clay" size="40" max="4" alt="Project members">
+            {['ada', 'grace', 'linus', 'margaret', 'alan', 'katherine', 'mary'].map((s) => <opaline-avatar seed={s}></opaline-avatar>)}
+          </opaline-avatar-group>
+          <opaline-avatar-group look="initials" size="40" max="3" shape="squircle" alt="Reviewers">
+            {['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Margaret Hamilton'].map((s) => <opaline-avatar seed={s}></opaline-avatar>)}
+          </opaline-avatar-group>
+          <opaline-avatar-group look="aura" size="32" alt="Watchers">
+            {['a', 'b', 'c'].map((s) => <opaline-avatar seed={s}></opaline-avatar>)}
+          </opaline-avatar-group>
+        </div>
+        {FRAMEWORKS.map((f) => <div class="codeblock" data-fw={f.id} hidden={f.id !== fw0}><pre>{f.group}</pre><button class="copy" type="button">Copy</button></div>)}
+      </section>
+
+      <section id="png" class="doc-sec">
+        <h2>PNG export</h2>
+        <p>For places that take no SVG: profile photo uploads, social cards, push notifications. <code>toPng</code> renders in the browser with no dependencies. On the server, <code>forRaster</code> bakes the colors in for a rasterizer such as resvg. Pass <code>vars</code> to bake in theme colors.</p>
+        <div class="grid2">
+          <div><span class="label">Browser</span><div class="codeblock"><pre>{PNG_BROWSER}</pre><button class="copy" type="button">Copy</button></div></div>
+          <div><span class="label">Server</span><div class="codeblock"><pre>{PNG_SERVER}</pre><button class="copy" type="button">Copy</button></div></div>
+        </div>
+      </section>
+
+      <section id="theming" class="doc-sec">
+        <h2>Theming</h2>
+        <p>Colors come out as <code>var(--avatar-c1, #hex)</code>. Set the variables on any parent to follow your brand or dark mode, with no re-render. <code>--avatar-c1</code> is always the body; <code>--avatar-fg</code> colors initials.</p>
+        <div class="card theme-demo">
+          <opaline-avatar id="theme-avatar" seed="ada@inlay.dev" look="clay" size="96"></opaline-avatar>
+          <label class="field">--avatar-c1<input type="color" id="theme-c1" value="#7c3aed" /></label>
+          <label class="field">--avatar-c2<input type="color" id="theme-c2" value="#5b21b6" /></label>
+          <pre class="code" id="theme-css" style="padding:0"></pre>
+        </div>
+      </section>
+
+      <section id="ssr" class="doc-sec">
+        <h2>Server rendering</h2>
+        <p>Server and browser produce the same markup, so hydration never warns. Gradient IDs are scoped per seed and options, and each component instance adds its own suffix, so two avatars on one page never clash. The repo has tested samples for Next (App Router), Nuxt, SvelteKit and Angular SSR.</p>
+      </section>
+
+      <section id="stability" class="doc-sec">
+        <h2>Same seed, same avatar</h2>
+        <p>The seed is normalized (trimmed, NFC, emails lower-cased) and hashed into a seeded generator: no <code>Math.random</code>, no dates. The same seed and options give a byte-identical SVG across 1.x, checked by checksums in CI, so you can cache avatars on a CDN or store them.</p>
+        <p class="muted">Not sure Opaline is the right fit? <a href={`${BASE}compare/`}>See how it compares with DiceBear and Boring Avatars →</a></p>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const KEY = 'opaline-docs-fw'
+    const PM_KEY = 'opaline-docs-pm'
+    const store = {
+      get: (k: string) => {
+        try {
+          return localStorage.getItem(k)
+        } catch {
+          return null
+        }
+      },
+      set: (k: string, v: string) => {
+        try {
+          localStorage.setItem(k, v)
+        } catch {}
+      },
+    }
+
+    /** Shows every block for one framework and hides the rest. */
+    function pick(fw: string, save = true) {
+      if (!document.querySelector(`[data-pick="${CSS.escape(fw)}"]`)) return
+      for (const b of document.querySelectorAll('[data-pick]'))
+        b.setAttribute('aria-selected', String((b as HTMLElement).dataset.pick === fw))
+      for (const el of document.querySelectorAll<HTMLElement>('[data-fw]')) el.hidden = el.dataset.fw !== fw
+      if (save) store.set(KEY, fw)
+    }
+    document.getElementById('fw-picker')!.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-pick]')
+      if (b) pick(b.dataset.pick!)
+    })
+    pick(new URLSearchParams(location.search).get('fw') ?? store.get(KEY) ?? 'react', false)
+
+    const COMMANDS: Record<string, string> = { npm: 'npm i', pnpm: 'pnpm add', yarn: 'yarn add', bun: 'bun add' }
+    function manager(pm: string) {
+      if (!COMMANDS[pm]) return
+      for (const b of document.querySelectorAll<HTMLElement>('[data-pm]')) b.setAttribute('aria-selected', String(b.dataset.pm === pm))
+      for (const pre of document.querySelectorAll<HTMLElement>('[data-install]')) pre.textContent = `${COMMANDS[pm]} ${pre.dataset.install}`
+      store.set(PM_KEY, pm)
+    }
+    document.addEventListener('click', (e) => {
+      const pm = (e.target as HTMLElement).closest<HTMLElement>('[data-pm]')
+      if (pm) manager(pm.dataset.pm!)
+      const copy = (e.target as HTMLElement).closest<HTMLButtonElement>('.copy')
+      if (!copy) return
+      const text = copy.parentElement!.querySelector('pre')!.textContent ?? ''
+      navigator.clipboard.writeText(text).then(
+        () => (copy.textContent = 'Copied'),
+        () => (copy.textContent = 'Failed'),
+      )
+      setTimeout(() => (copy.textContent = 'Copy'), 1400)
+    })
+    manager(store.get(PM_KEY) ?? 'npm')
+
+    // The contents list follows the section in view.
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')]
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries)
+          if (e.isIntersecting) for (const l of links) l.classList.toggle('active', l.hash === '#' + e.target.id)
+      },
+      { rootMargin: '-20% 0px -70% 0px' },
+    )
+    for (const s of document.querySelectorAll('.doc-sec')) spy.observe(s)
+
+    const avatar = document.getElementById('theme-avatar')!
+    const css = document.getElementById('theme-css')!
+    const paint = () => {
+      const c1 = (document.getElementById('theme-c1') as HTMLInputElement).value
+      const c2 = (document.getElementById('theme-c2') as HTMLInputElement).value
+      avatar.style.setProperty('--avatar-c1', c1)
+      avatar.style.setProperty('--avatar-c2', c2)
+      css.textContent = `.avatar {\n  --avatar-c1: ${c1};\n  --avatar-c2: ${c2};\n}`
+    }
+    for (const id of ['theme-c1', 'theme-c2']) document.getElementById(id)!.addEventListener('input', paint)
+    paint()
+  </script>
+</Base>

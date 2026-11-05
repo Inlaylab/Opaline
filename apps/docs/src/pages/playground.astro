@@ -1,0 +1,153 @@
+---
+import Base from '../layouts/Base.astro'
+
+const STYLES = [
+  ['morph', 'Morph', 'Blob with a face'],
+  ['gradient', 'Gradient', 'Smooth and expressive'],
+  ['aura', 'Aura', 'Glowing orb'],
+  ['clay', 'Clay', 'Little characters'],
+  ['initials', 'Initials', 'Letters on a tile'],
+]
+const PALETTES = ['', 'pastel', 'electric', 'muted', 'warm', 'cool', 'mono']
+const EXPRESSIONS = ['beam', 'content', 'proud', 'dreamy', 'hmm', 'shy', 'sleepy', 'curious', 'oh', 'cheeky', 'wink', 'giggle']
+const TABS = [
+  ['core', 'Core'],
+  ['react', 'React'],
+  ['vue', 'Vue'],
+  ['svelte', 'Svelte'],
+  ['angular', 'Angular'],
+  ['element', 'HTML'],
+  ['svg', 'SVG'],
+  ['json', 'JSON'],
+]
+const AT = [24, 32, 40, 56, 80]
+---
+
+<Base page="playground" title="Playground · Opaline" description="Design an Opaline avatar: pick a style, colors and shape, then copy the code for your framework or download SVG and PNG.">
+  <div class="wrap page-head">
+    <div>
+      <span class="eyebrow">Playground</span>
+      <h1>Design your avatar</h1>
+      <p>Type a name, pick a style, tweak the details. Everything you see is the library's real output, and the address bar always links to it.</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn" id="pg-reset" type="button">Reset</button>
+      <button class="btn primary" id="pg-share" type="button">Share</button>
+    </div>
+  </div>
+
+  <div class="wrap pg2">
+    <form class="card pg2-controls" id="pg-controls" onsubmit="return false" aria-label="Avatar options">
+      <div class="step">
+        <span class="step-num">1</span>
+        <label class="step-title" for="pg-seed">Seed</label>
+        <p class="step-hint">Any string: a user ID, an email or a name. The same seed always gives the same avatar.</p>
+        <div class="seed-row">
+          <input class="input" id="pg-seed" value="ada@inlay.dev" autocomplete="off" spellcheck="false" />
+          <button class="btn icon" id="pg-shuffle" type="button" aria-label="Try another seed" title="Try another seed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <fieldset class="step">
+        <span class="step-num">2</span>
+        <legend class="step-title">Style</legend>
+        <div class="style-cards">
+          {STYLES.map(([value, label, hint], i) => (
+            <label class="style-card">
+              <input type="radio" name="pg-style" value={value} checked={i === 0} />
+              <span class="style-thumb" data-thumb={value}></span>
+              <span class="style-name">{label}</span>
+              <span class="style-hint">{hint}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset class="step">
+        <span class="step-num">3</span>
+        <legend class="step-title">Details</legend>
+        <div class="sub">
+          <span class="sub-label">Palette</span>
+          <div class="swatches">
+            {PALETTES.map((p) => (
+              <label class="swatch" title={p || 'vivid (default)'}>
+                <input type="radio" name="pg-palette" value={p} checked={!p} />
+                <span data-swatch={p}></span>
+                <small>{p || 'vivid'}</small>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div class="sub" id="pg-shape-field">
+          <span class="sub-label">Shape</span>
+          <div class="seg">
+            <label><input type="radio" name="pg-shape" value="" checked /><span id="pg-shape-default">None</span></label>
+            {['circle', 'squircle', 'square'].map((v) => <label><input type="radio" name="pg-shape" value={v} /><span>{v}</span></label>)}
+          </div>
+        </div>
+        <div class="sub" id="pg-finish-field">
+          <span class="sub-label">Finish</span>
+          <div class="seg">
+            <label><input type="radio" name="pg-finish" value="" checked /><span>Default</span></label>
+            {['flat', 'soft', 'gloss'].map((v) => <label><input type="radio" name="pg-finish" value={v} /><span>{v}</span></label>)}
+          </div>
+        </div>
+        <div class="sub" id="pg-body-field" hidden>
+          <span class="sub-label">Body</span>
+          <div class="seg">
+            <label><input type="radio" name="pg-body" value="" checked /><span>Seeded</span></label>
+            {['jelly', 'hood'].map((v) => <label><input type="radio" name="pg-body" value={v} /><span>{v}</span></label>)}
+          </div>
+        </div>
+        <label class="sub" id="pg-expression-field">
+          <span class="sub-label">Expression</span>
+          <select class="select" id="pg-expression"><option value="">Seeded</option>{EXPRESSIONS.map((e) => <option>{e}</option>)}</select>
+        </label>
+        <label class="sub" id="pg-text-field" hidden>
+          <span class="sub-label">Text <small>up to 3 letters</small></span>
+          <input class="input" id="pg-text" placeholder="From the seed" maxlength="3" autocomplete="off" spellcheck="false" />
+        </label>
+      </fieldset>
+    </form>
+
+    <div class="pg2-main">
+      <div class="card pg2-stage grad-border">
+        <div class="pg-preview" id="pg-preview">
+          <div class="pane light" id="pg-light"></div>
+          <div class="pane dark" id="pg-dark"></div>
+        </div>
+        <div class="pg2-sizes" aria-label="At common sizes">
+          {AT.map((px) => <span class="at" data-at={px} title={`${px}px`}></span>)}
+          <span class="at-caption muted" id="pg-caption"></span>
+        </div>
+      </div>
+
+      <div class="card code-card">
+        <div class="code-head">
+          <div class="tabs" id="pg-tabs" role="tablist" aria-label="Code for">
+            {TABS.map(([id, label], i) => (
+              <button class="tab" type="button" role="tab" data-tab={id} aria-selected={i === 0 ? 'true' : 'false'}>{label}</button>
+            ))}
+          </div>
+        </div>
+        <pre class="code" id="pg-code"></pre>
+        <div class="code-foot">
+          <label class="size-pick">Export size
+            <select class="select" id="pg-size">{[32, 48, 64, 96, 128, 256, 512].map((n) => <option selected={n === 64}>{n}</option>)}</select>
+          </label>
+          <span class="spacer"></span>
+          <button class="btn" id="pg-copy" type="button">Copy code</button>
+          <button class="btn" id="pg-download" type="button">SVG</button>
+          <button class="btn" id="pg-png" type="button">PNG</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { initPlayground } from '../scripts/playground.ts'
+    initPlayground()
+  </script>
+</Base>

@@ -12,6 +12,7 @@ import { runSync, startServer, stopServer } from '../../tools/spawn-server.ts'
 const cwd = fileURLToPath(new URL('.', import.meta.url))
 const PORT = 4320
 const URL_ = `http://localhost:${PORT}/Opaline/`
+const PG = `${URL_}playground/`
 let server: ChildProcess
 let browser: Browser
 
@@ -54,19 +55,25 @@ async function newContext(options?: BrowserContextOptions) {
 }
 const newPage = async (options?: BrowserContextOptions) => (await newContext(options)).newPage()
 
+/** Clicks a playground radio (style card, palette swatch or segment) the way a person would. */
+const pick = (page: import('playwright').Page, name: string, value: string) =>
+  page.locator(`label:has(> input[name="pg-${name}"][value="${value}"])`).click()
+const picked = (page: import('playwright').Page, name: string) =>
+  page.locator(`input[name="pg-${name}"]:checked`).inputValue()
+
 const strip = (svg: string) => svg.replace(/a[0-9a-z]{7}-/g, 'ID-')
 
 test('the playground shows the core output for the chosen options', async () => {
   const page = await newPage()
-  await page.goto(URL_)
+  await page.goto(PG)
   await page.fill('#pg-seed', 'grace@inlay.dev')
-  await page.selectOption('#pg-style', 'clay')
-  await page.selectOption('#pg-finish', 'gloss')
+  await pick(page, 'style', 'clay')
+  await pick(page, 'finish', 'gloss')
   const svg = await page
     .locator('#pg-preview svg')
     .first()
     .evaluate((e) => e.outerHTML)
-  const expected = createAvatar(clay, { seed: 'grace@inlay.dev', finish: 'gloss', size: 160 }).svg
+  const expected = createAvatar(clay, { seed: 'grace@inlay.dev', finish: 'gloss', size: 176 }).svg
   // Compare after serializing the expected markup in the page, the same way the preview is.
   const serialized = await page.evaluate((s) => {
     const t = document.createElement('template')
@@ -91,45 +98,45 @@ async function previewMatches(page: import('playwright').Page, expected: string)
 
 test('the playground draws initials with a shape and custom text', async () => {
   const page = await newPage()
-  await page.goto(URL_)
+  await page.goto(PG)
   await page.fill('#pg-seed', 'grace hopper')
-  await page.selectOption('#pg-style', 'initials')
-  await page.selectOption('#pg-shape', 'square')
+  await pick(page, 'style', 'initials')
+  await pick(page, 'shape', 'square')
   await previewMatches(
     page,
-    createAvatar(initials, { seed: 'grace hopper', shape: 'square', size: 160 }).svg,
+    createAvatar(initials, { seed: 'grace hopper', shape: 'square', size: 176 }).svg,
   )
   await page.fill('#pg-text', 'Op')
   await previewMatches(
     page,
-    createAvatar(initials, { seed: 'grace hopper', shape: 'square', text: 'Op', size: 160 }).svg,
+    createAvatar(initials, { seed: 'grace hopper', shape: 'square', text: 'Op', size: 176 }).svg,
   )
   expect(await page.locator('#pg-code').textContent()).toContain('"text": "Op"')
 })
 
 test('every style offers every shape', async () => {
   const page = await newPage()
-  await page.goto(URL_)
-  await page.selectOption('#pg-style', 'morph')
+  await page.goto(PG)
+  await pick(page, 'style', 'morph')
   expect(await page.locator('#pg-shape-field').isVisible()).toBe(true)
-  expect(await page.locator('#pg-shape option').allTextContents()).toEqual([
-    'none (default)',
+  expect(await page.locator('#pg-shape-field label').allTextContents()).toEqual([
+    'None',
     'circle',
     'squircle',
     'square',
   ])
-  await page.selectOption('#pg-shape', 'squircle')
+  await pick(page, 'shape', 'squircle')
   await previewMatches(
     page,
-    createAvatar(morph, { seed: 'ada@inlay.dev', shape: 'squircle', size: 160 }).svg,
+    createAvatar(morph, { seed: 'ada@inlay.dev', shape: 'squircle', size: 176 }).svg,
   )
-  await page.selectOption('#pg-style', 'aura')
-  expect(await page.locator('#pg-shape option').first().textContent()).toBe('circle (default)')
+  await pick(page, 'style', 'aura')
+  expect(await page.locator('#pg-shape-default').textContent()).toBe('Circle')
 })
 
 test('user input is escaped, never rendered as markup', async () => {
   const page = await newPage()
-  await page.goto(URL_)
+  await page.goto(PG)
   await page.fill('#pg-seed', '<b>x</b>')
   expect(await page.locator('#pg-preview b').count()).toBe(0)
   expect(await page.locator('#pg-preview svg').count()).toBeGreaterThan(0)
@@ -140,7 +147,7 @@ test('user input is escaped, never rendered as markup', async () => {
 test('copy puts the snippet on the clipboard', async () => {
   const ctx = await newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
   const page = await ctx.newPage()
-  await page.goto(URL_)
+  await page.goto(PG)
   await page.fill('#pg-seed', 'copy-me')
   await page.click('#pg-copy')
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('copy-me')
@@ -149,7 +156,7 @@ test('copy puts the snippet on the clipboard', async () => {
 
 test('every snippet carries the exact seed, even with quotes, backslashes and braces', async () => {
   const page = await newPage()
-  await page.goto(URL_)
+  await page.goto(PG)
   const seed = 'a"b\\c{x}{{y}}<i>'
   await page.fill('#pg-seed', seed)
   for (const tab of ['core', 'element', 'react', 'vue', 'svelte', 'angular']) {
@@ -185,7 +192,7 @@ test('every snippet carries the exact seed, even with quotes, backslashes and br
 
 test('the Angular snippet separates component code from the template', async () => {
   const page = await newPage()
-  await page.goto(URL_)
+  await page.goto(PG)
   await page.click('[data-tab="angular"]')
   const code = (await page.locator('#pg-code').textContent())!
   expect(code).toContain('imports: [OpalineAvatar]')
@@ -204,13 +211,13 @@ test('the theme toggle persists across reloads', async () => {
 
 test('style-specific controls hide for other styles', async () => {
   const page = await newPage()
-  await page.goto(URL_)
-  await page.selectOption('#pg-style', 'morph')
+  await page.goto(PG)
+  await pick(page, 'style', 'morph')
   expect(await page.locator('#pg-body-field').isVisible()).toBe(false)
-  await page.selectOption('#pg-style', 'clay')
+  await pick(page, 'style', 'clay')
   expect(await page.locator('#pg-body-field').isVisible()).toBe(true)
   expect(await page.locator('#pg-text-field').isVisible()).toBe(false)
-  await page.selectOption('#pg-style', 'initials')
+  await pick(page, 'style', 'initials')
   expect(await page.locator('#pg-text-field').isVisible()).toBe(true)
   expect(await page.locator('#pg-finish-field').isVisible()).toBe(false)
   expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
@@ -237,6 +244,9 @@ async function expectNoHorizontalScroll(path: string) {
 }
 
 test('no horizontal scroll at phone width', () => expectNoHorizontalScroll(''))
+test('no horizontal scroll on the playground at phone width', () =>
+  expectNoHorizontalScroll('playground/'))
+test('no horizontal scroll on the docs at phone width', () => expectNoHorizontalScroll('docs/'))
 
 test('built HTML only references assets under the Pages base', () => {
   const pages = readdirSync(`${cwd}dist`, { recursive: true, encoding: 'utf8' }).filter((f) =>
@@ -249,49 +259,50 @@ test('built HTML only references assets under the Pages base', () => {
 
 test('a shared link opens the playground on that exact avatar', async () => {
   const page = await newPage()
-  await page.goto(`${URL_}?seed=grace+hopper&style=initials&shape=squircle&text=Op#playground`)
-  expect(await page.inputValue('#pg-style')).toBe('initials')
-  expect(await page.inputValue('#hero-seed')).toBe('grace hopper')
+  await page.goto(`${PG}?seed=grace+hopper&style=initials&shape=squircle&text=Op`)
+  expect(await picked(page, 'style')).toBe('initials')
+  expect(await picked(page, 'shape')).toBe('squircle')
+  expect(await page.inputValue('#pg-seed')).toBe('grace hopper')
   await previewMatches(
     page,
-    createAvatar(initials, { seed: 'grace hopper', shape: 'squircle', text: 'Op', size: 160 }).svg,
+    createAvatar(initials, { seed: 'grace hopper', shape: 'squircle', text: 'Op', size: 176 }).svg,
   )
 })
 
 test('the address bar follows the controls, and Share copies it', async () => {
   const ctx = await newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
   const page = await ctx.newPage()
-  await page.goto(URL_)
+  await page.goto(PG)
   // Defaults leave the address clean.
   expect(new URL(page.url()).search).toBe('')
   await page.fill('#pg-seed', 'a&b c')
-  await page.selectOption('#pg-style', 'clay')
-  await page.selectOption('#pg-finish', 'gloss')
+  await pick(page, 'style', 'clay')
+  await pick(page, 'finish', 'gloss')
   const params = new URL(page.url()).searchParams
   expect(Object.fromEntries(params)).toEqual({ seed: 'a&b c', style: 'clay', finish: 'gloss' })
   await page.click('#pg-share')
   const shared = new URL(await page.evaluate(() => navigator.clipboard.readText()))
-  expect(shared.hash).toBe('#playground')
+  expect(shared.pathname).toBe('/Opaline/playground/')
   expect(shared.searchParams.get('seed')).toBe('a&b c')
   // The copied link restores the same state in a fresh page.
   const again = await ctx.newPage()
   await again.goto(shared.href)
-  expect(await again.inputValue('#pg-finish')).toBe('gloss')
-  await previewMatches(again, createAvatar(clay, { seed: 'a&b c', finish: 'gloss', size: 160 }).svg)
+  expect(await picked(again, 'finish')).toBe('gloss')
+  await previewMatches(again, createAvatar(clay, { seed: 'a&b c', finish: 'gloss', size: 176 }).svg)
   await ctx.close()
 })
 
 test('unknown link values are ignored', async () => {
   const page = await newPage()
-  await page.goto(`${URL_}?style=constructor&size=99999&palette=%3Cb%3E`)
-  expect(await page.inputValue('#pg-style')).toBe('morph')
+  await page.goto(`${PG}?style=constructor&size=99999&palette=%3Cb%3E`)
+  expect(await picked(page, 'style')).toBe('morph')
   expect(await page.inputValue('#pg-size')).toBe('64')
-  expect(await page.inputValue('#pg-palette')).toBe('')
+  expect(await picked(page, 'palette')).toBe('')
 })
 
 test('PNG downloads a real PNG at the chosen size', async () => {
   const page = await newPage()
-  await page.goto(URL_)
+  await page.goto(PG)
   await page.fill('#pg-seed', 'png me')
   await page.selectOption('#pg-size', '128')
   const [download] = await Promise.all([page.waitForEvent('download'), page.click('#pg-png')])
@@ -307,7 +318,7 @@ test('the demos render avatars and groups with +N chips', async () => {
   await page.goto(URL_)
   const demos = page.locator('#demos')
   expect(await demos.locator('opaline-avatar svg').count()).toBeGreaterThan(10)
-  expect(await demos.locator('[data-opaline-more]').allTextContents()).toEqual(['+5', '+3'])
+  expect(await demos.locator('[data-opaline-more]').allTextContents()).toEqual(['+5', '+3', '+2'])
   expect(await demos.locator('.admin-table tbody tr').count()).toBe(4)
 })
 
@@ -321,9 +332,74 @@ test('the compare page lists all three libraries and links home', async () => {
     'Boring Avatars',
   ])
   expect(await page.locator('.compare-table tbody tr').count()).toBeGreaterThan(8)
-  await page.click('.nav a[href$="#playground"]')
-  await page.waitForURL(/\/Opaline\/#playground$/)
+  await page.click('.nav a[href$="/playground/"]')
+  await page.waitForURL(/\/Opaline\/playground\/$/)
 })
 
 test('no horizontal scroll on the compare page at phone width', () =>
   expectNoHorizontalScroll('compare/'))
+
+test('the docs follow the chosen framework and package manager', async () => {
+  const ctx = await newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
+  const page = await ctx.newPage()
+  await page.goto(`${URL_}docs/`)
+  const visible = () => page.locator('.steps:visible')
+  expect(await visible().getAttribute('data-fw')).toBe('react')
+  await page.click('[data-pick="vue"]')
+  expect(await visible().getAttribute('data-fw')).toBe('vue')
+  expect(await page.locator('#groups .codeblock:visible pre').textContent()).toContain(
+    'AvatarGroup',
+  )
+  await page.locator('.steps:visible [data-pm="pnpm"]').click()
+  const install = page.locator('.steps:visible [data-install]')
+  expect(await install.textContent()).toBe('pnpm add @inlaylab/opaline @inlaylab/opaline-vue')
+  await page.locator('.steps:visible li').first().locator('.copy').click()
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    'pnpm add @inlaylab/opaline @inlaylab/opaline-vue',
+  )
+  // Both choices survive a reload; a ?fw= link wins.
+  await page.reload()
+  expect(await visible().getAttribute('data-fw')).toBe('vue')
+  expect(await install.textContent()).toContain('pnpm add')
+  await page.goto(`${URL_}docs/?fw=angular`)
+  expect(await visible().getAttribute('data-fw')).toBe('angular')
+  await ctx.close()
+})
+
+test('every page links the favicon, and it is a real ICO', async () => {
+  for (const path of ['', 'playground/', 'docs/', 'compare/']) {
+    const html = readFileSync(`${cwd}dist/${path}index.html`, 'utf8')
+    expect(html, path).toContain('href="/Opaline/favicon.ico"')
+    expect(html, path).toContain('href="/Opaline/favicon.svg"')
+  }
+  const ico = readFileSync(`${cwd}dist/favicon.ico`)
+  expect([...ico.subarray(0, 4)]).toEqual([0, 0, 1, 0])
+  expect(ico.readUInt16LE(4)).toBe(3)
+  const res = await fetch(`${URL_}favicon.ico`)
+  expect(res.ok).toBe(true)
+})
+
+test('the demo filter shows one category at a time', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  const shown = () => page.locator('.demos > .demo:visible')
+  const all = await shown().count()
+  expect(all).toBe(10)
+  await page.click('#demo-filter [data-cat="Messaging"]')
+  expect(await shown().count()).toBe(2)
+  for (const cat of await shown().evaluateAll((els) =>
+    els.map((e) => (e as HTMLElement).dataset.cat),
+  ))
+    expect(cat).toBe('Messaging')
+  await page.click('#demo-filter [data-cat="All"]')
+  expect(await shown().count()).toBe(all)
+})
+
+test('the hero hands its seed to the playground', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.fill('#hero-seed', 'Zoë N')
+  await page.click('#hero-customize')
+  await page.waitForURL(/\/playground\//)
+  expect(await page.inputValue('#pg-seed')).toBe('Zoë N')
+})
