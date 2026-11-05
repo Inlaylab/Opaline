@@ -1,6 +1,6 @@
 {
   "name": "@inlaylab/opaline",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Seeded, deterministic SVG avatars. Zero dependencies.",
   "keywords": [
     "avatar",
@@ -13,7 +13,8 @@
     "placeholder",
     "generator",
     "oklch",
-    "zero-dependency"
+    "zero-dependency",
+    "png"
   ],
   "homepage": "https://inlaylab.github.io/Opaline/",
   "bugs": {
@@ -54,6 +55,10 @@
     "./initials": {
       "types": "./dist/initials.d.ts",
       "import": "./dist/initials.js"
+    },
+    "./png": {
+      "types": "./dist/png.d.ts",
+      "import": "./dist/png.js"
     }
   },
   "files": [

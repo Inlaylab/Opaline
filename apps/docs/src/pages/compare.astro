@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro'
+
+const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
+// Each cell: [text, tone]. Tone 'yes' or 'no' colors the cell; facts only, no scores.
+type Cell = string | [string, 'yes' | 'no']
+const ROWS: [string, Cell, Cell, Cell][] = [
+  ['Look', 'Five styles: soft characters, glowing orbs and initials', '30+ styles, from pixel art to illustrated people', 'Six abstract variants: marble, beam, pixel, sunset, ring, bauhaus'],
+  ['Framework components', ['React, Vue, Svelte, Angular and a Web Component', 'yes'], 'A JavaScript library: you place its SVG yourself', 'React'],
+  ['Runtime dependencies', ['0', 'yes'], '0 in @dicebear/core; each style is its own package', '0 (React as a peer)'],
+  ['Output', 'SVG string; PNG in the browser with toPng', 'SVG; PNG and JPEG with @dicebear/converter or the HTTP API', 'SVG as a React element'],
+  ['Hosted HTTP API', ['No', 'no'], ['Yes, free', 'yes'], 'A separate paid service'],
+  ['Photo with fallback', ['Built in: src shows once it loads', 'yes'], ['No', 'no'], ['No', 'no']],
+  ['Avatar group', ['Built in, with a +N chip', 'yes'], ['No', 'no'], ['No', 'no']],
+  ['Initials', ['Yes, with letters that clear WCAG AA', 'yes'], ['Yes, an initials style', 'yes'], ['No', 'no']],
+  ['Theming', 'CSS variables, so dark mode needs no re-render', 'Options per style, such as backgroundColor', 'A colors prop with your palette'],
+  ['Same seed, same image', 'Byte-identical SVG for all of 1.x, checked by checksums in CI', 'Seeded and deterministic', 'Deterministic from the name'],
+  ['License', ['MIT for code and art', 'yes'], 'Code MIT; art licensed per style, some need attribution', 'MIT'],
+]
+const cell = (c: Cell) => (typeof c === 'string' ? { text: c, tone: '' } : { text: c[0], tone: c[1] })
+---
+
+<Base title="Opaline vs DiceBear vs Boring Avatars" description="How Opaline compares with DiceBear and Boring Avatars: styles, frameworks, output formats, licensing and stability.">
+  <div class="wrap compare-hero">
+    <span class="eyebrow">Compare</span>
+    <h1>Opaline, DiceBear and Boring Avatars</h1>
+    <p>All three turn a string into an avatar. They differ in what the avatars look like, where they run and what they promise. Here is an honest side-by-side, so you can pick the right one, even when it is not us.</p>
+  </div>
+
+  <section class="block" style="border-top:0;padding-top:16px">
+    <div class="wrap docs-stack">
+      <div class="card table-wrap">
+        <table class="compare-table">
+          <thead><tr><th scope="col"></th><th scope="col">Opaline</th><th scope="col">DiceBear</th><th scope="col">Boring Avatars</th></tr></thead>
+          <tbody>
+            {ROWS.map(([label, ...cells]) => (
+              <tr>
+                <th scope="row">{label}</th>
+                {cells.map((c) => {
+                  const { text, tone } = cell(c)
+                  return <td class={tone || undefined}>{text}</td>
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="sec-head"><h2>Which one fits</h2></div>
+        <div class="grid2">
+          <div class="card pick">
+            <h3>Pick DiceBear</h3>
+            <ul>
+              <li>You want lots of art styles to choose from.</li>
+              <li>You want an image URL from an HTTP API, with no code at all.</li>
+              <li>You need PNG or JPEG files made on the server.</li>
+            </ul>
+          </div>
+          <div class="card pick">
+            <h3>Pick Boring Avatars</h3>
+            <ul>
+              <li>Your app is React only.</li>
+              <li>You want minimal abstract shapes in your exact brand palette.</li>
+              <li>You do not need photos, initials or groups.</li>
+            </ul>
+          </div>
+          <div class="card pick">
+            <h3>Pick Opaline</h3>
+            <ul>
+              <li>You want friendly faces or readable initials, not abstract shapes.</li>
+              <li>You ship more than one framework, or server-render and need no hydration warnings.</li>
+              <li>You want photos with a fallback, avatar groups and PNG export built in.</li>
+              <li>You cache avatars and need them never to change within a major version.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-head">
+          <h2>Switching over</h2>
+          <p>The seed is the only thing you need to keep. Pass the same user ID, email or name you pass today.</p>
+        </div>
+        <div class="grid2">
+          <div class="card pkg">
+            <b>From DiceBear</b>
+            <pre>{`// before
+import { createAvatar } from '@dicebear/core'
+import { lorelei } from '@dicebear/collection'
+createAvatar(lorelei, { seed: user.id }).toString()
+
+// after
+import { createAvatar } from '@inlaylab/opaline'
+import { clay } from '@inlaylab/opaline/clay'
+createAvatar(clay, { seed: user.id }).svg`}</pre>
+          </div>
+          <div class="card pkg">
+            <b>From Boring Avatars</b>
+            <pre>{`// before
+import Avatar from 'boring-avatars'
+<Avatar name={user.name} variant="marble" />
+
+// after
+import { Avatar } from '@inlaylab/opaline-react'
+import { aura } from '@inlaylab/opaline/aura'
+<Avatar seed={user.name} look={aura} />`}</pre>
+          </div>
+        </div>
+      </div>
+
+      <p class="fine-print">
+        Checked in November 2026 against each project's npm package and README (@dicebear/core 10.7, @dicebear/collection 9.4, boring-avatars 2.0). Both are good open-source projects; this page shows none of their art. If something here is out of date, <a href="https://github.com/Inlaylab/Opaline/issues">open an issue</a> and we will fix it. <a href={`${BASE}#playground`}>Try Opaline in the playground →</a>
+      </p>
+    </div>
+  </section>
+</Base>

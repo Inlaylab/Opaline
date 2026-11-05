@@ -118,6 +118,16 @@ kbd {
   display: flex;
   align-items: center;
   gap: 2px;
+  /* The links shrink and scroll inside the bar, so no font can push the page wider. */
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar {
+  display: none;
+}
+.nav a {
+  flex: none;
 }
 .nav a,
 .gh {
@@ -785,6 +795,16 @@ footer .wrap {
   }
 }
 @media (max-width: 480px) {
+  /* Room for the Compare link; the footer links to GitHub too. */
+  .gh {
+    display: none;
+  }
+  .brand {
+    margin-right: 0;
+  }
+  .nav a {
+    padding-inline: 7px;
+  }
   .hero-avatars {
     gap: 8px;
   }
@@ -807,4 +827,311 @@ footer .wrap {
 }
 .btn.round {
   border-radius: 999px;
+}
+
+/* Demos: real screens built from <opaline-avatar> and <opaline-avatar-group>. */
+.demos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+}
+.demo {
+  --avatar-ring: var(--card);
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 20px;
+  overflow: hidden;
+  min-width: 0;
+}
+:root[data-theme='dark'] .demo {
+  --avatar-more-bg: #27272a;
+  --avatar-more-fg: #e4e4e7;
+}
+.wide-demo {
+  grid-column: 1 / -1;
+}
+.demo b {
+  font-weight: 600;
+}
+.demo .muted,
+.muted {
+  color: var(--muted-foreground);
+}
+.demo-code {
+  display: block;
+  margin-top: auto;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-size: 12px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.profile-demo {
+  padding: 0 0 20px;
+}
+.profile-demo .demo-code {
+  margin-inline: 20px;
+}
+.profile-cover {
+  height: 96px;
+  background:
+    radial-gradient(circle at 20% 30%, rgb(255 255 255 / 0.5), transparent 40%),
+    linear-gradient(120deg, #c4b5fd, #f9a8d4 55%, #fcd34d);
+}
+.profile-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 20px;
+  margin-top: -44px;
+}
+.profile-avatar > span {
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--card);
+  background: var(--card);
+}
+.profile-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+}
+.profile-head > div,
+.post-head > div,
+.admin-head > div,
+.project-top > div,
+.who > div {
+  display: grid;
+  line-height: 1.35;
+  min-width: 0;
+}
+.profile-head .muted,
+.post-head .muted,
+.admin-head .muted,
+.project-top .muted,
+.who .muted {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-bio,
+.post p {
+  margin: 0;
+}
+.profile-stats {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+.profile-stats b {
+  color: var(--foreground);
+}
+.post {
+  display: grid;
+  gap: 12px;
+}
+.post-head,
+.who,
+.project-top {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.post-likes,
+.project-team {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+.comments {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+}
+.comments li {
+  display: flex;
+  gap: 10px;
+  align-items: start;
+}
+.comments li > div {
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: var(--muted);
+}
+.comments b {
+  display: block;
+  font-size: 13px;
+}
+.admin-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.admin-table td {
+  vertical-align: middle;
+}
+.status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.status.active {
+  background: color-mix(in oklab, #16a34a 16%, transparent);
+  color: color-mix(in oklab, #16a34a 80%, var(--foreground));
+}
+.status.invited {
+  background: color-mix(in oklab, #2563eb 14%, transparent);
+  color: color-mix(in oklab, #2563eb 80%, var(--foreground));
+}
+.status.suspended {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+.project {
+  display: grid;
+  gap: 12px;
+}
+.project-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #a78bfa, #f472b6);
+  color: #fff;
+}
+.progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--muted);
+  overflow: hidden;
+}
+.progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a78bfa, #f472b6);
+}
+.chat {
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.msg {
+  display: flex;
+  gap: 8px;
+  align-items: end;
+}
+.msg.me {
+  justify-content: end;
+}
+.msg p {
+  margin: 0;
+  padding: 8px 12px;
+  max-width: 80%;
+  border-radius: 16px 16px 16px 4px;
+  background: var(--muted);
+  font-size: 14px;
+}
+.msg.me p {
+  border-radius: 16px 16px 4px 16px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+@media (max-width: 480px) {
+  .hide-sm {
+    display: none;
+  }
+}
+
+/* Compare page */
+.compare-hero {
+  padding-block: 72px 24px;
+}
+.compare-hero h1 {
+  margin: 0 0 10px;
+  font-size: clamp(32px, 6vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+.compare-hero p {
+  margin: 0;
+  max-width: 65ch;
+  color: var(--muted-foreground);
+}
+.compare-table th:first-child,
+.compare-table td:first-child {
+  font-weight: 500;
+  min-width: 140px;
+}
+.compare-table thead th {
+  color: var(--foreground);
+  font-weight: 600;
+}
+.compare-table td,
+.compare-table th {
+  min-width: 170px;
+}
+.compare-table .yes {
+  color: color-mix(in oklab, #16a34a 80%, var(--foreground));
+}
+.compare-table .no {
+  color: var(--muted-foreground);
+}
+.pick {
+  padding: 20px;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+.pick h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.pick p,
+.pick ul {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+.pick ul {
+  padding-left: 18px;
+}
+.fine-print {
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+.group-demo {
+  --avatar-ring: var(--card);
+  gap: 24px;
+}
+:root[data-theme='dark'] .group-demo {
+  --avatar-more-bg: #27272a;
+  --avatar-more-fg: #e4e4e7;
+}
+.group-demo pre.code {
+  flex: 1 1 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+/* Long code lines scroll inside their card instead of widening the page. */
+.docs-stack > * {
+  min-width: 0;
 }

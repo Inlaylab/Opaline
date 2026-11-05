@@ -1,5 +1,14 @@
 # @inlaylab/opaline
 
+## 1.1.1
+
+### Patch Changes
+
+- Initials are easier to read: the letters are now a deep shade of the tile's own hue, chosen to clear WCAG AA (4.5:1) on every palette. White letters on 1.1.0's bright tiles were as low as 1.9:1. Only the letter color changes, and pastel tiles keep their 1.1.0 output. `--avatar-fg` still overrides it.
+- New `@inlaylab/opaline/png` entry: `toPng(avatar, { size, vars })` renders a PNG `Blob` in the browser with no dependencies, and `forRaster(avatar, { size, vars })` prepares the SVG for a server rasterizer such as resvg.
+- New `avatarGroup(members, { max, size, shape })`: the shared layout behind every wrapper's avatar group. New `contrast(a, b)` gives the WCAG contrast ratio of two hex colors.
+- Hotfix: remove the `ellipse` shape. `shape` takes `circle`, `squircle` or `square`. `shape: 'ellipse'` now falls back like any unknown value: a circle on Aura and Initials, and no tile on Morph, Gradient and Clay. 1.0 output is unchanged.
+
 ## 1.1.0
 
 ### Minor Changes

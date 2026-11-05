@@ -2,7 +2,9 @@ import {
   createAvatar,
   type AuraOptions,
   type ClayOptions,
+  type GroupMember,
   type InitialsOptions,
+  type Shape,
   type Style,
 } from '@inlaylab/opaline'
 import { aura } from '@inlaylab/opaline/aura'
@@ -154,7 +156,7 @@ export function runContract(adapter: Adapter): void {
   test(`${adapter.name}: initials with shape and text reach the core`, async () => {
     for (const props of [
       { seed: 'ada.lovelace@inlay.dev', look: 'initials', shape: 'square' },
-      { seed: 'b', look: 'initials', shape: 'ellipse', text: 'Op', palette: 'pastel' },
+      { seed: 'b', look: 'initials', shape: 'squircle', text: 'Op', palette: 'pastel' },
     ] as Props[]) {
       const root = await adapter.render(props)
       expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
@@ -216,4 +218,104 @@ export function runContract(adapter: Adapter): void {
       await until(() => imgOf(root)?.hidden === false)
     })
   }
+}
+
+/** The props every avatar group accepts. Members are seeds or `{ seed, src, alt }`. */
+export type GroupProps = {
+  members: GroupMember[]
+  max?: number
+  size?: number
+  alt?: string
+  look?: NonNullable<Props['look']>
+  shape?: Shape
+  palette?: Props['palette']
+}
+
+export type GroupAdapter = {
+  name: string
+  /** Mounts the group and resolves with its root `[data-opaline-group]` element. */
+  render(props: GroupProps): Promise<HTMLElement>
+  cleanup?(): void
+}
+
+const membersOf = (root: HTMLElement) => [
+  ...root.querySelectorAll<HTMLElement>('[data-opaline-member]'),
+]
+const moreOf = (root: HTMLElement) => root.querySelector<HTMLElement>('[data-opaline-more]')
+
+/** The behavior every Opaline avatar group must share. */
+export function runGroupContract(adapter: GroupAdapter): void {
+  afterEach(() => {
+    adapter.cleanup?.()
+    document.body.innerHTML = ''
+  })
+
+  const people: GroupMember[] = ['ada', 'grace', 'linus', 'margaret', 'alan']
+
+  test(`${adapter.name} group: shows max avatars, then a +N chip`, async () => {
+    const root = await adapter.render({ members: people, max: 3, size: 40, look: 'clay' })
+    const members = membersOf(root)
+    expect(members).toHaveLength(3)
+    members.forEach((m, i) =>
+      expect(stripInstance(svgOf(m).outerHTML)).toBe(
+        expectedSvg({ seed: people[i] as string, look: 'clay', size: 40 }),
+      ),
+    )
+    const more = moreOf(root)!
+    expect(more.textContent!.trim()).toBe('+2')
+    expect(more.getAttribute('role')).toBe('img')
+    expect(more.getAttribute('aria-label')).toBe('2 more')
+    expect(more.getBoundingClientRect().width).toBeCloseTo(40, 0)
+  })
+
+  test(`${adapter.name} group: everyone and no chip without max`, async () => {
+    const root = await adapter.render({ members: people })
+    expect(membersOf(root)).toHaveLength(5)
+    expect(moreOf(root)).toBeNull()
+  })
+
+  test(`${adapter.name} group: alt names the group`, async () => {
+    const root = await adapter.render({ members: people, alt: 'Project members' })
+    expect(root.getAttribute('role')).toBe('group')
+    expect(root.getAttribute('aria-label')).toBe('Project members')
+  })
+
+  test(`${adapter.name} group: member photos and names reach each avatar`, async () => {
+    const root = await adapter.render({
+      members: [{ seed: 'ada', src: PIXEL, alt: 'Ada Lovelace' }, 'grace'],
+    })
+    const [first, second] = membersOf(root).map((m) =>
+      m.querySelector<HTMLElement>('[data-opaline]')!,
+    )
+    expect(first!.getAttribute('aria-label')).toBe('Ada Lovelace')
+    await until(() => imgOf(first!)?.hidden === false)
+    expect(second!.getAttribute('aria-hidden')).toBe('true')
+    expect(imgOf(second!)).toBeNull()
+  })
+
+  test(`${adapter.name} group: avatars overlap and options reach the core`, async () => {
+    const root = await adapter.render({
+      members: ['same', 'same'],
+      size: 48,
+      look: 'initials',
+      shape: 'squircle',
+      palette: 'pastel',
+    })
+    const [a, b] = membersOf(root)
+    expect(getComputedStyle(a!).marginLeft).toBe('0px')
+    expect(getComputedStyle(b!).marginLeft).toBe('-12px')
+    expect(getComputedStyle(b!).borderRadius).toBe('38%')
+    const expected = expectedSvg({
+      seed: 'same',
+      look: 'initials',
+      shape: 'squircle',
+      palette: 'pastel',
+      size: 48,
+    })
+    expect(stripInstance(svgOf(a!).outerHTML)).toBe(expected)
+    // The same seed twice still gets its own gradient IDs.
+    const ids = gradientIds(root)
+    expect(ids.length).toBeGreaterThan(0)
+    expect(new Set(ids).size).toBe(ids.length)
+  })
 }

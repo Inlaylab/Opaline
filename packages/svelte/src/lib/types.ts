@@ -1,4 +1,10 @@
-import type { AuraOptions, ClayOptions, InitialsOptions, Style } from '@inlaylab/opaline'
+import type {
+  AuraOptions,
+  ClayOptions,
+  GroupMember,
+  InitialsOptions,
+  Style,
+} from '@inlaylab/opaline'
 
 export type AvatarProps = {
   seed: string | number | null | undefined
@@ -12,3 +18,12 @@ export type AvatarProps = {
 } & ClayOptions &
   AuraOptions &
   InitialsOptions
+
+export type AvatarGroupProps = Omit<AvatarProps, 'seed' | 'src' | 'alt'> & {
+  /** Seeds, or `{ seed, src, alt }` for a photo and an accessible name. */
+  members: readonly GroupMember[]
+  /** Show at most this many avatars, then a `+N` chip. Shows everyone when unset. */
+  max?: number
+  /** Accessible name for the whole group, e.g. "Project members". */
+  alt?: string
+}

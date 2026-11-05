@@ -1,4 +1,4 @@
-import { runContract, type Props } from '@inlaylab/opaline-contract'
+import { runContract, runGroupContract, type Props } from '@inlaylab/opaline-contract'
 import { expect, test } from 'vitest'
 import '../src/index.ts'
 
@@ -51,4 +51,71 @@ test('element: unknown clay attribute values fall back without throwing', () => 
     return strip(svg)
   }
   expect(make('finish="shiny" body="cat" ears="dog"')).toBe(make(''))
+})
+
+runGroupContract({
+  name: 'element',
+  async render({ members, ...props }) {
+    const group = document.createElement('opaline-avatar-group')
+    for (const [k, v] of Object.entries(props))
+      if (v !== undefined) group.setAttribute(k, String(v))
+    for (const m of members) {
+      const kid = document.createElement('opaline-avatar')
+      const { seed, src, alt } =
+        typeof m === 'object' ? m : { seed: m, src: undefined, alt: undefined }
+      kid.setAttribute('seed', String(seed ?? ''))
+      if (src) kid.setAttribute('src', src)
+      if (alt) kid.setAttribute('alt', alt)
+      group.append(kid)
+    }
+    document.body.append(group)
+    return group
+  },
+})
+
+const settle = () => new Promise((r) => setTimeout(r))
+const shown = (group: Element) =>
+  [...group.querySelectorAll<HTMLElement>('opaline-avatar')].filter(
+    (a) => a.style.display !== 'none',
+  )
+
+test('element group: children added later are laid out again', async () => {
+  document.body.innerHTML =
+    '<opaline-avatar-group max="2"><opaline-avatar seed="a"></opaline-avatar></opaline-avatar-group>'
+  const group = document.querySelector('opaline-avatar-group')!
+  expect(group.querySelector('[data-opaline-more]')).toBeNull()
+  for (const seed of ['b', 'c', 'd']) {
+    const kid = document.createElement('opaline-avatar')
+    kid.setAttribute('seed', seed)
+    group.append(kid)
+  }
+  await settle()
+  expect(shown(group)).toHaveLength(2)
+  expect(group.querySelector('[data-opaline-more]')!.textContent).toBe('+2')
+  expect(group.lastElementChild!.hasAttribute('data-opaline-more')).toBe(true)
+  group.setAttribute('max', '10')
+  expect(shown(group)).toHaveLength(4)
+  expect(group.querySelector('[data-opaline-more]')).toBeNull()
+})
+
+test('element group: shared attributes are defaults; a child keeps its own', () => {
+  document.body.innerHTML = `<opaline-avatar-group look="initials" size="32" palette="pastel">
+    <opaline-avatar seed="ada lovelace"></opaline-avatar>
+    <opaline-avatar seed="grace" look="clay" size="48"></opaline-avatar>
+  </opaline-avatar-group>`
+  const group = document.querySelector('opaline-avatar-group')!
+  const [a, b] = group.querySelectorAll('opaline-avatar')
+  expect(a!.getAttribute('look')).toBe('initials')
+  expect(a!.getAttribute('size')).toBe('32')
+  expect(a!.querySelector('text')!.textContent).toBe('AL')
+  expect(b!.getAttribute('look')).toBe('clay')
+  expect(b!.getAttribute('size')).toBe('48')
+  expect(b!.getAttribute('palette')).toBe('pastel')
+  // Changing or removing a group default follows through to the children that took it.
+  group.setAttribute('look', 'aura')
+  expect(a!.getAttribute('look')).toBe('aura')
+  expect(b!.getAttribute('look')).toBe('clay')
+  group.removeAttribute('palette')
+  expect(a!.hasAttribute('palette')).toBe(false)
+  expect(b!.hasAttribute('palette')).toBe(false)
 })

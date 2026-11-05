@@ -30,18 +30,13 @@ const blob = [
   { shape: 'circle' },
   { shape: 'squircle' },
   { shape: 'square' },
-  { shape: 'ellipse' },
 ]
 
 /** Every style with the option sets whose output 1.x promises never to change. */
 export const FROZEN: readonly (readonly [string, Style<any>, readonly object[]])[] = [
   ['morph', morph, blob],
   ['gradient', gradient, blob],
-  [
-    'aura',
-    aura,
-    [{}, { shape: 'squircle' }, { palette: 'mono' }, { shape: 'square' }, { shape: 'ellipse' }],
-  ],
+  ['aura', aura, [{}, { shape: 'squircle' }, { palette: 'mono' }, { shape: 'square' }]],
   [
     'clay',
     clay,
@@ -55,19 +50,11 @@ export const FROZEN: readonly (readonly [string, Style<any>, readonly object[]])
       { shape: 'circle' },
       { shape: 'squircle' },
       { shape: 'square' },
-      { shape: 'ellipse' },
     ],
   ],
   [
     'initials',
     initials,
-    [
-      {},
-      { shape: 'squircle' },
-      { shape: 'square' },
-      { shape: 'ellipse' },
-      { palette: 'pastel' },
-      { text: 'Op' },
-    ],
+    [{}, { shape: 'squircle' }, { shape: 'square' }, { palette: 'pastel' }, { text: 'Op' }],
   ],
 ]

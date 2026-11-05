@@ -1,6 +1,6 @@
 {
   "name": "@inlaylab/opaline-angular",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Seeded avatars for Angular: a standalone, zoneless, SSR-safe component.",
   "keywords": [
     "avatar",

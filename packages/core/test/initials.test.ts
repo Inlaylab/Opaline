@@ -1,5 +1,7 @@
 import { expect, test } from 'vitest'
+import { contrast } from '../src/color.ts'
 import { createAvatar } from '../src/index.ts'
+import { PALETTES } from '../src/parts/palette.ts'
 import { initials, letters } from '../src/styles/initials.ts'
 
 test('letters come from the seed: first and last word, upper-cased', () => {
@@ -45,12 +47,33 @@ test('font size: 40 for one or two letters, 30 for three', () => {
   expect(createAvatar(initials, { seed: 'a', text: 'ACM' }).svg).toContain('font-size="30"')
 })
 
-test('letters are dark on pastel and white on vivid', () => {
-  const fg = (svg: string) => /fill="var\(--avatar-fg, (#[0-9a-f]{3,6})\)"/.exec(svg)?.[1]
-  expect(fg(createAvatar(initials, { seed: 'ada' }).svg)).toBe('#fff')
-  const pastel = fg(createAvatar(initials, { seed: 'ada', palette: 'pastel' }).svg)
-  expect(pastel).toMatch(/^#[0-9a-f]{6}$/)
-  expect(pastel).not.toBe('#fff')
+const tileAndInk = (svg: string) => [
+  /fill="var\(--avatar-c1, (#[0-9a-f]{6})\)"/.exec(svg)![1]!,
+  /fill="var\(--avatar-fg, (#[0-9a-f]{3,6})\)"/.exec(svg)![1]!,
+]
+
+test.each(Object.keys(PALETTES))(
+  'letters are dark and clear WCAG AA on every %s tile',
+  (palette) => {
+    for (let i = 0; i < 300; i++) {
+      const [bg, fg] = tileAndInk(
+        createAvatar(initials, { seed: `user${i}`, palette } as never).svg,
+      )
+      expect(fg).not.toBe('#fff')
+      expect(contrast(bg!, fg!), `${palette} user${i}`).toBeGreaterThanOrEqual(4.5)
+    }
+  },
+)
+
+test('pastel letters keep their 1.1.0 color', () => {
+  // Pastel already had dark letters; only the palettes that had white ones change.
+  expect(tileAndInk(createAvatar(initials, { seed: 'ada', palette: 'pastel' }).svg)[1]).toBe(
+    '#432743',
+  )
+})
+
+test('--avatar-fg still overrides the letter color', () => {
+  expect(createAvatar(initials, { seed: 'ada' }).svg).toMatch(/fill="var\(--avatar-fg, #/)
 })
 
 test('picks report the style, palette, shape and the letters drawn', () => {
@@ -64,11 +87,12 @@ test('picks report the style, palette, shape and the letters drawn', () => {
 
 test('every shape draws its own tile; unknown shapes fall back to circle', () => {
   const first = (svg: string) => /<path d="([^"]+)"/.exec(svg)?.[1]
-  const tiles = (['circle', 'squircle', 'square', 'ellipse'] as const).map((shape) =>
+  const tiles = (['circle', 'squircle', 'square'] as const).map((shape) =>
     first(createAvatar(initials, { seed: 'a', shape }).svg),
   )
-  expect(new Set(tiles).size).toBe(4)
-  expect(first(createAvatar(initials, { seed: 'a', shape: 'nope' } as never).svg)).toBe(tiles[0])
+  expect(new Set(tiles).size).toBe(3)
+  for (const bad of ['nope', 'ellipse'])
+    expect(first(createAvatar(initials, { seed: 'a', shape: bad } as never).svg)).toBe(tiles[0])
 })
 
 test('the tile carries the opaline sheen', () => {

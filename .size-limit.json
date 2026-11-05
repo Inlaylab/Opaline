@@ -8,10 +8,7 @@
   },
   {
     "name": "core + morph",
-    "path": [
-      "packages/core/dist/index.js",
-      "packages/core/dist/morph.js"
-    ],
+    "path": ["packages/core/dist/index.js", "packages/core/dist/morph.js"],
     "import": {
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/morph.js": "{ morph }"
@@ -21,10 +18,7 @@
   },
   {
     "name": "core + gradient",
-    "path": [
-      "packages/core/dist/index.js",
-      "packages/core/dist/gradient.js"
-    ],
+    "path": ["packages/core/dist/index.js", "packages/core/dist/gradient.js"],
     "import": {
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/gradient.js": "{ gradient }"
@@ -34,10 +28,7 @@
   },
   {
     "name": "core + aura",
-    "path": [
-      "packages/core/dist/index.js",
-      "packages/core/dist/aura.js"
-    ],
+    "path": ["packages/core/dist/index.js", "packages/core/dist/aura.js"],
     "import": {
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/aura.js": "{ aura }"
@@ -47,10 +38,7 @@
   },
   {
     "name": "core + clay",
-    "path": [
-      "packages/core/dist/index.js",
-      "packages/core/dist/clay.js"
-    ],
+    "path": ["packages/core/dist/index.js", "packages/core/dist/clay.js"],
     "import": {
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/clay.js": "{ clay }"
@@ -60,10 +48,7 @@
   },
   {
     "name": "core + initials",
-    "path": [
-      "packages/core/dist/index.js",
-      "packages/core/dist/initials.js"
-    ],
+    "path": ["packages/core/dist/index.js", "packages/core/dist/initials.js"],
     "import": {
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/initials.js": "{ initials }"
@@ -72,7 +57,21 @@
     "gzip": true
   },
   {
-    "name": "element (own code)",
+    "name": "png (toPng)",
+    "path": "packages/core/dist/png.js",
+    "import": "{ toPng }",
+    "limit": "1 KB",
+    "gzip": true
+  },
+  {
+    "name": "core avatarGroup",
+    "path": "packages/core/dist/index.js",
+    "import": "{ avatarGroup }",
+    "limit": "0.6 KB",
+    "gzip": true
+  },
+  {
+    "name": "element (own code, avatar + group)",
     "path": "packages/element/dist/index.js",
     "ignore": [
       "@inlaylab/opaline",
@@ -82,39 +81,28 @@
       "@inlaylab/opaline/clay",
       "@inlaylab/opaline/initials"
     ],
-    "limit": "1.5 KB",
+    "limit": "2 KB",
     "gzip": true
   },
   {
-    "name": "react (own code)",
+    "name": "react (own code, avatar + group)",
     "path": "packages/react/dist/index.js",
-    "ignore": [
-      "react",
-      "react/jsx-runtime",
-      "@inlaylab/opaline"
-    ],
+    "ignore": ["react", "react/jsx-runtime", "@inlaylab/opaline"],
     "limit": "1.5 KB",
     "gzip": true
   },
   {
-    "name": "vue (own code)",
+    "name": "vue (own code, avatar + group)",
     "path": "packages/vue/dist/index.js",
-    "ignore": [
-      "vue",
-      "@inlaylab/opaline"
-    ],
+    "ignore": ["vue", "@inlaylab/opaline"],
     "limit": "1.5 KB",
     "gzip": true
   },
   {
-    "name": "angular (own code, partial-compiled FESM)",
+    "name": "angular (own code, avatar + group, partial-compiled FESM)",
     "path": "packages/angular/dist/fesm2022/inlaylab-opaline-angular.mjs",
-    "ignore": [
-      "@angular/core",
-      "@angular/platform-browser",
-      "@inlaylab/opaline"
-    ],
-    "limit": "2.1 KB",
+    "ignore": ["@angular/core", "@angular/platform-browser", "@inlaylab/opaline"],
+    "limit": "3 KB",
     "gzip": true
   }
 ]

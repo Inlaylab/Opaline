@@ -1,3 +1,4 @@
+import { contrast } from '../color.ts'
 import type { Style } from '../create.ts'
 import { known } from '../parts/known.ts'
 import { PALETTES, pickBase, type PaletteName } from '../parts/palette.ts'
@@ -34,6 +35,20 @@ export function letters(seed: string, text?: string): string {
   return (first + last).toUpperCase()
 }
 
+/**
+ * The letter color: a deep shade of the tile's own hue, stepped darker until it clears WCAG AA
+ * (4.5:1) against the tile. Every built-in palette gets dark letters; white only wins on a tile
+ * dark enough for it.
+ */
+function ink(base: string, h: number): string {
+  let dark = ''
+  for (const l of [0.32, 0.27, 0.22, 0.17]) {
+    dark = lch(l, 0.06, h)
+    if (contrast(base, dark) >= 4.5) break
+  }
+  return contrast(base, dark) >= contrast(base, '#fff') ? dark : '#fff'
+}
+
 /** Initials on a seeded tile with the opaline sheen. */
 export const initials: Style<InitialsOptions> = {
   name: 'initials',
@@ -44,10 +59,9 @@ export const initials: Style<InitialsOptions> = {
     const b = pickBase(rng, palette)
     const text = letters(seed, opts.text)
     const d = tile(shape)
-    // Light tiles (pastel) take a deep shade of their own hue; the rest take white.
-    const fg = b.l < 0.8 ? '#fff' : lch(0.32, 0.06, b.h)
+    const base = lch(b.l, b.c, b.h)
     const body =
-      el('path', { d, fill: colorVars()(lch(b.l, b.c, b.h)) }) +
+      el('path', { d, fill: colorVars()(base) }) +
       el('path', { d, fill: `url(#${id('s')})` }) +
       rim(shape) +
       (text
@@ -61,7 +75,7 @@ export const initials: Style<InitialsOptions> = {
               'font-family': FONT,
               'font-size': Array.from(text).length > 2 ? 30 : 40,
               'font-weight': 600,
-              fill: `var(--avatar-fg, ${fg})`,
+              fill: `var(--avatar-fg, ${ink(base, b.h)})`,
             },
             escapeXml(text),
           )

@@ -5,6 +5,8 @@ import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
 
+export { OpalineAvatarGroup } from './group.ts'
+
 const LOOKS: Record<string, Style<any>> = { morph, gradient, aura, clay, initials }
 const ATTRS = [
   'seed',

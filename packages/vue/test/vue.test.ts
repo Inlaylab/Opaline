@@ -1,9 +1,16 @@
-import { expectedSvg, runContract, STYLES, type Props } from '@inlaylab/opaline-contract'
+import {
+  expectedSvg,
+  runContract,
+  runGroupContract,
+  STYLES,
+  type GroupProps,
+  type Props,
+} from '@inlaylab/opaline-contract'
 import { morph } from '@inlaylab/opaline/morph'
 import { renderToString } from 'vue/server-renderer'
 import { expect, test } from 'vitest'
 import { createApp, createSSRApp, h, nextTick, reactive, type App } from 'vue'
-import { Avatar } from '../src/index.ts'
+import { Avatar, AvatarGroup } from '../src/index.ts'
 
 let appCount = 0
 // Each render is its own app, so give each one an id prefix, as a page with several Vue apps must.
@@ -102,4 +109,44 @@ test('vue: a bare face attribute turns the face on, as in a template', async () 
     .outerHTML.replace(/(a[0-9a-z]{7}-[a-z0-9]+)-[\w-]+/g, '$1')
   expect(svg).toBe(expectedSvg({ seed: 'b', face: true }))
   app.unmount()
+})
+
+const groupApps: App[] = []
+const groupView = ({ look = 'morph', ...props }: GroupProps) => ({
+  render: () => h(AvatarGroup, { look: STYLES[look], ...props }),
+})
+
+runGroupContract({
+  name: 'vue',
+  async render(props) {
+    const container = document.createElement('div')
+    document.body.append(container)
+    const app = prefixed(createApp(groupView(props)))
+    app.mount(container)
+    groupApps.push(app)
+    await nextTick()
+    return container.querySelector<HTMLElement>('[data-opaline-group]')!
+  },
+  cleanup() {
+    for (const app of groupApps.splice(0)) app.unmount()
+  },
+})
+
+test('vue group: server markup hydrates without changes', async () => {
+  const props: GroupProps = {
+    members: ['ada', { seed: 'grace', alt: 'Grace' }, 'linus'],
+    max: 2,
+    look: 'clay',
+  }
+  const html = await renderToString(createSSRApp(groupView(props)))
+  expect(html).toContain('+1')
+  await catchHydration(async () => {
+    const container = document.createElement('div')
+    container.innerHTML = html
+    document.body.append(container)
+    const app = createSSRApp(groupView(props))
+    app.mount(container)
+    groupApps.push(app)
+    await nextTick()
+  })
 })

@@ -1,0 +1,125 @@
+---
+/** Real-world layouts built only from <opaline-avatar> and <opaline-avatar-group>. */
+const USERS = [
+  ['Ada Lovelace', 'ada@inlay.dev', 'Owner', 'active', '2 min ago'],
+  ['Grace Hopper', 'grace@inlay.dev', 'Admin', 'active', '1 h ago'],
+  ['Linus Okafor', 'linus@inlay.dev', 'Editor', 'invited', 'Never'],
+  ['Mateo Rossi', 'mateo@inlay.dev', 'Viewer', 'suspended', '12 days ago'],
+]
+const TEAM = ['ada@inlay.dev', 'grace@inlay.dev', 'linus@inlay.dev', 'mateo@inlay.dev', 'priya@inlay.dev', 'kofi@inlay.dev', 'hana@inlay.dev']
+const LIKES = ['Søren', 'Aiko', 'Min-jun', 'Olu', 'Ines', 'Ravi', 'Lena', 'Zoë']
+---
+
+<section class="block" id="demos">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Demos</span>
+      <h2>Ready for real screens.</h2>
+      <p>Profiles, feeds, admin tables and team views, built from one component. Every face below comes from its seed; nothing is uploaded.</p>
+    </div>
+    <div class="demos">
+      <article class="card demo profile-demo" aria-label="Profile card demo">
+        <div class="profile-cover" aria-hidden="true"></div>
+        <div class="profile-body">
+          <opaline-avatar class="profile-avatar" seed="maya@inlay.dev" look="clay" finish="gloss" shape="circle" size="88" alt="Maya Chen"></opaline-avatar>
+          <div class="profile-head">
+            <div>
+              <b>Maya Chen</b>
+              <span class="muted">@maya · Product designer</span>
+            </div>
+            <button class="btn primary pill" type="button">Follow</button>
+          </div>
+          <p class="profile-bio">Designing calm interfaces at Inlay. Tea, type and tiny details.</p>
+          <ul class="profile-stats">
+            <li><b>128</b> posts</li>
+            <li><b>4.2k</b> followers</li>
+            <li><b>310</b> following</li>
+          </ul>
+        </div>
+        <code class="demo-code">&lt;opaline-avatar look="clay" finish="gloss" shape="circle"&gt;</code>
+      </article>
+
+      <article class="card demo" aria-label="Social post demo">
+        <div class="post">
+          <div class="post-head">
+            <opaline-avatar seed="kofi@inlay.dev" look="morph" shape="squircle" size="44" alt="Kofi Mensah"></opaline-avatar>
+            <div><b>Kofi Mensah</b><span class="muted">2h · Public</span></div>
+          </div>
+          <p>Shipped avatars for every signup today. Nobody gets the grey silhouette any more.</p>
+          <div class="post-likes">
+            <opaline-avatar-group look="gradient" size="24" max="3" alt="Liked by">
+              {LIKES.map((s) => <opaline-avatar seed={s}></opaline-avatar>)}
+            </opaline-avatar-group>
+            <span class="muted">Liked by <b>Søren</b> and {LIKES.length - 1} others</span>
+          </div>
+          <ul class="comments">
+            <li>
+              <opaline-avatar seed="Priya Raman" look="initials" size="32" alt="Priya Raman"></opaline-avatar>
+              <div><b>Priya Raman</b> The initials ones are so readable now.</div>
+            </li>
+            <li>
+              <opaline-avatar seed="hana@inlay.dev" look="aura" size="32" alt="Hana Sato"></opaline-avatar>
+              <div><b>Hana Sato</b> Same avatar on web, iOS and in the emails. Love it.</div>
+            </li>
+          </ul>
+        </div>
+        <code class="demo-code">&lt;opaline-avatar-group max="3"&gt; for the likes</code>
+      </article>
+
+      <article class="card demo" aria-label="Team project demo">
+        <div class="project">
+          <div class="project-top">
+            <span class="project-icon" aria-hidden="true">◆</span>
+            <div><b>Website relaunch</b><span class="muted">Due Friday · 68%</span></div>
+          </div>
+          <div class="progress" aria-hidden="true"><span style="width:68%"></span></div>
+          <div class="project-team">
+            <opaline-avatar-group look="clay" size="32" max="4" alt="Project members">
+              {TEAM.map((s) => <opaline-avatar seed={s}></opaline-avatar>)}
+            </opaline-avatar-group>
+            <span class="muted">{TEAM.length} members</span>
+          </div>
+        </div>
+        <div class="chat" aria-label="Chat">
+          <div class="msg">
+            <opaline-avatar seed="grace@inlay.dev" look="clay" size="28" alt="Grace"></opaline-avatar>
+            <p>Hero copy is final. Can someone check mobile?</p>
+          </div>
+          <div class="msg me">
+            <p>On it, sending screenshots in 5.</p>
+            <opaline-avatar seed="ada@inlay.dev" look="clay" size="28" alt="You"></opaline-avatar>
+          </div>
+        </div>
+        <code class="demo-code">&lt;opaline-avatar-group look="clay" max="4"&gt;</code>
+      </article>
+      <article class="card demo wide-demo" aria-label="Admin portal demo">
+        <div class="admin-head">
+          <div><b>Members</b><span class="muted">{USERS.length} people in Inlay Workspace</span></div>
+          <button class="btn" type="button">Invite</button>
+        </div>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Name</th><th>Role</th><th>Status</th><th class="hide-sm">Last active</th></tr></thead>
+            <tbody>
+              {USERS.map(([name, email, role, status, seen]) => (
+                <tr>
+                  <td>
+                    <div class="who">
+                      <opaline-avatar seed={email} look="initials" shape="squircle" size="36" text={name!.split(' ').map((w) => w[0]).join('')}></opaline-avatar>
+                      <div><b>{name}</b><span class="muted">{email}</span></div>
+                    </div>
+                  </td>
+                  <td>{role}</td>
+                  <td><span class={`status ${status}`}>{status}</span></td>
+                  <td class="hide-sm muted">{seen}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <code class="demo-code">&lt;opaline-avatar look="initials" shape="squircle" text="AL"&gt;</code>
+      </article>
+
+    </div>
+  </div>
+</section>
