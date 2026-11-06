@@ -23,7 +23,7 @@ export class UserAvatar {
 }
 ```
 
-Inputs: `seed`, `look`, `size`, `src`, `alt`, `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body`, `ears` and `text`. Works with Angular 22 and inside Ivorie's `<iv-avatar-fallback>`.
+Inputs: `seed`, `look`, `size`, `src`, `alt`, `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body`, `ears` and `text`. Works with Angular 22.
 
 Groups: `OpalineAvatarGroup` (`<op-avatar-group>`) overlaps avatars and adds a `+N` chip past `max`. Inputs: `members` (seeds or `{ seed, src, alt }`), `look`, `max`, `size`, `alt`, `palette`, `shape` and `finish`.
 

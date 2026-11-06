@@ -11,9 +11,8 @@
   <a href="https://inlaylab.github.io/Opaline/"><b>Live demo</b></a> ·
   <a href="https://inlaylab.github.io/Opaline/playground/">Playground</a> ·
   <a href="https://inlaylab.github.io/Opaline/docs/">Docs</a> ·
-  <a href="#frameworks">Frameworks</a> ·
-  <a href="https://inlaylab.github.io/Opaline/compare/">Compare</a> ·
-  <a href="docs/superpowers/specs/2026-11-03-avatar-design.md">Design spec</a>
+  <a href="docs/guides/README.md">Guides</a> ·
+  <a href="https://inlaylab.github.io/Opaline/compare/">Compare</a>
 </p>
 
 <p align="center">
@@ -23,15 +22,45 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-7c3aed" alt="MIT license"></a>
 </p>
 
-## Why Opaline
+## What is Opaline?
 
-- **Deterministic.** The same seed and options give a byte-identical SVG on the server, in every browser and in every 1.x release.
-- **No hydration warnings.** Server and client produce exactly the same markup.
-- **Every framework.** React (server-component safe), Vue 3, Angular (standalone, zoneless), Svelte 5 and a plain `<opaline-avatar>` custom element.
-- **Zero dependencies.** The core turns a seed into an SVG string, and that's all.
-- **Photo fallback.** Pass `src` and the photo is shown once it loads. If it fails, the generated avatar stays.
-- **Themeable.** Change colors with CSS variables.
-- **Groups and PNG.** An avatar group with a `+N` chip in every framework, and PNG export with no dependencies.
+Opaline turns any string (an email, a user ID, a username) into a unique SVG avatar. Give it the same string again and you get the same avatar, byte for byte, on the server and in every browser.
+
+Most users never upload a photo. Instead of a grey silhouette, they get a face that is theirs.
+
+```ts
+import { createAvatar } from '@inlaylab/opaline'
+import { clay } from '@inlaylab/opaline/clay'
+
+const { svg } = createAvatar(clay, { seed: 'ada@inlay.dev', finish: 'gloss' })
+```
+
+<img src="docs/assets/code.png" alt="createAvatar code next to the avatar it generates" width="100%">
+
+## Why use it
+
+<img src="docs/launch/images/why.png" alt="An activity feed with grey silhouettes, then the same feed with Opaline avatars" width="100%">
+
+Grey circles, shared initials and random colors all fall short. Opaline fixes each one.
+
+| Problem                                 | What Opaline does                                                   |
+| --------------------------------------- | ------------------------------------------------------------------- |
+| Every user looks the same               | Each seed gets its own face, colors and shape                       |
+| Avatars change between renders          | The same seed and options give a byte-identical SVG, forever (1.x)  |
+| Hydration warnings in SSR apps          | Server and client produce exactly the same markup                   |
+| A different library for each framework  | One core, with first-class wrappers for five frameworks             |
+| Heavy dependencies and slow pages       | Zero dependencies. Import only the styles you use                   |
+| A broken photo URL leaves a blank hole  | Pass `src`. If the photo fails, the generated avatar stays          |
+
+## Benefits
+
+- **Deterministic.** Cache avatars on a CDN, store them in a database or send them in email. They never change.
+- **SSR safe.** No hydration warnings in Next, Nuxt, SvelteKit or Angular SSR. React support is server-component safe.
+- **Tiny.** The core has zero dependencies, and each style is a separate import.
+- **Themeable.** Change colors with CSS variables, with no rebuild.
+- **Accessible.** Initials clear WCAG AA (4.5:1) contrast on every palette. Avatars with `alt` get `role="img"`.
+- **Complete.** Photo fallback, avatar groups with a `+N` chip and PNG export are built in.
+- **Open.** MIT for both the code and the art.
 
 ## Styles
 
@@ -45,33 +74,24 @@
 | **Clay**     | `@inlaylab/opaline/clay`     | Small characters: a jelly body, or a hood with cat, bear or bunny ears |
 | **Initials** | `@inlaylab/opaline/initials` | The person's initials on a seeded tile with the Opaline sheen          |
 
+Not sure which to pick? Try them all in the [playground](https://inlaylab.github.io/Opaline/playground/).
+
+## Installation
+
+Pick the package for your framework. Each one installs the core for you.
+
+| Framework      | Minimum version             | Install                           | Guide                                                 |
+| -------------- | --------------------------- | --------------------------------- | ----------------------------------------------------- |
+| React          | React 19                    | `npm i @inlaylab/opaline-react`   | [React guide](docs/guides/react.md)                   |
+| Vue            | Vue 3.5                     | `npm i @inlaylab/opaline-vue`     | [Vue guide](docs/guides/vue.md)                       |
+| Angular        | Angular 22 (`>=22.0.0 <23`) | `npm i @inlaylab/opaline-angular` | [Angular guide](docs/guides/angular.md)               |
+| Svelte         | Svelte 5.20                 | `npm i @inlaylab/opaline-svelte`  | [Svelte guide](docs/guides/svelte.md)                 |
+| Web Components | Any modern browser          | `npm i @inlaylab/opaline-element` | [Web Components guide](docs/guides/web-components.md) |
+| No framework   | None                        | `npm i @inlaylab/opaline`         | [Quick start](#quick-start)                           |
+
+The packages are `@inlaylab/opaline-react`, `-vue`, `-angular`, `-svelte`, `-element` and the core `@inlaylab/opaline`. They ship as ES modules. Node 22 or later is needed to develop in this repo.
+
 ## Quick start
-
-```sh
-npm i @inlaylab/opaline
-```
-
-```ts
-import { createAvatar } from '@inlaylab/opaline'
-import { clay } from '@inlaylab/opaline/clay'
-
-const { svg } = createAvatar(clay, { seed: 'ada@inlay.dev', finish: 'gloss' })
-```
-
-`svg` is a plain string. Put it in HTML, save it as a file or send it in an email.
-
-<img src="docs/assets/code.png" alt="createAvatar code next to the avatar it generates" width="100%">
-
-## Frameworks
-
-| Package                     | Component                                       | Install                           |
-| --------------------------- | ----------------------------------------------- | --------------------------------- |
-| `@inlaylab/opaline`         | Core: seed to SVG, zero dependencies            | `npm i @inlaylab/opaline`         |
-| `@inlaylab/opaline-react`   | React `<Avatar>`, server-component safe         | `npm i @inlaylab/opaline-react`   |
-| `@inlaylab/opaline-vue`     | Vue 3 `<Avatar>`, SSR safe                      | `npm i @inlaylab/opaline-vue`     |
-| `@inlaylab/opaline-svelte`  | Svelte 5 `<Avatar>`, runes, SSR safe            | `npm i @inlaylab/opaline-svelte`  |
-| `@inlaylab/opaline-angular` | Angular `<op-avatar>`, standalone and zoneless  | `npm i @inlaylab/opaline-angular` |
-| `@inlaylab/opaline-element` | `<opaline-avatar>` custom element, no framework | `npm i @inlaylab/opaline-element` |
 
 Every component takes `seed`, `look` (the style), an optional `src` (the photo to show) and `alt`. Every package also has a group component: see [Avatar groups](#avatar-groups).
 
@@ -160,7 +180,23 @@ export class UserAvatar {
 
 </details>
 
-## Clay and finishes
+<details>
+<summary><b>Plain JavaScript (core)</b></summary>
+
+```ts
+import { createAvatar } from '@inlaylab/opaline'
+import { clay } from '@inlaylab/opaline/clay'
+
+const { svg } = createAvatar(clay, { seed: 'ada@inlay.dev' })
+```
+
+`svg` is a plain string. Put it in HTML, save it as a file or send it in an email.
+
+</details>
+
+## Customize
+
+### Clay and finishes
 
 <img src="docs/assets/finishes.png" alt="Clay avatars in flat, soft and gloss finishes" width="100%">
 
@@ -174,17 +210,13 @@ createAvatar(clay, { seed: 'ada@inlay.dev', body: 'hood', ears: 'bunny', finish:
 | `ears`   | `cat`, `bear`, `bunny`  | Chosen by the seed (hood only)                                                        |
 | `finish` | `flat`, `soft`, `gloss` | `soft` for Clay. `flat` for Morph and Gradient, so their output is unchanged from 0.2 |
 
-### Theming
+Any option you set fixes that part of the avatar. The seed fills in the rest.
 
-| Variable      | Colors            |
-| ------------- | ----------------- |
-| `--avatar-c1` | The body          |
-| `--avatar-c2` | The arms and ears |
-| `--avatar-c3` | The hood opening  |
+### Initials and shapes
 
-## Initials and shapes
+<img src="docs/launch/images/new-in-1-1.png" alt="Initials, avatar groups and PNG export, new in 1.1" width="100%">
 
-New in 1.1. `initials` takes the letters from the seed: `ada.lovelace@inlay.dev` gives AL and `Zoë Nguyễn` gives ZN. Set `text` to show your own (up to 3 characters). Letters are SVG text in the system font, so every script works. They are a deep shade of the tile's own hue and clear WCAG AA (4.5:1) on every palette. Set `--avatar-fg` to use your own color.
+`initials` takes the letters from the seed: `ada.lovelace@inlay.dev` gives AL and `Zoë Nguyễn` gives ZN. Set `text` to show your own (up to 3 characters). Letters are SVG text in the system font, so every script works.
 
 ```ts
 import { initials } from '@inlaylab/opaline/initials'
@@ -196,18 +228,24 @@ createAvatar(initials, { seed: user.id, text: 'Op', palette: 'pastel' })
 Every style takes `shape`: `circle`, `squircle` or `square`.
 
 - **Aura and Initials** draw their tile in that shape. They default to `circle`.
-- **Morph, Gradient and Clay** draw a soft tinted tile in that shape behind the character. Leave `shape` unset to keep them on a transparent background.
+- **Morph, Gradient and Clay** draw a soft tinted tile in that shape behind the character. Leave `shape` unset for a transparent background.
 
-```tsx
-<Avatar seed={user.email} look={clay} shape="square" />
-<opaline-avatar seed="ada@inlay.dev" look="initials" shape="squircle"></opaline-avatar>
-```
+### Theming
 
-Leaving `shape` unset gives exactly the 1.0 output, so upgrading changes no avatar.
+Colors come out as CSS variables, so you can restyle avatars without rebuilding them.
+
+| Variable          | Colors                               |
+| ----------------- | ------------------------------------ |
+| `--avatar-c1`     | The body                             |
+| `--avatar-c2`     | The arms and ears (Clay)             |
+| `--avatar-c3`     | The hood opening (Clay)              |
+| `--avatar-fg`     | The Initials letters                 |
+| `--avatar-ring`   | The ring between grouped avatars     |
+| `--avatar-more-bg`, `--avatar-more-fg` | The `+N` chip in a group |
 
 ## Avatar groups
 
-New in 1.1.1. Overlapping avatars with a `+N` chip for everyone past `max`. Members are seeds, or `{ seed, src, alt }` for a photo and a name.
+Overlapping avatars with a `+N` chip for everyone past `max`. Members are seeds, or `{ seed, src, alt }` for a photo and a name.
 
 ```tsx
 import { AvatarGroup } from '@inlaylab/opaline-react' // also in -vue and -svelte
@@ -223,11 +261,11 @@ import { AvatarGroup } from '@inlaylab/opaline-react' // also in -vue and -svelt
 </opaline-avatar-group>
 ```
 
-Angular: `<op-avatar-group [members]="people" [look]="clay" max="4" />`. Avatars default to 40px. Set `--avatar-ring` to your background color for the ring between avatars; `--avatar-more-bg` and `--avatar-more-fg` color the chip.
+Angular: `<op-avatar-group [members]="people" [look]="clay" max="4" />`. Avatars default to 40px.
 
-## PNG
+## PNG export
 
-New in 1.1.1. For places that take no SVG, such as profile photo uploads, social cards and push notifications.
+For places that take no SVG, such as profile photo uploads, social cards and push notifications.
 
 ```ts
 import { forRaster, toPng } from '@inlaylab/opaline/png'
@@ -241,40 +279,27 @@ const buffer = new Resvg(forRaster(createAvatar(clay, { seed }), { size: 512 }))
 
 Pass `vars: { '--avatar-c1': '#7c3aed' }` to bake theme colors into the image.
 
+## Same seed, same avatar
+
+<img src="docs/launch/images/ssr.png" alt="The server and the browser render the same bytes for the same seed" width="100%">
+
+The same seed and options give a **byte-identical SVG** in every 1.x release, on the server and in every browser.
+
+- An option set to its default gives exactly the same output as leaving it unset.
+- Option order never matters.
+- A checksum test in the core guards this. Changing the output needs a new major version.
+- One exception, made on purpose: 1.1.1 darkens the Initials letters, which were as low as 1.9:1 contrast on 1.1.0's bright tiles. Only the `<text>` color changed, and only for non-pastel palettes.
+
+SSR samples render the same avatars on the server and check in a browser that hydration changes nothing: `apps/ssr-next`, `apps/ssr-angular`, `apps/ssr-nuxt` and `apps/ssr-sveltekit`. Run them with `pnpm build && pnpm e2e`.
+
 ## The site
 
 [inlaylab.github.io/Opaline](https://inlaylab.github.io/Opaline/) is built with Astro from `apps/docs`.
 
-- **Home.** Type a name and watch five styles redraw it, or press **Random hero** for a Marvel or DC name. **Customize this avatar** opens the playground on that seed and style. Below that: per-framework install snippets, [ten demos](https://inlaylab.github.io/Opaline/#demos) of real product screens and a gallery of 100 seeds.
+- **Home.** Type a name and watch five styles redraw it. Browse demos of real product screens and a gallery of 100 seeds.
 - **[Playground](https://inlaylab.github.io/Opaline/playground/).** Pick a style, colors and shape, then copy the code for your framework or download SVG and PNG. Every setting lives in the address, so you can share a link to an exact avatar: [`?seed=grace+hopper&style=initials&shape=squircle`](https://inlaylab.github.io/Opaline/playground/?seed=grace+hopper&style=initials&shape=squircle).
 - **[Docs](https://inlaylab.github.io/Opaline/docs/).** Step-by-step setup for every framework.
 - **[Compare](https://inlaylab.github.io/Opaline/compare/).** How Opaline stacks up against DiceBear and Boring Avatars.
-
-Every page ships a canonical URL, Open Graph and Twitter tags and JSON-LD. `public/sitemap.xml` lists the four pages and `public/og.png` is the share image.
-
-## Same seed, same avatar
-
-From 1.0, the same seed and options give a **byte-identical SVG** in every 1.x release, on the server and in every browser.
-
-- An option set to its default gives exactly the same output as leaving it unset.
-- Option order never matters.
-- A checksum file in the core's tests guards this. Changing the output needs a new major version.
-- One exception, made on purpose: 1.1.1 darkens the Initials letters, which were white and as low as 1.9:1 contrast on 1.1.0's bright tiles. Only the `<text>` color changes, and only for non-pastel palettes; the tile, shape and letters stay the same. Initials shipped one day before, in 1.1.0. Every other style is unchanged.
-
-So you can cache avatars on a CDN, store them in a database or send them in email without them changing.
-
-## SSR samples
-
-Each sample renders the same two avatars on the server and checks in a browser that hydration changes nothing.
-
-| App                  | Framework                  |
-| -------------------- | -------------------------- |
-| `apps/ssr-next`      | Next (App Router, RSC)     |
-| `apps/ssr-angular`   | Angular SSR                |
-| `apps/ssr-nuxt`      | Nuxt                       |
-| `apps/ssr-sveltekit` | SvelteKit (`adapter-node`) |
-
-Run them all with `pnpm build && pnpm e2e`.
 
 ## Development
 
@@ -289,8 +314,6 @@ Requires Node 22 or later and pnpm.
 ## The name
 
 Opaline is milky, softly glowing glass. Light goes in and comes back as color that seems to bloom from inside. That is the look we aim for: soft shapes, gentle gradients and light from one side, never hard edges.
-
-Inlaylab names its projects after inlay materials. [Ivorie](https://github.com/Inlaylab/ivorie), our Angular UI library, is ivory: the base. Opaline is the colored glass set into it, the small bright piece that makes each surface personal. An avatar does the same job in an app.
 
 ## License
 
