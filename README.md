@@ -82,9 +82,9 @@ Pick the package for your framework. Each one installs the core for you.
 
 | Framework      | Minimum version             | Install                           | Guide                                                 |
 | -------------- | --------------------------- | --------------------------------- | ----------------------------------------------------- |
-| React          | React 19                    | `npm i @inlaylab/opaline-react`   | [React guide](docs/guides/react.md)                   |
+| React          | React 18                    | `npm i @inlaylab/opaline-react`   | [React guide](docs/guides/react.md)                   |
 | Vue            | Vue 3.5                     | `npm i @inlaylab/opaline-vue`     | [Vue guide](docs/guides/vue.md)                       |
-| Angular        | Angular 22 (`>=22.0.0 <23`) | `npm i @inlaylab/opaline-angular` | [Angular guide](docs/guides/angular.md)               |
+| Angular        | Angular 20 (`>=20.0.0 <23`) | `npm i @inlaylab/opaline-angular` | [Angular guide](docs/guides/angular.md)               |
 | Svelte         | Svelte 5.20                 | `npm i @inlaylab/opaline-svelte`  | [Svelte guide](docs/guides/svelte.md)                 |
 | Web Components | Any modern browser          | `npm i @inlaylab/opaline-element` | [Web Components guide](docs/guides/web-components.md) |
 | No framework   | None                        | `npm i @inlaylab/opaline`         | [Quick start](#quick-start)                           |

@@ -50,7 +50,7 @@ const FRAMEWORKS: Framework[] = [
     pkg: '@inlaylab/opaline @inlaylab/opaline-angular',
     imports: `import { OpalineAvatar } from '@inlaylab/opaline-angular'\nimport { clay } from '@inlaylab/opaline/clay'`,
     render: `import { Component, input } from '@angular/core'\nimport { OpalineAvatar } from '@inlaylab/opaline-angular'\nimport { clay } from '@inlaylab/opaline/clay'\n\n@Component({\n  selector: 'app-user-avatar',\n  imports: [OpalineAvatar],\n  template: \`<op-avatar [seed]="email()" [look]="clay" [size]="48" />\`,\n})\nexport class UserAvatar {\n  readonly email = input.required<string>()\n  protected readonly clay = clay\n}`,
-    renderNote: 'Standalone, zoneless and SSR safe, with signal inputs. Angular 22.',
+    renderNote: 'Standalone, zoneless and SSR safe, with signal inputs. Angular 20+.',
     photo: `<op-avatar [seed]="user.email" [look]="clay" [src]="user.photoUrl" [alt]="user.name" />`,
     group: `import { OpalineAvatarGroup } from '@inlaylab/opaline-angular'\n\n// in the component's imports: [OpalineAvatarGroup]\n<op-avatar-group [members]="emails" [look]="clay" max="4" alt="Project members" />`,
   },

@@ -1,5 +1,12 @@
 # @inlaylab/opaline-react
 
+## 1.1.2
+
+### Patch Changes
+
+- Support React 18 (peer `react >=18`) and Angular 20 to 22 (peer `@angular/core >=20 <23`). Component output is unchanged. With React 18, use `@types/react` 18.2.6 or later.
+- @inlaylab/opaline@1.1.2
+
 ## 1.1.1
 
 ### Patch Changes

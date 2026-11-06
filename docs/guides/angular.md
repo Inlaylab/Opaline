@@ -6,7 +6,7 @@ Most users never upload a photo. This guide shows how to give each of them a uni
 
 You will learn how to install Opaline, render your first avatar, pick a style, add photo fallback, build a team group, theme the colors and use it with Angular SSR.
 
-**You need:** Angular 22 (`>=22.0.0 <23.0.0`). Node 22 or later for development.
+**You need:** Angular 20 or later (`>=20.0.0 <23.0.0`). Node 22 or later for development.
 
 ## 1. Why avatars need a seed
 
@@ -258,7 +258,7 @@ export class TeamList {
 
 | Problem | Fix |
 | ------- | --- |
-| Peer dependency error on install | The package supports Angular `>=22.0.0 <23.0.0`. |
+| Peer dependency error on install | The package supports Angular `>=20.0.0 <23.0.0`. |
 | `look` binding is undefined | Style objects must be class fields. Templates cannot read imports directly. |
 | Avatar changed after a user edited their email | Seed with a stable user ID. |
 | Photo never shows | Check `src` loads in the network tab. A failed photo keeps the generated avatar on purpose. |

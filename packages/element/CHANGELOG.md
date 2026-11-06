@@ -1,5 +1,11 @@
 # @inlaylab/opaline-element
 
+## 1.1.2
+
+### Patch Changes
+
+- @inlaylab/opaline@1.1.2
+
 ## 1.1.1
 
 ### Patch Changes

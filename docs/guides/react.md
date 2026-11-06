@@ -6,7 +6,7 @@ Most users never upload a photo. This guide shows how to give each of them a uni
 
 You will learn how to install Opaline, render your first avatar, pick a style, add photo fallback, build a team group, theme the colors and use it in Next.js Server Components.
 
-**You need:** React 19 or later. Node 22 or later for development.
+**You need:** React 18 or later. Node 22 or later for development.
 
 ## 1. Why avatars need a seed
 
