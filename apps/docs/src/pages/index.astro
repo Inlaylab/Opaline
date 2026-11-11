@@ -16,6 +16,28 @@ const SEEDS = Array.from({ length: 100 }, (_, i) => {
 })
 const LOOKS = ['morph', 'gradient', 'aura', 'clay', 'plush', 'pip', 'initials']
 const VERSION = core.version
+// The spotlight's floating characters: [look, seed, x %, y %, size px, depth 0 (sharp) .. 1 (far)].
+const FLOATERS: [string, string, number, number, number, number][] = [
+  ['pip', 'Nova', 4, 10, 64, 0.05],
+  ['plush', 'Juniper', 11, 24, 76, 0],
+  ['pip', 'Orbit', 27, 5, 30, 0.7],
+  ['pip', 'Kiwi', 2, 40, 34, 0.8],
+  ['plush', 'Mochi', 82, 9, 70, 0.1],
+  ['pip', 'Pebble', 91, 33, 44, 0.5],
+  ['pip', 'Sprocket', 90, 2, 28, 0.85],
+  ['plush', 'Bramble', 72, 5, 34, 0.75],
+  ['pip', 'Comet', 58, 3, 26, 0.9],
+  ['plush', 'Tofu', 40, 7, 28, 0.95],
+  ['pip', 'Fizz', 48, 96, 26, 1],
+]
+const ACCESSORIES = ['beret', 'cap', 'beanie', 'glasses', 'shades', 'flower', 'sprout', 'bow', 'star', 'none']
+const FORMS = ['circle', 'squircle', 'triangle', 'hexagon', 'diamond', 'heart', 'drop', 'pill', 'dome']
+const FEATURES = [
+  ['plush', 'Plush', 'Fuzzy felt critters. Now and then one wears a hat, glasses or a flower.', 'accessory', ACCESSORIES],
+  ['pip', 'Pip', 'Bold shapes with two pill eyes. Clear at 24px, friendly at 240.', 'form', FORMS],
+] as const
+const CREW = ['Ada', 'Kofi', 'Hana', 'Mateo', 'Priya', 'Søren']
+const STYLE_NAMES: Record<string, string> = { morph: 'Morph', gradient: 'Gradient', aura: 'Aura', clay: 'Clay', plush: 'Plush', pip: 'Pip', initials: 'Initials' }
 const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
 // Shortest working code per framework; the docs page has the full setup.
 const SHIP = [
@@ -35,7 +57,10 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
   <div class="hero">
     <div class="wrap hero-inner">
       <div class="hero-copy">
-        <a class="badge" href="https://github.com/Inlaylab" target="_blank" rel="noreferrer"><span class="dot"></span>Open source by <b>Inlaylab</b> · v{VERSION}</a>
+        <div class="hero-badges">
+          <a class="badge" href="https://github.com/Inlaylab" target="_blank" rel="noreferrer"><span class="dot"></span>Open source by <b>Inlaylab</b> · v{VERSION}</a>
+          <a class="badge badge-new" href="#new"><span class="new-tag">New</span>Plush and Pip<span aria-hidden="true">→</span></a>
+        </div>
         <h1>Every user<br /><span class="grad">gets a face.</span></h1>
         <p>Opaline turns a user ID, email or name into a friendly avatar. The same input draws the same face on every device, as clean SVG. Nothing is uploaded or stored.</p>
         <div class="hero-try">
@@ -80,6 +105,71 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
       ))}
     </div>
   </div>
+
+  <section class="spotlight" id="new" aria-labelledby="new-title">
+    <div class="wrap">
+      <div class="stage">
+        <div class="floaters" aria-hidden="true">
+          {FLOATERS.map(([look, seed, x, y, size, depth], i) => (
+            <span class={depth >= 0.7 ? 'floater far' : 'floater'} style={`--x:${x}%;--y:${y}%;--depth:${depth};--i:${i}`}>
+              <opaline-avatar seed={seed} look={look} size={String(size)}></opaline-avatar>
+            </span>
+          ))}
+        </div>
+        <div class="stage-head">
+          <span class="stage-eyebrow">New in 1.2</span>
+          <h2 id="new-title">Meet <span class="grad">Plush</span> and <span class="grad">Pip</span>.</h2>
+          <p>Two new looks, drawn as clean SVG like the rest. Pick one and try the options: every avatar below follows the name in the hero.</p>
+        </div>
+        <div class="features-pair">
+          {FEATURES.map(([look, name, blurb, option, values]) => (
+            <article class="feature" data-feature={look}>
+              <div class="feature-top">
+                <div class="feature-face" data-feature-face>
+                  <opaline-avatar seed="Starfire" look={look} size="152"></opaline-avatar>
+                </div>
+                <div class="feature-copy">
+                  <h3>{name}</h3>
+                  <p>{blurb}</p>
+                  <code>@inlaylab/opaline/{look}</code>
+                </div>
+              </div>
+              <div class="feature-label">{option}</div>
+              <div class="feature-chips" role="radiogroup" aria-label={`${name} ${option}`}>
+                <button type="button" role="radio" aria-checked="true" data-opt={option} data-value="">Seeded</button>
+                {values.map((v) => <button type="button" role="radio" aria-checked="false" data-opt={option} data-value={v}>{v}</button>)}
+              </div>
+              <div class="feature-crew">
+                {CREW.map((seed) => <opaline-avatar seed={seed} look={look} size="44" title={seed}></opaline-avatar>)}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block family" id="styles" aria-labelledby="family-title">
+    <div class="wrap">
+      <div class="family-head">
+        <div class="sec-head">
+          <span class="eyebrow">Seven styles</span>
+          <h2 id="family-title">One person, one color, every style.</h2>
+          <p>The seed picks the color first, so switching looks never recolors your users. Type a name in the hero and watch the whole row follow.</p>
+        </div>
+        <div class="family-seed" aria-live="polite"><span class="family-swatch" id="family-swatch"></span><span><b id="family-name">Starfire</b><small id="family-hue"></small></span></div>
+      </div>
+      <div class="family-row">
+        {LOOKS.map((l) => (
+          <a class="family-card" href={`${BASE}playground/?style=${l}`} data-family={l}>
+            <span class="family-tile"></span>
+            <span class="family-name">{STYLE_NAMES[l]}{(l === 'plush' || l === 'pip') && <span class="new-dot">New</span>}</span>
+            <code>/{l}</code>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
 
   <section class="block ship" id="install">
     <div class="wrap ship-grid">
@@ -175,6 +265,17 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
     const paint = () => {
       const seed = hero.value
       face.innerHTML = createAvatar(STYLES[look]!, { seed, size: 240, instance: 'f' }).svg
+      // The new-styles spotlight and the family row follow the typed seed too.
+      for (const el of document.querySelectorAll('[data-feature-face] opaline-avatar')) el.setAttribute('seed', seed)
+      let hue = 0
+      for (const el of document.querySelectorAll<HTMLElement>('[data-family]')) {
+        const a = createAvatar(STYLES[el.dataset.family!]!, { seed, size: 72, instance: 'y' })
+        el.querySelector('.family-tile')!.innerHTML = a.svg
+        hue = a.toJSON().hue as number
+      }
+      document.getElementById('family-name')!.textContent = seed || 'An empty seed'
+      document.getElementById('family-hue')!.textContent = `hue ${hue}° in all seven`
+      document.getElementById('family-swatch')!.style.background = `oklch(0.74 0.16 ${hue})`
       face.setAttribute('aria-label', `Avatar for ${seed || 'an empty seed'}`)
       for (const el of document.querySelectorAll<HTMLElement>('[data-hero] .tile'))
         el.innerHTML = createAvatar(STYLES[el.parentElement!.dataset.hero!]!, { seed, size: 56, instance: 'h' }).svg
@@ -213,6 +314,16 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
       for (const x of tabs.children) x.setAttribute('aria-selected', String(x === b))
       for (const p of document.querySelectorAll<HTMLElement>('[data-fw-pane]')) p.hidden = p.dataset.fwPane !== b.dataset.fw
     })
+
+    // Spotlight chips set one option on the big avatar and the crew under it.
+    for (const card of document.querySelectorAll<HTMLElement>('[data-feature]'))
+      card.querySelector('.feature-chips')!.addEventListener('click', (e) => {
+        const b = (e.target as HTMLElement).closest<HTMLElement>('[data-opt]')
+        if (!b) return
+        for (const x of b.parentElement!.children) x.setAttribute('aria-checked', String(x === b))
+        for (const a of card.querySelectorAll('opaline-avatar'))
+          b.dataset.value ? a.setAttribute(b.dataset.opt!, b.dataset.value) : a.removeAttribute(b.dataset.opt!)
+      })
 
     const chips = document.getElementById('gallery-chips')!
     chips.addEventListener('click', (e) => {

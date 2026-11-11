@@ -422,3 +422,35 @@ test('the hero hands its seed to the playground', async () => {
   await page.waitForURL(/\/playground\//)
   expect(await page.inputValue('#pg-seed')).toBe('Zoë N')
 })
+
+test('the spotlight chips dress the plush and shape the pip, big avatar and crew alike', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.click('[data-feature="plush"] [data-value="beret"]')
+  const plush = page.locator('[data-feature="plush"] opaline-avatar')
+  expect(await plush.count()).toBe(7)
+  for (const a of await plush.all()) expect(await a.getAttribute('accessory')).toBe('beret')
+  await page.click('[data-feature="pip"] [data-value="heart"]')
+  for (const a of await page.locator('[data-feature="pip"] opaline-avatar').all())
+    expect(await a.getAttribute('form')).toBe('heart')
+  // Seeded takes the option off again.
+  await page.click('[data-feature="plush"] [data-value=""]')
+  expect(await plush.first().getAttribute('accessory')).toBeNull()
+})
+
+test('the style family follows the hero seed with one hue across all seven', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.fill('#hero-seed', 'Grace Hopper')
+  expect(await page.textContent('#family-name')).toBe('Grace Hopper')
+  expect(
+    await page
+      .locator('[data-feature="plush"] [data-feature-face] opaline-avatar')
+      .getAttribute('seed'),
+  ).toBe('Grace Hopper')
+  const fills = await page
+    .locator('.family-tile svg')
+    .evaluateAll((svgs) => svgs.map((s) => /--avatar-c1, (#[0-9a-f]{6})/.exec(s.outerHTML)?.[1]))
+  expect(fills).toHaveLength(7)
+  expect(new Set(fills).size).toBe(1)
+})
