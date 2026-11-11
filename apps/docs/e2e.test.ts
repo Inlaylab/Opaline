@@ -456,3 +456,8 @@ test('the style family follows the hero seed with one hue across all seven', asy
   expect(fills).toHaveLength(7)
   expect(new Set(fills).size).toBe(1)
 })
+
+test('the stats show their final numbers in the HTML, before any script runs', async () => {
+  const html = readFileSync(new URL('./dist/index.html', import.meta.url), 'utf8')
+  for (const n of ['100,000', '52,000+', '7', '0']) expect(html).toContain(`>${n}</span>`)
+})

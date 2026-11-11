@@ -77,7 +77,8 @@
     "test": "vitest run",
     "lint": "tsc -p tsconfig.json && prettier --check . --ignore-path ../../.prettierignore",
     "test:perf": "vitest run --config vitest.perf.config.ts",
-    "freeze": "node --experimental-strip-types scripts/freeze.ts"
+    "freeze": "node --experimental-strip-types scripts/freeze.ts",
+    "uniqueness": "node --experimental-strip-types scripts/uniqueness.ts"
   },
   "devDependencies": {
     "@vitest/browser-playwright": "^5.1.0",

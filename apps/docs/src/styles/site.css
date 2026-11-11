@@ -2566,3 +2566,61 @@ footer .wrap {
     transition: none;
   }
 }
+
+/* Stats: four big numbers under the hero, divided by hairlines. */
+.stats {
+  padding-block: clamp(28px, 5vw, 48px) 0;
+}
+.stat-row {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.stat {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: clamp(18px, 3vw, 28px);
+  min-width: 0;
+}
+.stat + .stat {
+  border-left: 1px solid var(--border);
+}
+.stat-num {
+  /* Fit the box to the digits, so even "7" shows the whole gradient. */
+  justify-self: start;
+  font: 600 clamp(34px, 5vw, 52px) / 1 var(--display);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2) 60%, var(--accent-3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.08em;
+}
+.stat b {
+  font-size: 15px;
+}
+.stat span:last-child {
+  color: var(--muted-foreground);
+  font-size: 13.5px;
+  text-wrap: pretty;
+}
+@media (max-width: 860px) {
+  .stat-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stat:nth-child(3) {
+    border-left: 0;
+  }
+  .stat:nth-child(n + 3) {
+    border-top: 1px solid var(--border);
+  }
+}

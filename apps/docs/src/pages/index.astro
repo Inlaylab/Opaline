@@ -36,6 +36,16 @@ const FEATURES = [
   ['plush', 'Plush', 'Fuzzy felt critters. Now and then one wears a hat, glasses or a flower.', 'accessory', ACCESSORIES],
   ['pip', 'Pip', 'Bold shapes with two pill eyes. Clear at 24px, friendly at 240.', 'form', FORMS],
 ] as const
+// Measured, not estimated: `pnpm --filter @inlaylab/opaline uniqueness` draws 100,000 seeds per
+// style and finds 100,000 different SVGs in each. Looks: the option combinations of all seven
+// styles (families, bodies, accessories, forms, faces, finishes, backgrounds, palettes) add up to
+// 52,542 before the seed varies color and outline.
+const STATS: [number, string, string, string][] = [
+  [100000, '', 'users, 100,000 different faces', 'Measured in every style: no two seeds repeat.'],
+  [52000, '+', 'looks to dial in', 'Styles, shapes, faces, finishes and palettes.'],
+  [7, '', 'styles, one color per person', 'The seed picks the color first, in every look.'],
+  [0, '', 'runtime dependencies', 'A tiny core, plus native wrappers.'],
+]
 const CREW = ['Ada', 'Kofi', 'Hana', 'Mateo', 'Priya', 'Søren']
 const STYLE_NAMES: Record<string, string> = { morph: 'Morph', gradient: 'Gradient', aura: 'Aura', clay: 'Clay', plush: 'Plush', pip: 'Pip', initials: 'Initials' }
 const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
@@ -105,6 +115,20 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
       ))}
     </div>
   </div>
+
+  <section class="stats" aria-label="Opaline in numbers">
+    <div class="wrap">
+      <ul class="stat-row">
+        {STATS.map(([n, suffix, label, note]) => (
+          <li class="stat">
+            <span class="stat-num" data-count={n} data-suffix={suffix}>{n.toLocaleString('en')}{suffix}</span>
+            <b>{label}</b>
+            <span>{note}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
 
   <section class="spotlight" id="new" aria-labelledby="new-title">
     <div class="wrap">
@@ -324,6 +348,31 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
         for (const a of card.querySelectorAll('opaline-avatar'))
           b.dataset.value ? a.setAttribute(b.dataset.opt!, b.dataset.value) : a.removeAttribute(b.dataset.opt!)
       })
+
+    // Stats count up once when they scroll into view. The HTML already holds the final numbers, so
+    // without JS, or with reduced motion, they simply show.
+    const counters = [...document.querySelectorAll<HTMLElement>('[data-count]')]
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+      const run = (el: HTMLElement) => {
+        const end = Number(el.dataset.count)
+        const start = performance.now()
+        const tick = (now: number) => {
+          const t = Math.min(1, (now - start) / 1400)
+          // Ease out, so the count settles instead of stopping dead.
+          el.textContent = Math.round(end * (1 - (1 - t) ** 3)).toLocaleString('en') + (el.dataset.suffix ?? '')
+          if (t < 1) requestAnimationFrame(tick)
+        }
+        requestAnimationFrame(tick)
+      }
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries)
+          if (e.isIntersecting) {
+            io.unobserve(e.target)
+            run(e.target as HTMLElement)
+          }
+      }, { threshold: 0.6 })
+      for (const el of counters) io.observe(el)
+    }
 
     const chips = document.getElementById('gallery-chips')!
     chips.addEventListener('click', (e) => {

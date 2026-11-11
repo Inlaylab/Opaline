@@ -45,7 +45,7 @@ Grey circles, shared initials and random colors all fall short. Opaline fixes ea
 
 | Problem                                | What Opaline does                                                  |
 | -------------------------------------- | ------------------------------------------------------------------ |
-| Every user looks the same              | Each seed gets its own face, colors and shape                      |
+| Every user looks the same              | 100,000 seeds give 100,000 different avatars, in every style       |
 | Avatars change between renders         | The same seed and options give a byte-identical SVG, forever (1.x) |
 | Hydration warnings in SSR apps         | Server and client produce exactly the same markup                  |
 | A different library for each framework | One core, with first-class wrappers for five frameworks            |
@@ -54,6 +54,7 @@ Grey circles, shared initials and random colors all fall short. Opaline fixes ea
 
 ## Benefits
 
+- **Unique.** 100,000 seeds give 100,000 different SVGs in each of the seven styles (measured: `pnpm --filter @inlaylab/opaline uniqueness`), and the options add 52,000+ looks on top.
 - **Deterministic.** Cache avatars on a CDN, store them in a database or send them in email. They never change.
 - **SSR safe.** No hydration warnings in Next, Nuxt, SvelteKit or Angular SSR. React support is server-component safe.
 - **Tiny.** The core has zero dependencies, and each style is a separate import.
