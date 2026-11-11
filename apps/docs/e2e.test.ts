@@ -324,6 +324,8 @@ test('PNG downloads a real PNG at the chosen size', async () => {
   await page.goto(PG)
   await page.fill('#pg-seed', 'png me')
   await page.selectOption('#pg-size', '128')
+  // The size shows at once, not only after another control re-renders.
+  expect(await page.textContent('#pg-caption')).toContain('128px')
   const [download] = await Promise.all([page.waitForEvent('download'), page.click('#pg-png')])
   expect(download.suggestedFilename()).toBe('png_me.png')
   const bytes = readFileSync((await download.path())!)

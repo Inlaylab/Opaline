@@ -214,6 +214,10 @@ export function initPlayground(): void {
   const controls = $('pg-controls')
   controls.addEventListener('input', render)
   controls.addEventListener('change', render)
+  // Export size sits under the code, outside the form: without this the caption, code and PNG kept
+  // the old size until some other control re-rendered, and that late re-render could shift the
+  // buttons between mouse down and up, so a PNG click was lost.
+  $('pg-size').addEventListener('change', render)
   $('pg-shuffle').addEventListener('click', () => {
     setField('seed', randomHero(field('seed')))
     render()
