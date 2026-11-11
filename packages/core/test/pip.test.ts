@@ -40,7 +40,7 @@ describe('pick order', () => {
 })
 
 describe('geometry', () => {
-  test('every form and its eyes stay inside the frame', () => {
+  test('every form and its eyes stay inside the frame', { timeout: 30_000 }, () => {
     const outside: string[] = []
     for (const seed of seeds(40))
       for (const form of FORMS) {

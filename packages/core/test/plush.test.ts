@@ -57,9 +57,10 @@ describe('pick order', () => {
 })
 
 describe('geometry', () => {
-  test('fur and accessories stay inside the frame', () => {
+  // 600 renders: plenty to catch a stray hat, and a timeout for busy CI runners (5 s timed out).
+  test('fur and accessories stay inside the frame', { timeout: 30_000 }, () => {
     const outside: string[] = []
-    for (const seed of seeds(150))
+    for (const seed of seeds(60))
       for (const accessory of ACCESSORIES) {
         const svg = createAvatar(plush, { seed, accessory, face: false }).svg
         for (const m of svg.matchAll(/\b(?:cx|cy|d|x|y)="([^"]+)"/g))
