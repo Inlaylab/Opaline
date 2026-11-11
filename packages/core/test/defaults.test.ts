@@ -5,6 +5,8 @@ import { clay } from '../src/styles/clay.ts'
 import { gradient } from '../src/styles/gradient.ts'
 import { initials } from '../src/styles/initials.ts'
 import { morph } from '../src/styles/morph.ts'
+import { pip } from '../src/styles/pip.ts'
+import { plush } from '../src/styles/plush.ts'
 
 const seeds = ['ada@inlay.dev', 'Grace', '42', 'Zoë']
 const cases = [
@@ -13,6 +15,8 @@ const cases = [
   [clay, { finish: 'soft', palette: 'vivid', face: true, backdrop: 'none' }],
   [aura, { palette: 'vivid', shape: 'circle' }],
   [initials, { palette: 'vivid', shape: 'circle' }],
+  [plush, { palette: 'vivid', face: true, backdrop: 'none' }],
+  [pip, { palette: 'vivid', face: true, finish: 'flat', backdrop: 'none' }],
 ] as const
 
 for (const [style, defaults] of cases)
@@ -31,6 +35,6 @@ test('option order never matters', () => {
 })
 
 test('a numeric seed equals its string form in every style', () => {
-  for (const style of [morph, gradient, aura, clay, initials])
+  for (const style of [morph, gradient, aura, clay, initials, plush, pip])
     expect(createAvatar(style, { seed: 42 }).svg).toBe(createAvatar(style, { seed: '42' }).svg)
 })

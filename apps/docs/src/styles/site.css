@@ -448,6 +448,7 @@ label.field {
 }
 .hero-looks {
   position: relative;
+  width: min(100%, 380px);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -459,6 +460,8 @@ label.field {
   box-shadow: var(--shadow);
 }
 .hero-looks button {
+  /* Seven looks: four on the first row and three centered under them, at every width. */
+  flex: 0 0 calc((100% - 30px) / 4);
   display: grid;
   justify-items: center;
   gap: 2px;
@@ -516,7 +519,6 @@ label.field {
 }
 @media (max-width: 480px) {
   .hero-looks {
-    flex-wrap: nowrap;
     gap: 0;
   }
   .hero-looks button {

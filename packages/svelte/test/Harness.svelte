@@ -4,6 +4,8 @@
   import { clay } from '@inlaylab/opaline/clay'
   import { gradient } from '@inlaylab/opaline/gradient'
   import { initials } from '@inlaylab/opaline/initials'
+  import { pip } from '@inlaylab/opaline/pip'
+  import { plush } from '@inlaylab/opaline/plush'
   import { morph } from '@inlaylab/opaline/morph'
   import Avatar from '../src/lib/Avatar.svelte'
 
@@ -13,7 +15,7 @@
   export const state = $state({ props: initial })
   const view = $derived.by(() => {
     const { look = 'morph', ...rest } = state.props
-    return { look: { morph, gradient, aura, clay, initials }[look], ...rest }
+    return { look: { morph, gradient, aura, clay, initials, plush, pip }[look], ...rest }
   })
 </script>
 

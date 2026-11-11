@@ -8,6 +8,8 @@ export default defineConfig({
     aura: 'src/styles/aura.ts',
     clay: 'src/styles/clay.ts',
     initials: 'src/styles/initials.ts',
+    plush: 'src/styles/plush.ts',
+    pip: 'src/styles/pip.ts',
     png: 'src/png.ts',
   },
   format: 'esm',

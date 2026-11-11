@@ -3,6 +3,8 @@ import { aura } from '../src/styles/aura.ts'
 import { gradient } from '../src/styles/gradient.ts'
 import { initials } from '../src/styles/initials.ts'
 import { morph } from '../src/styles/morph.ts'
+import { pip } from '../src/styles/pip.ts'
+import { plush } from '../src/styles/plush.ts'
 import { goldenSuite } from './golden.ts'
 
 goldenSuite(morph, 'morph')
@@ -17,3 +19,7 @@ goldenSuite(clay, 'clay-gloss', { finish: 'gloss' })
 goldenSuite(clay, 'clay-hood', { body: 'hood' })
 goldenSuite(initials, 'initials')
 goldenSuite(initials, 'initials-square', { shape: 'square' })
+goldenSuite(plush, 'plush')
+goldenSuite(plush, 'plush-glasses', { accessory: 'glasses' })
+goldenSuite(pip, 'pip')
+goldenSuite(pip, 'pip-gloss', { finish: 'gloss' })

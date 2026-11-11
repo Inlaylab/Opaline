@@ -86,6 +86,8 @@ const STYLES = [
   ['morph', 'Morph', 'An organic blob with a face.'],
   ['gradient', 'Gradient', 'Smooth shapes with expressive faces.'],
   ['aura', 'Aura', 'A glowing orb of blended color.'],
+  ['plush', 'Plush', 'Fuzzy felt critters, now and then wearing a hat, glasses or a flower.'],
+  ['pip', 'Pip', 'Bold geometric shapes with two pill eyes. Reads well at 24px.'],
   ['initials', 'Initials', 'Readable letters on a seeded tile.'],
 ]
 const OPTIONS = [
@@ -93,12 +95,14 @@ const OPTIONS = [
   ['size', 'number', 'Pixel size. Default 64 (40 in groups).'],
   ['palette', 'vivid · pastel · electric · muted · warm · cool · mono', 'Color family. Default vivid.'],
   ['shape', 'circle · squircle · square', 'Every style. Aura and Initials default to circle; on the others it adds a tinted tile.'],
-  ['finish', 'flat · soft · gloss', 'Light and shade. Morph and Gradient default to flat, Clay to soft.'],
+  ['finish', 'flat · soft · gloss', 'Light and shade. Morph, Gradient and Pip default to flat, Clay to soft. Plush is always felt.'],
   ['expression', 'beam · content · … · giggle', 'Fix the face. Or set mood: happy · calm · surprised · playful.'],
-  ['face', 'boolean', 'Morph, Gradient and Clay show a face unless false.'],
+  ['face', 'boolean', 'Every style but Aura and Initials shows a face unless false.'],
   ['family', 'egg · duo · tri · cushion · clover · petal', 'Morph and Gradient blob shape.'],
   ['body · ears', 'jelly · hood · cat · bear · bunny', 'Clay only. Ears go with the hood.'],
   ['text', 'string', 'Initials only. Up to 3 letters, shown as given.'],
+  ['accessory', 'none · beret · cap · beanie · glasses · shades · flower · sprout · bow · star', 'Plush only. Seeded when unset; glasses and shades need the face.'],
+  ['form', 'circle · squircle · triangle · hexagon · diamond · heart · drop · pill · dome', 'Pip only. Seeded when unset.'],
   ['backdrop', 'none · tint', 'A soft circle behind the body.'],
   ['src · alt', 'string', 'Components only: a photo shown once it loads, and an accessible name.'],
   ['members · max', 'array · number', 'Groups only: who to show, and how many before the +N chip.'],
@@ -172,7 +176,7 @@ const fw0 = FRAMEWORKS[0]!.id
 
       <section id="styles" class="doc-sec">
         <h2>Styles</h2>
-        <p>Five looks, one API. Each is its own import path: <code>@inlaylab/opaline/&lt;style&gt;</code>.</p>
+        <p>Seven looks, one API. A seed keeps its color in every look. Each is its own import path: <code>@inlaylab/opaline/&lt;style&gt;</code>.</p>
         <div class="style-grid">
           {STYLES.map(([id, name, desc]) => (
             <div class="card style-tile">

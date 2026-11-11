@@ -43,14 +43,14 @@ const { svg } = createAvatar(clay, { seed: 'ada@inlay.dev', finish: 'gloss' })
 
 Grey circles, shared initials and random colors all fall short. Opaline fixes each one.
 
-| Problem                                 | What Opaline does                                                   |
-| --------------------------------------- | ------------------------------------------------------------------- |
-| Every user looks the same               | Each seed gets its own face, colors and shape                       |
-| Avatars change between renders          | The same seed and options give a byte-identical SVG, forever (1.x)  |
-| Hydration warnings in SSR apps          | Server and client produce exactly the same markup                   |
-| A different library for each framework  | One core, with first-class wrappers for five frameworks             |
-| Heavy dependencies and slow pages       | Zero dependencies. Import only the styles you use                   |
-| A broken photo URL leaves a blank hole  | Pass `src`. If the photo fails, the generated avatar stays          |
+| Problem                                | What Opaline does                                                  |
+| -------------------------------------- | ------------------------------------------------------------------ |
+| Every user looks the same              | Each seed gets its own face, colors and shape                      |
+| Avatars change between renders         | The same seed and options give a byte-identical SVG, forever (1.x) |
+| Hydration warnings in SSR apps         | Server and client produce exactly the same markup                  |
+| A different library for each framework | One core, with first-class wrappers for five frameworks            |
+| Heavy dependencies and slow pages      | Zero dependencies. Import only the styles you use                  |
+| A broken photo URL leaves a blank hole | Pass `src`. If the photo fails, the generated avatar stays         |
 
 ## Benefits
 
@@ -64,7 +64,7 @@ Grey circles, shared initials and random colors all fall short. Opaline fixes ea
 
 ## Styles
 
-<img src="docs/assets/styles.png" alt="Aura, Morph, Gradient, Clay and Initials avatar styles" width="100%">
+<img src="docs/assets/styles.png" alt="Aura, Morph, Gradient, Clay, Plush, Pip and Initials avatar styles" width="100%">
 
 | Style        | Import                       | Looks like                                                             |
 | ------------ | ---------------------------- | ---------------------------------------------------------------------- |
@@ -72,7 +72,11 @@ Grey circles, shared initials and random colors all fall short. Opaline fixes ea
 | **Morph**    | `@inlaylab/opaline/morph`    | An organic blob with a face                                            |
 | **Gradient** | `@inlaylab/opaline/gradient` | Smooth shapes with expressive faces                                    |
 | **Clay**     | `@inlaylab/opaline/clay`     | Small characters: a jelly body, or a hood with cat, bear or bunny ears |
+| **Plush**    | `@inlaylab/opaline/plush`    | Fuzzy felt critters, now and then wearing a hat, glasses or a flower   |
+| **Pip**      | `@inlaylab/opaline/pip`      | Bold geometric shapes with two pill eyes, legible down to 24px         |
 | **Initials** | `@inlaylab/opaline/initials` | The person's initials on a seeded tile with the Opaline sheen          |
+
+A seed keeps its color in every style, so switching looks never recolors your users.
 
 Not sure which to pick? Try them all in the [playground](https://inlaylab.github.io/Opaline/playground/).
 
@@ -212,6 +216,23 @@ createAvatar(clay, { seed: 'ada@inlay.dev', body: 'hood', ears: 'bunny', finish:
 
 Any option you set fixes that part of the avatar. The seed fills in the rest.
 
+### Plush and Pip
+
+```ts
+import { plush } from '@inlaylab/opaline/plush'
+import { pip } from '@inlaylab/opaline/pip'
+
+createAvatar(plush, { seed: 'ada@inlay.dev', accessory: 'beret' })
+createAvatar(pip, { seed: 'ada@inlay.dev', form: 'heart', finish: 'gloss' })
+```
+
+| Option      | Values                                                                                   | Default                                          |
+| ----------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `accessory` | `none`, `beret`, `cap`, `beanie`, `glasses`, `shades`, `flower`, `sprout`, `bow`, `star` | Chosen by the seed (Plush). Eyewear needs a face |
+| `form`      | `circle`, `squircle`, `triangle`, `hexagon`, `diamond`, `heart`, `drop`, `pill`, `dome`  | Chosen by the seed (Pip)                         |
+
+Plush takes `mood`, `expression` and `family` like Morph; its felt is its finish. Pip takes `finish` (`flat` by default) and has pill eyes instead of expressions.
+
 ### Initials and shapes
 
 <img src="docs/launch/images/new-in-1-1.png" alt="Initials, avatar groups and PNG export, new in 1.1" width="100%">
@@ -228,20 +249,20 @@ createAvatar(initials, { seed: user.id, text: 'Op', palette: 'pastel' })
 Every style takes `shape`: `circle`, `squircle` or `square`.
 
 - **Aura and Initials** draw their tile in that shape. They default to `circle`.
-- **Morph, Gradient and Clay** draw a soft tinted tile in that shape behind the character. Leave `shape` unset for a transparent background.
+- **Morph, Gradient, Clay, Plush and Pip** draw a soft tinted tile in that shape behind the character. Leave `shape` unset for a transparent background.
 
 ### Theming
 
 Colors come out as CSS variables, so you can restyle avatars without rebuilding them.
 
-| Variable          | Colors                               |
-| ----------------- | ------------------------------------ |
-| `--avatar-c1`     | The body                             |
-| `--avatar-c2`     | The arms and ears (Clay)             |
-| `--avatar-c3`     | The hood opening (Clay)              |
-| `--avatar-fg`     | The Initials letters                 |
-| `--avatar-ring`   | The ring between grouped avatars     |
-| `--avatar-more-bg`, `--avatar-more-fg` | The `+N` chip in a group |
+| Variable                               | Colors                                     |
+| -------------------------------------- | ------------------------------------------ |
+| `--avatar-c1`                          | The body                                   |
+| `--avatar-c2`                          | The arms and ears (Clay), the fuzz (Plush) |
+| `--avatar-c3`                          | The hood opening (Clay)                    |
+| `--avatar-fg`                          | The Initials letters                       |
+| `--avatar-ring`                        | The ring between grouped avatars           |
+| `--avatar-more-bg`, `--avatar-more-fg` | The `+N` chip in a group                   |
 
 ## Avatar groups
 

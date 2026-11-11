@@ -4,6 +4,8 @@ import { clay } from '../src/styles/clay.ts'
 import { gradient } from '../src/styles/gradient.ts'
 import { initials } from '../src/styles/initials.ts'
 import { morph } from '../src/styles/morph.ts'
+import { pip } from '../src/styles/pip.ts'
+import { plush } from '../src/styles/plush.ts'
 
 /** 100 seeds in the shapes real apps pass: emails, names, IDs, numbers, unicode. */
 export const FROZEN_SEEDS: readonly string[] = Array.from({ length: 100 }, (_, i) =>
@@ -56,5 +58,34 @@ export const FROZEN: readonly (readonly [string, Style<any>, readonly object[]])
     'initials',
     initials,
     [{}, { shape: 'squircle' }, { shape: 'square' }, { palette: 'pastel' }, { text: 'Op' }],
+  ],
+  [
+    'plush',
+    plush,
+    [
+      {},
+      { accessory: 'none' },
+      { accessory: 'glasses' },
+      { accessory: 'beanie' },
+      { palette: 'pastel' },
+      { expression: 'wink' },
+      { backdrop: 'tint' },
+      { face: false },
+      { shape: 'squircle' },
+    ],
+  ],
+  [
+    'pip',
+    pip,
+    [
+      {},
+      { finish: 'soft' },
+      { finish: 'gloss' },
+      { form: 'heart' },
+      { palette: 'pastel' },
+      { backdrop: 'tint' },
+      { face: false },
+      { shape: 'square' },
+    ],
   ],
 ]

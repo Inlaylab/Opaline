@@ -14,7 +14,7 @@ const SEEDS = Array.from({ length: 100 }, (_, i) => {
         ? `user_${(i * 7919).toString(36)}`
         : `${n}${i}`
 })
-const LOOKS = ['morph', 'gradient', 'aura', 'clay', 'initials']
+const LOOKS = ['morph', 'gradient', 'aura', 'clay', 'plush', 'pip', 'initials']
 const VERSION = core.version
 const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
 // Shortest working code per framework; the docs page has the full setup.
@@ -161,9 +161,11 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
     import { gradient } from '@inlaylab/opaline/gradient'
     import { initials } from '@inlaylab/opaline/initials'
     import { morph } from '@inlaylab/opaline/morph'
+    import { pip } from '@inlaylab/opaline/pip'
+    import { plush } from '@inlaylab/opaline/plush'
     import { randomHero } from '../scripts/heroes'
 
-    const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials }
+    const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials, plush, pip }
     const hero = document.getElementById('hero-seed') as HTMLInputElement
     const face = document.getElementById('hero-face')!
     const customize = document.getElementById('hero-customize') as HTMLAnchorElement

@@ -221,6 +221,25 @@ test('style-specific controls hide for other styles', async () => {
   expect(await page.locator('#pg-text-field').isVisible()).toBe(true)
   expect(await page.locator('#pg-finish-field').isVisible()).toBe(false)
   expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
+  await pick(page, 'style', 'plush')
+  expect(await page.locator('#pg-accessory-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-finish-field').isVisible()).toBe(false)
+  expect(await page.locator('#pg-expression-field').isVisible()).toBe(true)
+  await pick(page, 'style', 'pip')
+  expect(await page.locator('#pg-form-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-accessory-field').isVisible()).toBe(false)
+  expect(await page.locator('#pg-finish-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
+})
+
+test('plush and pip options reach the link and the code', async () => {
+  const page = await newPage()
+  await page.goto(`${PG}?seed=ada&style=plush&accessory=beret`)
+  expect(await page.locator('#pg-accessory').inputValue()).toBe('beret')
+  expect(await page.locator('#pg-code').textContent()).toContain('"accessory": "beret"')
+  await page.goto(`${PG}?seed=ada&style=pip&form=heart`)
+  expect(await page.locator('#pg-form').inputValue()).toBe('heart')
+  expect(await page.locator('#pg-code').textContent()).toContain('"form": "heart"')
 })
 
 /**

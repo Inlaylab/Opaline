@@ -56,6 +56,14 @@
       "types": "./dist/initials.d.ts",
       "import": "./dist/initials.js"
     },
+    "./plush": {
+      "types": "./dist/plush.d.ts",
+      "import": "./dist/plush.js"
+    },
+    "./pip": {
+      "types": "./dist/pip.d.ts",
+      "import": "./dist/pip.js"
+    },
     "./png": {
       "types": "./dist/png.d.ts",
       "import": "./dist/png.js"

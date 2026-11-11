@@ -5,7 +5,7 @@ const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
 // Each cell: [text, tone]. Tone 'yes' or 'no' colors the cell; facts only, no scores.
 type Cell = string | [string, 'yes' | 'no']
 const ROWS: [string, Cell, Cell, Cell][] = [
-  ['Look', 'Five styles: soft characters, glowing orbs and initials', '30+ styles, from pixel art to illustrated people', 'Six abstract variants: marble, beam, pixel, sunset, ring, bauhaus'],
+  ['Look', 'Seven styles: soft characters, felt critters, glowing orbs and initials', '30+ styles, from pixel art to illustrated people', 'Six abstract variants: marble, beam, pixel, sunset, ring, bauhaus'],
   ['Framework components', ['React, Vue, Svelte, Angular and a Web Component', 'yes'], 'A JavaScript library: you place its SVG yourself', 'React'],
   ['Runtime dependencies', ['0', 'yes'], '0 in @dicebear/core; each style is its own package', '0 (React as a peer)'],
   ['Output', 'SVG string; PNG in the browser with toPng', 'SVG; PNG and JPEG with @dicebear/converter or the HTTP API', 'SVG as a React element'],
