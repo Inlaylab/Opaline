@@ -1,5 +1,13 @@
 # @inlaylab/opaline-angular
 
+## 1.2.0
+
+### Patch Changes
+
+- New `accessory` and `form` options for the Plush and Pip styles.
+- Updated dependencies
+  - @inlaylab/opaline@1.2.0
+
 ## 1.1.2
 
 ### Patch Changes

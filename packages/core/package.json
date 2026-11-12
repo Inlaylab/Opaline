@@ -1,6 +1,6 @@
 {
   "name": "@inlaylab/opaline",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Seeded, deterministic SVG avatars. Zero dependencies.",
   "keywords": [
     "avatar",
