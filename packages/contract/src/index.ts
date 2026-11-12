@@ -4,6 +4,8 @@ import {
   type ClayOptions,
   type GroupMember,
   type InitialsOptions,
+  type PipOptions,
+  type PlushOptions,
   type Shape,
   type Style,
 } from '@inlaylab/opaline'
@@ -12,6 +14,8 @@ import { clay } from '@inlaylab/opaline/clay'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
+import { pip } from '@inlaylab/opaline/pip'
+import { plush } from '@inlaylab/opaline/plush'
 import { afterEach, expect, test } from 'vitest'
 
 /** The props every wrapper accepts. `look` is a name here; each adapter maps it to its own input. */
@@ -20,10 +24,12 @@ export type Props = {
   size?: number
   src?: string
   alt?: string
-  look?: 'morph' | 'gradient' | 'aura' | 'clay' | 'initials'
+  look?: 'morph' | 'gradient' | 'aura' | 'clay' | 'initials' | 'plush' | 'pip'
 } & ClayOptions &
   AuraOptions &
-  InitialsOptions
+  InitialsOptions &
+  PlushOptions &
+  PipOptions
 
 export type Adapter = {
   name: string
@@ -42,6 +48,8 @@ export const STYLES: Record<NonNullable<Props['look']>, Style<any>> = {
   aura,
   clay,
   initials,
+  plush,
+  pip,
 }
 
 // A real 1×1 PNG, and bytes that are not an image, so no test needs the network.
@@ -151,6 +159,18 @@ export function runContract(adapter: Adapter): void {
     }
     const root = await adapter.render(props)
     expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
+  })
+
+  test(`${adapter.name}: plush and pip options reach the core`, async () => {
+    for (const props of [
+      { seed: 'b', look: 'plush', accessory: 'beret', expression: 'wink' },
+      { seed: 'b', look: 'plush', accessory: 'glasses', palette: 'pastel', shape: 'squircle' },
+      { seed: 'b', look: 'pip', form: 'heart', finish: 'gloss' },
+      { seed: 'c', look: 'pip', form: 'drop', face: false, backdrop: 'tint' },
+    ] as Props[]) {
+      const root = await adapter.render(props)
+      expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
+    }
   })
 
   test(`${adapter.name}: initials with shape and text reach the core`, async () => {

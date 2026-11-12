@@ -20,7 +20,7 @@ npm i @inlaylab/opaline-element
 ></opaline-avatar>
 ```
 
-Attributes: `seed`, `look` (`morph`, `gradient`, `aura`, `clay` or `initials`), `size`, `src`, `alt`, `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body`, `ears` and `text`.
+Attributes: `seed`, `look` (`morph`, `gradient`, `aura`, `clay`, `plush`, `pip` or `initials`), `size`, `src`, `alt`, `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body`, `ears`, `text`, `accessory` and `form`.
 
 With `src`, the photo shows once it loads, and a failed photo leaves the generated avatar. With `alt`, the avatar has `role="img"`; without it, it is hidden from assistive tech.
 

@@ -5,7 +5,7 @@ const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
 // Each cell: [text, tone]. Tone 'yes' or 'no' colors the cell; facts only, no scores.
 type Cell = string | [string, 'yes' | 'no']
 const ROWS: [string, Cell, Cell, Cell][] = [
-  ['Look', 'Five styles: soft characters, glowing orbs and initials', '30+ styles, from pixel art to illustrated people', 'Six abstract variants: marble, beam, pixel, sunset, ring, bauhaus'],
+  ['Look', 'Seven styles: soft characters, gummy critters, glowing orbs and initials', '30+ styles, from pixel art to illustrated people', 'Six abstract variants: marble, beam, pixel, sunset, ring, bauhaus'],
   ['Framework components', ['React, Vue, Svelte, Angular and a Web Component', 'yes'], 'A JavaScript library: you place its SVG yourself', 'React'],
   ['Runtime dependencies', ['0', 'yes'], '0 in @dicebear/core; each style is its own package', '0 (React as a peer)'],
   ['Output', 'SVG string; PNG in the browser with toPng', 'SVG; PNG and JPEG with @dicebear/converter or the HTTP API', 'SVG as a React element'],
@@ -21,13 +21,14 @@ const cell = (c: Cell) => (typeof c === 'string' ? { text: c, tone: '' } : { tex
 ---
 
 <Base page="compare" title="Opaline vs DiceBear vs Boring Avatars" description="How Opaline compares with DiceBear and Boring Avatars: styles, frameworks, output formats, licensing and stability.">
-  <div class="wrap compare-hero">
-    <span class="eyebrow">Compare</span>
-    <h1>Opaline, DiceBear and Boring Avatars</h1>
-    <p>All three turn a string into an avatar. They differ in what the avatars look like, where they run and what they promise. Here is an honest side-by-side, so you can pick the right one, even when it is not us.</p>
+  <div class="wrap page-head">
+    <div>
+      <h1>Opaline, DiceBear and Boring Avatars</h1>
+      <p>All three turn a string into an avatar. They differ in what the avatars look like, where they run and what they promise. Here is an honest side-by-side, so you can pick the right one, even when it is not us.</p>
+    </div>
   </div>
 
-  <section class="block" style="border-top:0;padding-top:16px">
+  <section class="block flush">
     <div class="wrap docs-stack">
       <div class="card table-wrap">
         <table class="compare-table">
@@ -110,7 +111,7 @@ import { aura } from '@inlaylab/opaline/aura'
       </div>
 
       <p class="fine-print">
-        Checked in November 2026 against each project's npm package and README (@dicebear/core 10.7, @dicebear/collection 9.4, boring-avatars 2.0). Both are good open-source projects; this page shows none of their art. If something here is out of date, <a href="https://github.com/Inlaylab/Opaline/issues">open an issue</a> and we will fix it. <a href={`${BASE}playground/`}>Try Opaline in the playground →</a>
+        Checked in November 2026 against each project's npm package and README (@dicebear/core 10.7, @dicebear/collection 9.4, boring-avatars 2.0). Both are good open-source projects; this page shows none of their art. If something here is out of date, <a href="https://github.com/Inlaylab/Opaline/issues">open an issue</a> and we will fix it. <a href={`${BASE}playground/`}>Try Opaline in the playground</a>
       </p>
     </div>
   </section>

@@ -256,5 +256,7 @@ const CALL = ['Ada Lovelace', 'Kofi Mensah', 'Priya Raman', 'Mateo Rossi', 'Hana
     for (const x of filter.children) x.setAttribute('aria-selected', String(x === b))
     for (const card of document.querySelectorAll<HTMLElement>('.demos > .demo'))
       card.hidden = cat !== 'All' && card.dataset.cat !== cat
+    // On a phone the cards are one swipe row: show the first match after filtering.
+    document.querySelector('.demos')!.scrollLeft = 0
   })
 </script>

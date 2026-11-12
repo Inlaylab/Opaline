@@ -15,7 +15,7 @@ avatar.svg // '<svg …>'
 avatar.toJSON() // { style: 'clay', seed: 'ada@inlay.dev', body: 'hood', … }
 ```
 
-Styles are separate imports, so you ship only what you use: `@inlaylab/opaline/morph`, `/gradient`, `/aura`, `/clay` and `/initials`.
+Styles are separate imports, so you ship only what you use: `@inlaylab/opaline/morph`, `/gradient`, `/aura`, `/clay`, `/plush`, `/pip` and `/initials`.
 
 Options: `seed`, `size`, `palette`, `shape` (`circle`, `squircle` or `square`, on every style), `finish`, `expression` or `mood`, `face`, `family`, `backdrop`, plus `body` and `ears` (Clay) and `text` (Initials). Any option you set fixes that part; the seed fills in the rest.
 

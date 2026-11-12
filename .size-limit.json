@@ -57,6 +57,26 @@
     "gzip": true
   },
   {
+    "name": "core + plush",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/plush.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/plush.js": "{ plush }"
+    },
+    "limit": "8 KB",
+    "gzip": true
+  },
+  {
+    "name": "core + pip",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/pip.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/pip.js": "{ pip }"
+    },
+    "limit": "5 KB",
+    "gzip": true
+  },
+  {
     "name": "png (toPng)",
     "path": "packages/core/dist/png.js",
     "import": "{ toPng }",
@@ -79,7 +99,9 @@
       "@inlaylab/opaline/gradient",
       "@inlaylab/opaline/aura",
       "@inlaylab/opaline/clay",
-      "@inlaylab/opaline/initials"
+      "@inlaylab/opaline/initials",
+      "@inlaylab/opaline/plush",
+      "@inlaylab/opaline/pip"
     ],
     "limit": "2 KB",
     "gzip": true

@@ -113,6 +113,8 @@ export function face(
   rng: Rng,
   at: { x: number; y: number; r: number; hue: number },
   opts: { mood?: Mood; expression?: Expression },
+  /** Extra art in the face's own frame (eyes at ±spread on y = 0), e.g. glasses. Drawn last. */
+  wear?: (spread: number, ink: string) => string,
 ): { svg: string; expression: Expression } {
   const g = rng.fork('face')
   const moodPool = NAMES.filter((n) => EXPRESSIONS[n].mood === opts.mood)
@@ -150,6 +152,7 @@ export function face(
     )
   }
   out += mouth(E.mouth, ink, oklchToHex({ l: 0.68, c: 0.16, h: 15 }))
+  if (wear) out += wear(spread, ink)
   const scale = Math.max(0.5, Math.min(1.2, at.r / 22))
   return {
     svg: el(

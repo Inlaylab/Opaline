@@ -56,6 +56,14 @@
       "types": "./dist/initials.d.ts",
       "import": "./dist/initials.js"
     },
+    "./plush": {
+      "types": "./dist/plush.d.ts",
+      "import": "./dist/plush.js"
+    },
+    "./pip": {
+      "types": "./dist/pip.d.ts",
+      "import": "./dist/pip.js"
+    },
     "./png": {
       "types": "./dist/png.d.ts",
       "import": "./dist/png.js"
@@ -69,7 +77,8 @@
     "test": "vitest run",
     "lint": "tsc -p tsconfig.json && prettier --check . --ignore-path ../../.prettierignore",
     "test:perf": "vitest run --config vitest.perf.config.ts",
-    "freeze": "node --experimental-strip-types scripts/freeze.ts"
+    "freeze": "node --experimental-strip-types scripts/freeze.ts",
+    "uniqueness": "node --experimental-strip-types scripts/uniqueness.ts"
   },
   "devDependencies": {
     "@vitest/browser-playwright": "^5.1.0",

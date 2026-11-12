@@ -86,6 +86,8 @@ const STYLES = [
   ['morph', 'Morph', 'An organic blob with a face.'],
   ['gradient', 'Gradient', 'Smooth shapes with expressive faces.'],
   ['aura', 'Aura', 'A glowing orb of blended color.'],
+  ['plush', 'Plush', 'Gummy critters, now and then wearing a hat, glasses or a flower.'],
+  ['pip', 'Pip', 'Bold geometric shapes with two pill eyes. Reads well at 24px.'],
   ['initials', 'Initials', 'Readable letters on a seeded tile.'],
 ]
 const OPTIONS = [
@@ -93,12 +95,14 @@ const OPTIONS = [
   ['size', 'number', 'Pixel size. Default 64 (40 in groups).'],
   ['palette', 'vivid · pastel · electric · muted · warm · cool · mono', 'Color family. Default vivid.'],
   ['shape', 'circle · squircle · square', 'Every style. Aura and Initials default to circle; on the others it adds a tinted tile.'],
-  ['finish', 'flat · soft · gloss', 'Light and shade. Morph and Gradient default to flat, Clay to soft.'],
+  ['finish', 'flat · soft · gloss', 'Light and shade. Morph, Gradient and Pip default to flat, Clay to soft. Plush is always gummy.'],
   ['expression', 'beam · content · … · giggle', 'Fix the face. Or set mood: happy · calm · surprised · playful.'],
-  ['face', 'boolean', 'Morph, Gradient and Clay show a face unless false.'],
+  ['face', 'boolean', 'Every style but Aura and Initials shows a face unless false.'],
   ['family', 'egg · duo · tri · cushion · clover · petal', 'Morph and Gradient blob shape.'],
   ['body · ears', 'jelly · hood · cat · bear · bunny', 'Clay only. Ears go with the hood.'],
   ['text', 'string', 'Initials only. Up to 3 letters, shown as given.'],
+  ['accessory', 'none · beret · cap · beanie · glasses · shades · flower · sprout · bow · star', 'Plush only. Seeded when unset; glasses and shades need the face.'],
+  ['form', 'circle · squircle · triangle · hexagon · diamond · heart · drop · pill · dome', 'Pip only. Seeded when unset.'],
   ['backdrop', 'none · tint', 'A soft circle behind the body.'],
   ['src · alt', 'string', 'Components only: a photo shown once it loads, and an accessible name.'],
   ['members · max', 'array · number', 'Groups only: who to show, and how many before the +N chip.'],
@@ -123,7 +127,6 @@ const fw0 = FRAMEWORKS[0]!.id
 <Base page="docs" title="Opaline docs: add avatars to any framework" description="Install Opaline and render your first avatar in React, Vue, Svelte, Angular, plain HTML or JavaScript, step by step.">
   <div class="wrap page-head">
     <div>
-      <span class="eyebrow">Docs</span>
       <h1>Add avatars in three steps</h1>
       <p>Pick your framework, install one package and render. Everything else on this page is optional.</p>
     </div>
@@ -163,7 +166,7 @@ const fw0 = FRAMEWORKS[0]!.id
               <p class="note">{f.renderNote}</p>
               <div class="result">
                 <opaline-avatar seed="ada@inlay.dev" look="clay" size="48"></opaline-avatar>
-                <span class="muted">That's it. <a href={`${BASE}playground/`}>Design yours in the playground →</a></span>
+                <span class="muted">That's it. <a href={`${BASE}playground/`}>Design yours in the playground</a></span>
               </div>
             </li>
           </ol>
@@ -172,26 +175,25 @@ const fw0 = FRAMEWORKS[0]!.id
 
       <section id="styles" class="doc-sec">
         <h2>Styles</h2>
-        <p>Five looks, one API. Each is its own import path: <code>@inlaylab/opaline/&lt;style&gt;</code>.</p>
-        <div class="style-grid">
+        <p>Seven looks, one API. A seed keeps its color in every look. Each is its own import path: <code>@inlaylab/opaline/&lt;style&gt;</code>.</p>
+        <ul class="card style-list">
           {STYLES.map(([id, name, desc]) => (
-            <div class="card style-tile">
-              <div class="style-tile-avatars">
-                {['ada@inlay.dev', 'Grace Hopper', 'linus.okafor'].map((seed) => <opaline-avatar seed={seed} look={id} size="44"></opaline-avatar>)}
-              </div>
-              <b>{name}</b>
-              <span class="muted">{desc}</span>
+            <li>
+              <span class="style-list-avatars">
+                {['ada@inlay.dev', 'Grace Hopper', 'linus.okafor'].map((seed) => <opaline-avatar seed={seed} look={id} size="40"></opaline-avatar>)}
+              </span>
+              <span class="style-list-text"><b>{name}</b><span class="muted">{desc}</span></span>
               <code>@inlaylab/opaline/{id}</code>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       <section id="options" class="doc-sec">
         <h2>Options</h2>
         <p>Set an option to fix that part; the seed fills in the rest. An option set to its default gives exactly the same avatar as leaving it out.</p>
         <div class="card table-wrap">
-          <table>
+          <table class="options-table">
             <thead><tr><th>Option</th><th>Values</th><th>What it does</th></tr></thead>
             <tbody>{OPTIONS.map(([o, v, d]) => <tr><td><code>{o}</code></td><td>{v}</td><td>{d}</td></tr>)}</tbody>
           </table>
@@ -263,7 +265,7 @@ const fw0 = FRAMEWORKS[0]!.id
       <section id="stability" class="doc-sec">
         <h2>Same seed, same avatar</h2>
         <p>The seed is normalized (trimmed, NFC, emails lower-cased) and hashed into a seeded generator: no <code>Math.random</code>, no dates. The same seed and options give a byte-identical SVG across 1.x, checked by checksums in CI, so you can cache avatars on a CDN or store them.</p>
-        <p class="muted">Not sure Opaline is the right fit? <a href={`${BASE}compare/`}>See how it compares with DiceBear and Boring Avatars →</a></p>
+        <p class="muted">Not sure Opaline is the right fit? <a href={`${BASE}compare/`}>See how it compares with DiceBear and Boring Avatars</a></p>
       </section>
     </div>
   </div>

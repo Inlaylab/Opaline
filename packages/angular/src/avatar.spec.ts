@@ -36,6 +36,8 @@ const INPUTS = [
   'backdrop',
   'shape',
   'text',
+  'accessory',
+  'form',
 ] as const
 
 async function apply(ref: ComponentRef<OpalineAvatar>, { look = 'morph', ...props }: Props) {

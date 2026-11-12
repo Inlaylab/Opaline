@@ -2,7 +2,7 @@
 
 <img src="../assets/cover.png" alt="Opaline: seeded avatars for every framework" width="100%">
 
-Most users never upload a photo. This guide shows how to give each of them a unique avatar with one custom element, `<opaline-avatar>`. It works in plain HTML, a server-rendered template, a CMS or any framework.
+Most users never upload a photo. This guide shows how to give each of them their own avatar with one custom element, `<opaline-avatar>`. It works in plain HTML, a server-rendered template, a CMS or any framework.
 
 You will learn how to install Opaline, add your first avatar, pick a style, add photo fallback, build a team group and theme the colors.
 
@@ -55,11 +55,11 @@ Attributes:
 | Attribute | What it does                                                         |
 | --------- | -------------------------------------------------------------------- |
 | `seed`    | The string that decides the avatar. Use a stable ID or email.        |
-| `look`    | The style name: `aura`, `morph`, `gradient`, `clay` or `initials`.   |
+| `look`    | The style name: `aura`, `morph`, `gradient`, `clay`, `plush`, `pip` or `initials`.   |
 | `size`    | Width and height in pixels.                                          |
 | `src`     | A photo URL. See [photo fallback](#6-photo-fallback).                |
 | `alt`     | The accessible name. With `alt` the avatar is `role="img"`. Without it, the avatar is hidden from assistive tech. |
-| others    | `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body`, `ears` and `text`. |
+| others    | `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body`, `ears`, `text`, `accessory` and `form`. |
 
 Use the user ID rather than an email if people can change their email. Changing the seed changes the face.
 
@@ -83,6 +83,8 @@ Here `look` is a name, not an object, so there is nothing else to import.
 | Morph    | An organic blob with a face                   |
 | Gradient | Smooth shapes with expressive faces           |
 | Clay     | Small characters with jelly or hood bodies    |
+| Plush    | Gummy critters with a seeded accessory         |
+| Pip      | Geometric shapes with two pill eyes           |
 | Initials | Letters from the seed on a seeded tile        |
 
 ## 5. Customize Clay and Initials

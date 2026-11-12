@@ -7,6 +7,8 @@ const STYLES = [
   ['aura', 'Aura', 'Glowing orb'],
   ['clay', 'Clay', 'Little characters'],
   ['initials', 'Initials', 'Letters on a tile'],
+  ['plush', 'Plush', 'Gummy critters'],
+  ['pip', 'Pip', 'Shapes with pill eyes'],
 ]
 const PALETTES = ['', 'pastel', 'electric', 'muted', 'warm', 'cool', 'mono']
 const EXPRESSIONS = ['beam', 'content', 'proud', 'dreamy', 'hmm', 'shy', 'sleepy', 'curious', 'oh', 'cheeky', 'wink', 'giggle']
@@ -20,13 +22,14 @@ const TABS = [
   ['svg', 'SVG'],
   ['json', 'JSON'],
 ]
+const ACCESSORIES = ['none', 'beret', 'cap', 'beanie', 'glasses', 'shades', 'flower', 'sprout', 'bow', 'star']
+const FORMS = ['circle', 'squircle', 'triangle', 'hexagon', 'diamond', 'heart', 'drop', 'pill', 'dome']
 const AT = [24, 32, 40, 56, 80]
 ---
 
 <Base page="playground" title="Opaline playground: design and export an SVG avatar" description="Design an Opaline avatar: pick a style, colors and shape, then copy the code for your framework or download SVG and PNG.">
   <div class="wrap page-head">
     <div>
-      <span class="eyebrow">Playground</span>
       <h1>Design your avatar</h1>
       <p>Type a name, pick a style, tweak the details. Everything you see is the library's real output, and the address bar always links to it.</p>
     </div>
@@ -101,6 +104,14 @@ const AT = [24, 32, 40, 56, 80]
             {['jelly', 'hood'].map((v) => <label><input type="radio" name="pg-body" value={v} /><span>{v}</span></label>)}
           </div>
         </div>
+        <label class="sub" id="pg-accessory-field" hidden>
+          <span class="sub-label">Accessory</span>
+          <select class="select" id="pg-accessory"><option value="">Seeded</option>{ACCESSORIES.map((a) => <option>{a}</option>)}</select>
+        </label>
+        <label class="sub" id="pg-form-field" hidden>
+          <span class="sub-label">Form</span>
+          <select class="select" id="pg-form"><option value="">Seeded</option>{FORMS.map((f) => <option>{f}</option>)}</select>
+        </label>
         <label class="sub" id="pg-expression-field">
           <span class="sub-label">Expression</span>
           <select class="select" id="pg-expression"><option value="">Seeded</option>{EXPRESSIONS.map((e) => <option>{e}</option>)}</select>
@@ -113,7 +124,7 @@ const AT = [24, 32, 40, 56, 80]
     </form>
 
     <div class="pg2-main">
-      <div class="card pg2-stage grad-border">
+      <div class="card pg2-stage">
         <div class="pg-preview" id="pg-preview">
           <div class="pane light" id="pg-light"></div>
           <div class="pane dark" id="pg-dark"></div>
@@ -134,7 +145,7 @@ const AT = [24, 32, 40, 56, 80]
         </div>
         <pre class="code" id="pg-code"></pre>
         <div class="code-foot">
-          <label class="size-pick">Export size
+          <label class="size-pick"><span class="size-label">Export size</span>
             <select class="select" id="pg-size">{[32, 48, 64, 96, 128, 256, 512].map((n) => <option selected={n === 64}>{n}</option>)}</select>
           </label>
           <span class="spacer"></span>

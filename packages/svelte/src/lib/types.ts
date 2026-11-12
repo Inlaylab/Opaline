@@ -3,6 +3,8 @@ import type {
   ClayOptions,
   GroupMember,
   InitialsOptions,
+  PipOptions,
+  PlushOptions,
   Style,
 } from '@inlaylab/opaline'
 
@@ -17,7 +19,9 @@ export type AvatarProps = {
   alt?: string
 } & ClayOptions &
   AuraOptions &
-  InitialsOptions
+  InitialsOptions &
+  PlushOptions &
+  PipOptions
 
 export type AvatarGroupProps = Omit<AvatarProps, 'seed' | 'src' | 'alt'> & {
   /** Seeds, or `{ seed, src, alt }` for a photo and an accessible name. */

@@ -14,6 +14,7 @@ import {
 import { DomSanitizer, type SafeHtml } from '@angular/platform-browser'
 import {
   createAvatar,
+  type Accessory,
   type BlobOptions,
   type ClayOptions,
   type Finish,
@@ -21,6 +22,7 @@ import {
   type Family,
   type Mood,
   type PaletteName,
+  type PipForm,
   type Shape,
   type Style,
 } from '@inlaylab/opaline'
@@ -58,6 +60,8 @@ type ImageState = 'loading' | 'loaded' | 'error'
     '[attr.finish]': 'null',
     '[attr.body]': 'null',
     '[attr.ears]': 'null',
+    '[attr.accessory]': 'null',
+    '[attr.form]': 'null',
   },
   template: `<span style="display:contents" [innerHTML]="svg()"></span>
     @if (src() && state() !== 'error') {
@@ -95,6 +99,10 @@ export class OpalineAvatar {
   readonly ears = input<ClayOptions['ears']>()
   /** Initials only: letters to show instead of the ones from the seed. */
   readonly text = input<string>()
+  /** Plush only: something the critter wears. */
+  readonly accessory = input<Accessory>()
+  /** Pip only: the body outline. */
+  readonly form = input<PipForm>()
 
   protected readonly state = signal<ImageState>('loading')
 
@@ -114,6 +122,8 @@ export class OpalineAvatar {
       body: this.body(),
       ears: this.ears(),
       text: this.text(),
+      accessory: this.accessory(),
+      form: this.form(),
     }).svg
     // Safe: the core escapes every input that reaches the SVG, and the default sanitizer strips SVG.
     return this.sanitizer.bypassSecurityTrustHtml(svg)

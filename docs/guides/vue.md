@@ -2,7 +2,7 @@
 
 <img src="../assets/cover.png" alt="Opaline: seeded avatars for every framework" width="100%">
 
-Most users never upload a photo. This guide shows how to give each of them a unique avatar in a Vue 3 or Nuxt app, with no hydration warnings.
+Most users never upload a photo. This guide shows how to give each of them their own avatar in a Vue 3 or Nuxt app, with no hydration warnings.
 
 You will learn how to install Opaline, render your first avatar, pick a style, add photo fallback, build a team group, theme the colors and use it with Nuxt SSR.
 
@@ -50,11 +50,11 @@ Props:
 | Prop        | What it does                                                         |
 | ----------- | -------------------------------------------------------------------- |
 | `seed`      | The string that decides the avatar. Use a stable ID or email.        |
-| `look`      | The style object: `aura`, `morph`, `gradient`, `clay` or `initials`. |
+| `look`      | The style object: `aura`, `morph`, `gradient`, `clay`, `plush`, `pip` or `initials`. |
 | `size`      | Width and height in pixels.                                          |
 | `src`       | A photo URL. See [photo fallback](#6-photo-fallback).                |
 | `alt`       | The accessible name. With `alt` the avatar is `role="img"`. Without it, the avatar is hidden from assistive tech. |
-| other props | Every core option: `palette`, `shape`, `finish`, `expression`, `body`, `ears`, `text` and more. |
+| other props | Every core option: `palette`, `shape`, `finish`, `expression`, `body`, `ears`, `text`, `accessory`, `form` and more. |
 
 Use the user ID rather than an email if people can change their email. Changing the seed changes the face.
 
@@ -83,6 +83,8 @@ import { initials } from '@inlaylab/opaline/initials'
 | Morph    | An organic blob with a face                   |
 | Gradient | Smooth shapes with expressive faces           |
 | Clay     | Small characters with jelly or hood bodies    |
+| Plush    | Gummy critters with a seeded accessory         |
+| Pip      | Geometric shapes with two pill eyes           |
 | Initials | Letters from the seed on a seeded tile        |
 
 ## 5. Customize Clay and Initials

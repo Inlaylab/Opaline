@@ -221,6 +221,25 @@ test('style-specific controls hide for other styles', async () => {
   expect(await page.locator('#pg-text-field').isVisible()).toBe(true)
   expect(await page.locator('#pg-finish-field').isVisible()).toBe(false)
   expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
+  await pick(page, 'style', 'plush')
+  expect(await page.locator('#pg-accessory-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-finish-field').isVisible()).toBe(false)
+  expect(await page.locator('#pg-expression-field').isVisible()).toBe(true)
+  await pick(page, 'style', 'pip')
+  expect(await page.locator('#pg-form-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-accessory-field').isVisible()).toBe(false)
+  expect(await page.locator('#pg-finish-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
+})
+
+test('plush and pip options reach the link and the code', async () => {
+  const page = await newPage()
+  await page.goto(`${PG}?seed=ada&style=plush&accessory=beret`)
+  expect(await page.locator('#pg-accessory').inputValue()).toBe('beret')
+  expect(await page.locator('#pg-code').textContent()).toContain('"accessory": "beret"')
+  await page.goto(`${PG}?seed=ada&style=pip&form=heart`)
+  expect(await page.locator('#pg-form').inputValue()).toBe('heart')
+  expect(await page.locator('#pg-code').textContent()).toContain('"form": "heart"')
 })
 
 /**
@@ -249,9 +268,10 @@ test('no horizontal scroll on the playground at phone width', () =>
 test('no horizontal scroll on the docs at phone width', () => expectNoHorizontalScroll('docs/'))
 
 test('built HTML only references assets under the Pages base', () => {
-  const pages = readdirSync(`${cwd}dist`, { recursive: true, encoding: 'utf8' }).filter((f) =>
-    f.endsWith('.html'),
-  )
+  // Windows lists nested files with backslashes; compare with forward slashes on every OS.
+  const pages = readdirSync(`${cwd}dist`, { recursive: true, encoding: 'utf8' })
+    .map((f) => f.replaceAll('\\', '/'))
+    .filter((f) => f.endsWith('.html'))
   expect(pages).toContain('compare/index.html')
   const html = pages.map((f) => readFileSync(`${cwd}dist/${f}`, 'utf8')).join('')
   expect(html).not.toMatch(/(?:src|href)="\/(?!Opaline\/)[^/"]/)
@@ -305,6 +325,8 @@ test('PNG downloads a real PNG at the chosen size', async () => {
   await page.goto(PG)
   await page.fill('#pg-seed', 'png me')
   await page.selectOption('#pg-size', '128')
+  // The size shows at once, not only after another control re-renders.
+  expect(await page.textContent('#pg-caption')).toContain('128px')
   const [download] = await Promise.all([page.waitForEvent('download'), page.click('#pg-png')])
   expect(download.suggestedFilename()).toBe('png_me.png')
   const bytes = readFileSync((await download.path())!)
@@ -402,4 +424,41 @@ test('the hero hands its seed to the playground', async () => {
   await page.click('#hero-customize')
   await page.waitForURL(/\/playground\//)
   expect(await page.inputValue('#pg-seed')).toBe('Zoë N')
+})
+
+test('the spotlight chips dress the plush and shape the pip, big avatar and crew alike', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.click('[data-feature="plush"] [data-value="beret"]')
+  const plush = page.locator('[data-feature="plush"] opaline-avatar')
+  expect(await plush.count()).toBe(7)
+  for (const a of await plush.all()) expect(await a.getAttribute('accessory')).toBe('beret')
+  await page.click('[data-feature="pip"] [data-value="heart"]')
+  for (const a of await page.locator('[data-feature="pip"] opaline-avatar').all())
+    expect(await a.getAttribute('form')).toBe('heart')
+  // Seeded takes the option off again.
+  await page.click('[data-feature="plush"] [data-value=""]')
+  expect(await plush.first().getAttribute('accessory')).toBeNull()
+})
+
+test('the style family follows the hero seed with one hue across all seven', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  await page.fill('#hero-seed', 'Grace Hopper')
+  expect(await page.textContent('#family-name')).toBe('Grace Hopper')
+  expect(
+    await page
+      .locator('[data-feature="plush"] [data-feature-face] opaline-avatar')
+      .getAttribute('seed'),
+  ).toBe('Grace Hopper')
+  const fills = await page
+    .locator('.family-tile svg')
+    .evaluateAll((svgs) => svgs.map((s) => /--avatar-c1, (#[0-9a-f]{6})/.exec(s.outerHTML)?.[1]))
+  expect(fills).toHaveLength(7)
+  expect(new Set(fills).size).toBe(1)
+})
+
+test('the stats show their final numbers in the HTML, before any script runs', async () => {
+  const html = readFileSync(new URL('./dist/index.html', import.meta.url), 'utf8')
+  for (const n of ['100,000', '52,000+', '7', '0']) expect(html).toContain(`>${n}</span>`)
 })

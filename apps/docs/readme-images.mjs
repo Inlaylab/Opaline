@@ -9,6 +9,8 @@ import { clay } from '@inlaylab/opaline/clay'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
+import { pip } from '@inlaylab/opaline/pip'
+import { plush } from '@inlaylab/opaline/plush'
 
 const out = fileURLToPath(new URL('../../docs/assets/', import.meta.url))
 const { version } = JSON.parse(
@@ -16,8 +18,11 @@ const { version } = JSON.parse(
 )
 
 let n = 0
+// Branding shows only smiling and playful faces; styles without expressions ignore this.
+const FUN = ['beam', 'cheeky', 'giggle', 'wink', 'proud', 'content']
 const face = (style, seed, size, opts = {}) =>
-  createAvatar(style, { seed, size, instance: `r${n++}`, ...opts }).svg
+  createAvatar(style, { seed, size, instance: `r${n}`, expression: FUN[n++ % FUN.length], ...opts })
+    .svg
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500..700&family=Figtree:wght@400..700&family=Geist+Mono:wght@400;500&display=swap');
@@ -82,12 +87,14 @@ const cover = shell(
 </div>`,
 )
 
-// styles: five cards
+// styles: seven cards
 const STYLES = [
   ['Aura', aura, 'ada@inlay.dev', ['Ada', 'Zoë', 'Kofi', 'Hana']],
   ['Morph', morph, 'ada@inlay.dev', ['Ada', 'Zoë', 'Kofi', 'Hana']],
   ['Gradient', gradient, 'ada@inlay.dev', ['Ada', 'Zoë', 'Kofi', 'Hana']],
   ['Clay', clay, 'ada@inlay.dev', ['Ada', 'Zoë', 'Kofi', 'Hana']],
+  ['Plush', plush, 'ada@inlay.dev', ['Ada', 'Zoë', 'Kofi', 'Hana']],
+  ['Pip', pip, 'ada@inlay.dev', ['Ada', 'Zoë', 'Kofi', 'Hana']],
   [
     'Initials',
     initials,
@@ -98,10 +105,10 @@ const STYLES = [
 const styles = shell(
   680,
   `
-<h2>Five styles. <span class="grad">Infinite faces.</span></h2>
-<p class="sub">Any string, a user ID, email or username, becomes a unique, deterministic SVG.</p>
-<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-top:40px">
-${STYLES.map(([name, style, seed, minis]) => `<div class="card glass"><div class="tile" style="width:200px;height:200px">${face(style, seed, 150)}</div><div class="name">${name}</div><div class="row" style="gap:6px;transform:scale(.8);margin:-6px -20px 0">${minis.map((s) => `<div class="mini">${face(style, s, 44)}</div>`).join('')}</div></div>`).join('')}
+<h2>Seven styles. <span class="grad">4.3 billion faces each.</span></h2>
+<p class="sub">Any string, a user ID, email or username, becomes its own deterministic SVG. 100,000 seeds, zero repeats. Same seed, same color, in every style.</p>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:14px;margin-top:40px">
+${STYLES.map(([name, style, seed, minis]) => `<div class="card glass" style="padding:24px 10px 20px;border-radius:30px"><div class="tile" style="width:160px;height:160px">${face(style, seed, 120)}</div><div class="name">${name}</div><div class="row" style="gap:6px;transform:scale(.62);margin:-14px -60px -10px">${minis.map((s) => `<div class="mini">${face(style, s, 44)}</div>`).join('')}</div></div>`).join('')}
 </div>`,
 )
 

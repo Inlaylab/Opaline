@@ -4,14 +4,31 @@ import { clay } from '@inlaylab/opaline/clay'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
+import { pip } from '@inlaylab/opaline/pip'
+import { plush } from '@inlaylab/opaline/plush'
 import { toPng } from '@inlaylab/opaline/png'
 import { randomHero } from './heroes'
 
-const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials }
+const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials, plush, pip }
 /** Styles that always fill a tile, so their shape defaults to circle and they have no face. */
 const TILED = new Set(['aura', 'initials'])
 /** Every control, by name. Its value is `#pg-<name>` (input or select) or the checked `pg-<name>` radio. */
-const FIELDS = ['seed', 'style', 'finish', 'palette', 'expression', 'body', 'shape', 'text', 'size']
+const FIELDS = [
+  'seed',
+  'style',
+  'finish',
+  'palette',
+  'expression',
+  'body',
+  'accessory',
+  'form',
+  'shape',
+  'text',
+  'size',
+]
+/** Plush has no finish (its gummy look is its finish); Pip has pill eyes, not expressions. */
+const NO_FINISH = new Set(['aura', 'initials', 'plush'])
+const NO_EXPRESSION = new Set(['aura', 'initials', 'pip'])
 const DEFAULTS: Record<string, string> = { seed: 'Starfire', style: 'morph', size: '64' }
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
@@ -49,12 +66,12 @@ function chosen(): { style: string; opts: Opts } {
     const v = field(key)
     if (v) opts[key] = v
   }
-  if (!TILED.has(style)) {
-    set('finish')
-    set('expression')
-  }
+  if (!NO_FINISH.has(style)) set('finish')
+  if (!NO_EXPRESSION.has(style)) set('expression')
   set('palette')
   if (style === 'clay') set('body')
+  if (style === 'plush') set('accessory')
+  if (style === 'pip') set('form')
   set('shape')
   if (style === 'initials' && field('text').trim()) opts.text = field('text')
   return { style, opts }
@@ -148,6 +165,8 @@ function render(): void {
   const look = STYLES[style]!
   // The light pane carries the plain output; every other copy needs an instance so IDs never clash.
   const avatar = createAvatar(look, { seed, ...opts, size: 176 })
+  // The site accent follows the seed's hue, like every style does.
+  document.documentElement.style.setProperty('--hue', String(avatar.toJSON().hue))
   $('pg-light').innerHTML = avatar.svg
   $('pg-dark').innerHTML = createAvatar(look, { seed, ...opts, size: 176, instance: 'd' }).svg
   for (const el of document.querySelectorAll<HTMLElement>('[data-at]'))
@@ -180,7 +199,10 @@ function render(): void {
         : snippet(tab, seed, style, opts, size)
   $('pg-body-field').hidden = style !== 'clay'
   $('pg-text-field').hidden = style !== 'initials'
-  for (const id of ['pg-finish-field', 'pg-expression-field']) $(id).hidden = TILED.has(style)
+  $('pg-accessory-field').hidden = style !== 'plush'
+  $('pg-form-field').hidden = style !== 'pip'
+  $('pg-finish-field').hidden = NO_FINISH.has(style)
+  $('pg-expression-field').hidden = NO_EXPRESSION.has(style)
   // The first shape option is each style's own default: a circle tile, or no tile at all.
   $('pg-shape-default').textContent = TILED.has(style) ? 'Circle' : 'None'
   $('pg-caption').textContent = `${style} · ${size}px`
@@ -194,6 +216,10 @@ export function initPlayground(): void {
   const controls = $('pg-controls')
   controls.addEventListener('input', render)
   controls.addEventListener('change', render)
+  // Export size sits under the code, outside the form: without this the caption, code and PNG kept
+  // the old size until some other control re-rendered, and that late re-render could shift the
+  // buttons between mouse down and up, so a PNG click was lost.
+  $('pg-size').addEventListener('change', render)
   $('pg-shuffle').addEventListener('click', () => {
     setField('seed', randomHero(field('seed')))
     render()

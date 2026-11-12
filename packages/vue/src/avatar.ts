@@ -3,6 +3,8 @@ import {
   type AuraOptions,
   type ClayOptions,
   type InitialsOptions,
+  type PipOptions,
+  type PlushOptions,
   type Style,
 } from '@inlaylab/opaline'
 import { computed, defineComponent, h, useId, type PropType } from 'vue'
@@ -19,7 +21,9 @@ export type AvatarProps = {
   alt?: string
 } & ClayOptions &
   AuraOptions &
-  InitialsOptions
+  InitialsOptions &
+  PlushOptions &
+  PipOptions
 
 export const Avatar = defineComponent({
   name: 'OpalineAvatar',
@@ -37,7 +41,7 @@ export const Avatar = defineComponent({
     const svg = computed(
       () =>
         createAvatar(props.look, {
-          ...(attrs as ClayOptions & AuraOptions & InitialsOptions),
+          ...(attrs as ClayOptions & AuraOptions & InitialsOptions & PlushOptions & PipOptions),
           seed: props.seed,
           size: props.size,
           instance,

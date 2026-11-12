@@ -4,10 +4,12 @@ import { clay } from '@inlaylab/opaline/clay'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
+import { pip } from '@inlaylab/opaline/pip'
+import { plush } from '@inlaylab/opaline/plush'
 
 export { OpalineAvatarGroup } from './group.ts'
 
-const LOOKS: Record<string, Style<any>> = { morph, gradient, aura, clay, initials }
+const LOOKS: Record<string, Style<any>> = { morph, gradient, aura, clay, initials, plush, pip }
 const ATTRS = [
   'seed',
   'look',
@@ -25,6 +27,8 @@ const ATTRS = [
   'body',
   'ears',
   'text',
+  'accessory',
+  'form',
 ] as const
 const IMG_STYLE =
   'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit'
@@ -76,6 +80,8 @@ export class OpalineAvatar extends HTMLElement {
         body: get('body'),
         ears: get('ears'),
         text: get('text'),
+        accessory: get('accessory'),
+        form: get('form'),
       } as never,
     ).svg
     const a11y = alt ? `role="img" aria-label="${escapeXml(alt)}"` : 'aria-hidden="true"'

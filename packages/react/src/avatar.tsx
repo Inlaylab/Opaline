@@ -3,6 +3,8 @@ import {
   type AuraOptions,
   type ClayOptions,
   type InitialsOptions,
+  type PipOptions,
+  type PlushOptions,
   type Style,
 } from '@inlaylab/opaline'
 import { useId, type JSX } from 'react'
@@ -19,7 +21,9 @@ export type AvatarProps = {
   alt?: string
 } & ClayOptions &
   AuraOptions &
-  InitialsOptions
+  InitialsOptions &
+  PlushOptions &
+  PipOptions
 
 /** Server-safe: without `src` it renders no client code at all. */
 export function Avatar({ look, size = 64, src, alt, ...options }: AvatarProps): JSX.Element {
