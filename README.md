@@ -22,6 +22,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-7c3aed" alt="MIT license"></a>
 </p>
 
+![opaline — type any name and get its own seeded avatar face](https://raw.githubusercontent.com/yasirwhite/opendemo-media/main/Inlaylab-Opaline/opaline-demo.gif)
+
 ## What is Opaline?
 
 Opaline turns any string (an email, a user ID, a username) into its own SVG avatar. Give it the same string again and you get the same avatar, byte for byte, on the server and in every browser.
