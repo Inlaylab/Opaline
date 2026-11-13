@@ -337,6 +337,10 @@ Requires Node 22 or later and pnpm.
 
 Opaline is milky, softly glowing glass. Light goes in and comes back as color that seems to bloom from inside. That is the look we aim for: soft shapes, gentle gradients and light from one side, never hard edges.
 
+## Support
+
+Ivorie is free and MIT licensed. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/bhavikbhensajaliya).
+
 ## License
 
 MIT, for both the code and the art.
