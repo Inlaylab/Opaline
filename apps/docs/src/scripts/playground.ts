@@ -128,7 +128,8 @@ function flash(id: string, text: string): void {
 /** A JS string literal: safe inside `{…}` in JSX and Svelte, whatever the seed holds. */
 const js = (v: string) => JSON.stringify(v)
 /** Single-quoted literal for expressions inside a double-quoted attribute, so the example avoids &quot;. */
-const jsq = (v: string) => `'${JSON.stringify(v).slice(1, -1).replace(/\\"/g, '"').replace(/'/g, "\\'")}'`
+const jsq = (v: string) =>
+  `'${JSON.stringify(v).slice(1, -1).replace(/\\"/g, '"').replace(/'/g, "\\'")}'`
 /** Escapes text for a double-quoted HTML attribute. */
 const html = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 const attrs = (opts: Opts, fmt: (k: string, v: string) => string) =>
