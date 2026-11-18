@@ -39,7 +39,7 @@ const { svg } = createAvatar(clay, { seed: 'ada@inlay.dev', finish: 'gloss' })
 
 ## Why use it
 
-<img src="docs/launch/images/why.png" alt="An activity feed with grey silhouettes, then the same feed with Opaline avatars" width="100%">
+<img src="docs/assets/why.png" alt="An activity feed with grey silhouettes, then the same feed with Opaline avatars" width="100%">
 
 Grey circles, shared initials and random colors all fall short. Opaline fixes each one.
 
@@ -236,7 +236,7 @@ Plush takes `mood`, `expression` and `family` like Morph; its gummy look is its 
 
 ### Initials and shapes
 
-<img src="docs/launch/images/new-in-1-1.png" alt="Initials, avatar groups and PNG export, new in 1.1" width="100%">
+<img src="docs/assets/new-in-1-1.png" alt="Initials, avatar groups and PNG export, new in 1.1" width="100%">
 
 `initials` takes the letters from the seed: `ada.lovelace@inlay.dev` gives AL and `Zoë Nguyễn` gives ZN. Set `text` to show your own (up to 3 characters). Letters are SVG text in the system font, so every script works.
 
@@ -303,7 +303,7 @@ Pass `vars: { '--avatar-c1': '#7c3aed' }` to bake theme colors into the image.
 
 ## Same seed, same avatar
 
-<img src="docs/launch/images/ssr.png" alt="The server and the browser render the same bytes for the same seed" width="100%">
+<img src="docs/assets/ssr.png" alt="The server and the browser render the same bytes for the same seed" width="100%">
 
 The same seed and options give a **byte-identical SVG** in every 1.x release, on the server and in every browser.
 

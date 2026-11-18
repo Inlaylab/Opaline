@@ -127,6 +127,8 @@ function flash(id: string, text: string): void {
 
 /** A JS string literal: safe inside `{…}` in JSX and Svelte, whatever the seed holds. */
 const js = (v: string) => JSON.stringify(v)
+/** Single-quoted literal for expressions inside a double-quoted attribute, so the example avoids &quot;. */
+const jsq = (v: string) => `'${JSON.stringify(v).slice(1, -1).replace(/\\"/g, '"').replace(/'/g, "\\'")}'`
 /** Escapes text for a double-quoted HTML attribute. */
 const html = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 const attrs = (opts: Opts, fmt: (k: string, v: string) => string) =>
@@ -145,11 +147,11 @@ function snippet(fw: string, seed: string, style: string, opts: Opts, size: numb
     case 'react':
       return `import { Avatar } from '@inlaylab/opaline-react'\n${imp}\n\n<Avatar seed={${js(seed)}} look={${style}}${sz ? ` size={${sz}}` : ''}${attrs(opts, plain)} />`
     case 'vue':
-      return `<script setup>\nimport { Avatar } from '@inlaylab/opaline-vue'\n${imp}\n</script>\n\n<template>\n  <Avatar :seed="${html(js(seed))}" :look="${style}"${sz ? ` :size="${sz}"` : ''}${attrs(opts, plain)} />\n</template>`
+      return `<script setup>\nimport { Avatar } from '@inlaylab/opaline-vue'\n${imp}\n</script>\n\n<template>\n  <Avatar :seed="${html(jsq(seed))}" :look="${style}"${sz ? ` :size="${sz}"` : ''}${attrs(opts, plain)} />\n</template>`
     case 'svelte':
       return `<script>\n  import { Avatar } from '@inlaylab/opaline-svelte'\n  ${imp}\n</script>\n\n<Avatar seed={${js(seed)}} look={${style}}${sz ? ` size={${sz}}` : ''}${attrs(opts, plain)} />`
     case 'angular':
-      return `import { Component } from '@angular/core'\nimport { OpalineAvatar } from '@inlaylab/opaline-angular'\n${imp}\n\n@Component({\n  selector: 'app-user-avatar',\n  imports: [OpalineAvatar],\n  template: \`\n    <op-avatar [seed]="${html(js(seed)).replace(/[`\\$]/g, '\\$&')}" [look]="${style}"${sz ? ` [size]="${sz}"` : ''}${attrs(opts, plain)} />\n  \`,\n})\nexport class UserAvatar {\n  protected readonly ${style} = ${style}\n}`
+      return `import { Component } from '@angular/core'\nimport { OpalineAvatar } from '@inlaylab/opaline-angular'\n${imp}\n\n@Component({\n  selector: 'app-user-avatar',\n  imports: [OpalineAvatar],\n  template: \`\n    <op-avatar [seed]="${html(jsq(seed)).replace(/[`\\$]/g, '\\$&')}" [look]="${style}"${sz ? ` [size]="${sz}"` : ''}${attrs(opts, plain)} />\n  \`,\n})\nexport class UserAvatar {\n  protected readonly ${style} = ${style}\n}`
     default:
       return `import { createAvatar } from '@inlaylab/opaline'\n${imp}\n\ncreateAvatar(${style}, ${JSON.stringify({ seed, ...(sz ? { size } : {}), ...opts }, null, 2)}).svg`
   }

@@ -182,7 +182,8 @@ test('every snippet carries the exact seed, even with quotes, backslashes and br
         let raw = code.match(new RegExp(attr + '="([^"]*)"'))![1]!
         // Angular's template sits in a TS template literal: undo that layer first.
         if (tab === 'angular') raw = raw.replace(/\\([`\\$])/g, '$1')
-        return JSON.parse(decode(raw))
+        // The attribute holds a single-quoted JS literal; evaluate it as the framework would.
+        return new Function('return ' + decode(raw))()
       },
       [tab, code] as const,
     )

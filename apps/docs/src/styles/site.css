@@ -234,6 +234,22 @@ kbd {
   color: var(--foreground);
   background: var(--muted);
 }
+.coffee {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffdd00;
+  color: #1a1f33;
+  transition:
+    filter 0.15s,
+    transform 0.15s;
+}
+.coffee:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
 .spacer {
   flex: 1;
 }
@@ -994,8 +1010,7 @@ footer .wrap {
 }
 
 @media (max-width: 820px) {
-  .nav .wide,
-  .gh span {
+  .nav .wide {
     display: none;
   }
   .nav a,
@@ -1005,7 +1020,8 @@ footer .wrap {
 }
 @media (max-width: 480px) {
   /* Room for the Compare link; the footer links to GitHub too. */
-  .gh {
+  .gh,
+  .coffee {
     display: none;
   }
   .brand {
@@ -2951,7 +2967,7 @@ section.block.flush {
   display: flex;
   justify-self: end;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 .bar-cta {
   height: 34px;

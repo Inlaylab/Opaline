@@ -58,12 +58,12 @@ const mini = (style, seeds, size, opts = {}) =>
 
 // cover: wordmark left, a ring of real avatars right
 const ring = [
-  [clay, 'Wonder Woman', 120, 20, 130],
+  [pip, 'Wonder Woman', 120, 20, 130],
   [morph, 'Peter Parker', 130, 270, 0],
   [gradient, 'Storm', 130, 560, 110],
   [initials, 'Miles Morales', 110, 40, 460],
   [aura, 'Zatanna', 120, 330, 540],
-  [clay, 'Black Panther', 130, 580, 440],
+  [plush, 'Black Panther', 130, 580, 440],
 ]
   .map(
     ([style, seed, size, x, y]) =>
