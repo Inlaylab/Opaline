@@ -1,12 +1,15 @@
+import type { Status } from './parts/status.ts'
 import type { Shape } from './parts/tile.ts'
 
 /** One person in an avatar group: a seed, or a seed with a photo and an accessible name. */
 export type GroupMember =
-  string | number | { seed: string | number | null | undefined; src?: string; alt?: string }
+  | string
+  | number
+  | { seed: string | number | null | undefined; src?: string; alt?: string; status?: Status }
 
 export type GroupLayout = {
   /** The avatars to draw, in order. */
-  shown: { seed: string | number | null | undefined; src?: string; alt?: string }[]
+  shown: { seed: string | number | null | undefined; src?: string; alt?: string; status?: Status }[]
   /** How many people the `+N` chip stands for. 0 means no chip. */
   rest: number
   /** How far each avatar tucks under the one before it, in pixels. */
@@ -28,13 +31,14 @@ const RING = 'var(--avatar-ring, #fff)'
  */
 export function avatarGroup(
   members: readonly GroupMember[],
-  { max, size = 40, shape }: { max?: number; size?: number; shape?: Shape } = {},
+  // `none` (Folk and Doodle without a tile) rings like a circle.
+  { max, size = 40, shape }: { max?: number; size?: number; shape?: Shape | 'none' } = {},
 ): GroupLayout {
   const all = members.map((m) => (m !== null && typeof m === 'object' ? m : { seed: m }))
   const limit = Number.isFinite(max) && max! >= 1 ? Math.floor(max!) : all.length
   const shown = all.slice(0, limit)
   const overlap = Math.round(size * 0.25)
-  const radius = (shape && RADIUS[shape]) || '50%'
+  const radius = (shape && shape !== 'none' && RADIUS[shape]) || '50%'
   const font = Math.round(size * 0.36)
   // The ring color also fills behind each avatar, so a transparent one never shows its neighbor.
   const first = `display:inline-flex;border-radius:${radius};background:${RING};box-shadow:0 0 0 2px ${RING}`

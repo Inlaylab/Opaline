@@ -4,7 +4,20 @@ import type { Point } from './shape.ts'
 
 /** Something a Plush wears. `none` keeps the critter bare. */
 export type Accessory =
-  'none' | 'beret' | 'cap' | 'beanie' | 'glasses' | 'shades' | 'flower' | 'sprout' | 'bow' | 'star'
+  | 'none'
+  | 'beret'
+  | 'cap'
+  | 'beanie'
+  | 'glasses'
+  | 'shades'
+  | 'flower'
+  | 'sprout'
+  | 'bow'
+  | 'star'
+  | 'pumpkin'
+  | 'party'
+  | 'headphones'
+  | 'crown'
 
 export const ACCESSORIES: Record<Accessory, true> = {
   none: true,
@@ -17,7 +30,25 @@ export const ACCESSORIES: Record<Accessory, true> = {
   sprout: true,
   bow: true,
   star: true,
+  // 1.3, opt-in only through `accessory`.
+  pumpkin: true,
+  party: true,
+  headphones: true,
+  crown: true,
 }
+/** The 1.2 set: the only ones a seed draws. */
+export const SEEDED_ACCESSORIES: readonly Accessory[] = [
+  'none',
+  'beret',
+  'cap',
+  'beanie',
+  'glasses',
+  'shades',
+  'flower',
+  'sprout',
+  'bow',
+  'star',
+]
 /** Worn on the face, so they need one. */
 export const EYEWEAR: Partial<Record<Accessory, true>> = { glasses: true, shades: true }
 
@@ -196,9 +227,38 @@ export function accessory(kind: Accessory, f: Fit): string {
         })
       )
     }
+    // 1.3 hats, drawn as the gate sheet draws them on a head centred at x 50 with its crown at y 30,
+    // then moved onto this head.
+    case 'pumpkin':
+    case 'party':
+    case 'crown':
+      return el(
+        'g',
+        { transform: `translate(${num(x - 50)} ${num(top - 26)}) ${rot(dir * 6, 50, 30)}` },
+        HATS[kind],
+      )
+    case 'headphones': {
+      const k = Math.min(1.1, Math.max(0.7, f.width / 64))
+      return el(
+        'g',
+        { transform: `translate(${num(x)} ${num(top + 14)}) scale(${num(k)}) translate(-50 -40)` },
+        HATS.headphones,
+      )
+    }
     default:
       return ''
   }
+}
+
+const HATS = {
+  pumpkin:
+    '<ellipse cx="50" cy="22" rx="17" ry="11" fill="#f08a24"/><ellipse cx="50" cy="22" rx="8" ry="11" fill="#f79a3a"/><path d="M41 13Q38 22 41 32M59 13Q62 22 59 32" stroke="#c96a12" stroke-width="1.6" fill="none"/><path d="M50 11Q50 5 54 3" stroke="#5c7a2e" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M53 8Q60 4 62 9Q57 11 53 8Z" fill="#7aa33c"/>',
+  party:
+    '<path d="M38 30L52 3L64 30Z" fill="#7a5cd6"/><path d="M45 16L57 16L59.5 21L42.5 21ZM40.5 25L61.5 25L64 30L38 30Z" fill="#ffd166"/><circle cx="52" cy="4" r="4" fill="#ff6fa8"/>',
+  headphones:
+    '<path d="M14 58Q12 18 50 16Q88 18 86 58" stroke="#2f3140" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="7" y="50" width="13" height="20" rx="6" fill="#ff6f61"/><rect x="80" y="50" width="13" height="20" rx="6" fill="#ff6f61"/>',
+  crown:
+    '<path d="M31 30L33 12L42 22L50 8L58 22L67 12L69 30Z" fill="#f5c542" stroke="#d9a520" stroke-width="1.2" stroke-linejoin="round"/><rect x="30" y="27" width="40" height="6" rx="3" fill="#f0b429"/><circle cx="50" cy="20" r="2.2" fill="#e0457a"/><circle cx="39" cy="24" r="1.6" fill="#3aa0e0"/><circle cx="61" cy="24" r="1.6" fill="#3aa0e0"/>',
 }
 
 /** Glasses or shades in the face frame: eyes at ±spread on y = 0. */

@@ -1,6 +1,6 @@
 {
   "name": "@inlaylab/opaline",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Seeded, deterministic SVG avatars. Zero dependencies.",
   "keywords": [
     "avatar",
@@ -63,6 +63,22 @@
     "./pip": {
       "types": "./dist/pip.d.ts",
       "import": "./dist/pip.js"
+    },
+    "./critters": {
+      "types": "./dist/critters.d.ts",
+      "import": "./dist/critters.js"
+    },
+    "./cosmos": {
+      "types": "./dist/cosmos.d.ts",
+      "import": "./dist/cosmos.js"
+    },
+    "./folk": {
+      "types": "./dist/folk.d.ts",
+      "import": "./dist/folk.js"
+    },
+    "./doodle": {
+      "types": "./dist/doodle.d.ts",
+      "import": "./dist/doodle.js"
     },
     "./png": {
       "types": "./dist/png.d.ts",

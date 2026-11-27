@@ -1,12 +1,4 @@
-import {
-  createAvatar,
-  type AuraOptions,
-  type ClayOptions,
-  type InitialsOptions,
-  type PipOptions,
-  type PlushOptions,
-  type Style,
-} from '@inlaylab/opaline'
+import { createAvatar, statusLabel, type LookOptions, type Style } from '@inlaylab/opaline'
 import { computed, defineComponent, h, useId, type PropType } from 'vue'
 import { Photo } from './photo.ts'
 
@@ -19,11 +11,7 @@ export type AvatarProps = {
   src?: string
   /** Accessible name. Without it the avatar is decorative and hidden from assistive tech. */
   alt?: string
-} & ClayOptions &
-  AuraOptions &
-  InitialsOptions &
-  PlushOptions &
-  PipOptions
+} & LookOptions
 
 export const Avatar = defineComponent({
   name: 'OpalineAvatar',
@@ -41,7 +29,7 @@ export const Avatar = defineComponent({
     const svg = computed(
       () =>
         createAvatar(props.look, {
-          ...(attrs as ClayOptions & AuraOptions & InitialsOptions & PlushOptions & PipOptions),
+          ...(attrs as LookOptions),
           seed: props.seed,
           size: props.size,
           instance,
@@ -58,7 +46,9 @@ export const Avatar = defineComponent({
             height: `${props.size}px`,
             position: 'relative',
           },
-          ...(props.alt ? { role: 'img', 'aria-label': props.alt } : { 'aria-hidden': 'true' }),
+          ...(props.alt
+            ? { role: 'img', 'aria-label': statusLabel(props.alt, (attrs as LookOptions).status) }
+            : { 'aria-hidden': 'true' }),
         },
         [
           // Safe: the core escapes every input that reaches the SVG.

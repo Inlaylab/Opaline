@@ -13,9 +13,9 @@ import { clay } from '@inlaylab/opaline/clay'
 ;<Avatar seed={user.email} look={clay} src={user.photo} alt={user.name} />
 ```
 
-Props: `seed`, `look` (a style object), `size`, `src`, `alt`, and every core option (`palette`, `finish`, `expression`, `body` and more).
+Props: `seed`, `look` (a style object), `size`, `src`, `alt`, and every core option (`palette`, `finish`, `expression`, `body`, `status` and more; the type is `LookOptions`).
 
-Groups: `AvatarGroup` overlaps avatars and adds a `+N` chip past `max`. It is server-safe too.
+Groups: `AvatarGroup` overlaps avatars and adds a `+N` chip past `max`. A member's `status` (`{ seed, status }`) shows its badge; a `status` on the group goes to members without one. It is server-safe too.
 
 ```tsx
 import { AvatarGroup } from '@inlaylab/opaline-react'
@@ -25,4 +25,4 @@ import { AvatarGroup } from '@inlaylab/opaline-react'
 
 Same seed, same avatar: from 1.0, the same seed and options give a byte-identical SVG in every 1.x release.
 
-[Playground and docs](https://inlaylab.github.io/Opaline/) · [GitHub](https://github.com/Inlaylab/Opaline) · MIT for code and art.
+[Playground and docs](https://inlaylab.github.io/Opaline/) · [GitHub](https://github.com/Inlaylab/Opaline) · [Changelog](https://github.com/Inlaylab/Opaline/blob/main/CHANGELOG.md) · MIT for code and art.

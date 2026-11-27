@@ -7,6 +7,7 @@ import {
   effect,
   inject,
   input,
+  numberAttribute,
   signal,
   untracked,
   viewChild,
@@ -14,16 +15,13 @@ import {
 import { DomSanitizer, type SafeHtml } from '@angular/platform-browser'
 import {
   createAvatar,
+  statusLabel,
   type Accessory,
   type BlobOptions,
   type ClayOptions,
-  type Finish,
-  type Expression,
+  type LookOptions,
   type Family,
-  type Mood,
   type PaletteName,
-  type PipForm,
-  type Shape,
   type Style,
 } from '@inlaylab/opaline'
 import { OpalineIds } from './ids'
@@ -40,7 +38,7 @@ type ImageState = 'loading' | 'loaded' | 'error'
     '[style.width.px]': 'size()',
     '[style.height.px]': 'size()',
     '[attr.role]': 'alt() ? "img" : null',
-    '[attr.aria-label]': 'alt() || null',
+    '[attr.aria-label]': 'label()',
     '[attr.aria-hidden]': 'alt() ? null : "true"',
     // Static template attributes (`seed="ada@inlay.dev"`) stay on the host; the seed is often an
     // email. Clear them so the root carries only the markup contract, on the server too.
@@ -58,10 +56,17 @@ type ImageState = 'loading' | 'loaded' | 'error'
     '[attr.shape]': 'null',
     '[attr.text]': 'null',
     '[attr.finish]': 'null',
+    '[attr.material]': 'null',
     '[attr.body]': 'null',
     '[attr.ears]': 'null',
     '[attr.accessory]': 'null',
     '[attr.form]': 'null',
+    '[attr.animal]': 'null',
+    '[attr.coat]': 'null',
+    '[attr.object]': 'null',
+    '[attr.tone]': 'null',
+    '[attr.scheme]': 'null',
+    '[attr.status]': 'null',
   },
   template: `<span style="display:contents" [innerHTML]="svg()"></span>
     @if (src() && state() !== 'error') {
@@ -90,19 +95,39 @@ export class OpalineAvatar {
   readonly palette = input<PaletteName>()
   readonly family = input<Family>()
   readonly face = input<boolean>()
-  readonly mood = input<Mood>()
-  readonly expression = input<Expression>()
+  readonly mood = input<LookOptions['mood']>()
+  readonly expression = input<LookOptions['expression']>()
   readonly backdrop = input<BlobOptions['backdrop']>()
-  readonly shape = input<Shape>()
-  readonly finish = input<Finish>()
+  /** Tile outline; Folk and Doodle also take `none`. */
+  readonly shape = input<LookOptions['shape']>()
+  readonly finish = input<LookOptions['finish']>()
+  /** Plush only: `gummy` (default), `flat` or `soft`. Plush ignores `finish`. */
+  readonly material = input<LookOptions['material']>()
   readonly body = input<ClayOptions['body']>()
   readonly ears = input<ClayOptions['ears']>()
   /** Initials only: letters to show instead of the ones from the seed. */
   readonly text = input<string>()
   /** Plush only: something the critter wears. */
   readonly accessory = input<Accessory>()
-  /** Pip only: the body outline. */
-  readonly form = input<PipForm>()
+  /** Pip and Gradient: the body outline. */
+  readonly form = input<LookOptions['form']>()
+  /** Critters only. */
+  readonly animal = input<LookOptions['animal']>()
+  readonly coat = input<LookOptions['coat']>()
+  /** Cosmos only: the object and its colour theme. */
+  readonly object = input<LookOptions['object']>()
+  readonly tone = input(undefined, {
+    transform: (v: unknown) => (v == null || v === '' ? undefined : numberAttribute(v)),
+  })
+  /** Folk and Doodle: the colour look. */
+  readonly scheme = input<LookOptions['scheme']>()
+  /** A presence badge; with `alt` it is read out too, e.g. `Ada (away)`. */
+  readonly status = input<LookOptions['status']>()
+
+  protected readonly label = computed(() => {
+    const alt = this.alt()
+    return alt ? statusLabel(alt, this.status()) : null
+  })
 
   protected readonly state = signal<ImageState>('loading')
 
@@ -119,12 +144,19 @@ export class OpalineAvatar {
       backdrop: this.backdrop(),
       shape: this.shape(),
       finish: this.finish(),
+      material: this.material(),
       body: this.body(),
       ears: this.ears(),
       text: this.text(),
       accessory: this.accessory(),
       form: this.form(),
-    }).svg
+      animal: this.animal(),
+      coat: this.coat(),
+      object: this.object(),
+      tone: this.tone(),
+      scheme: this.scheme(),
+      status: this.status(),
+    } as never).svg
     // Safe: the core escapes every input that reaches the SVG, and the default sanitizer strips SVG.
     return this.sanitizer.bypassSecurityTrustHtml(svg)
   })

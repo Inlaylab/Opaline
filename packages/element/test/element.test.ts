@@ -53,6 +53,20 @@ test('element: unknown clay attribute values fall back without throwing', () => 
   expect(make('finish="shiny" body="cat" ears="dog"')).toBe(make(''))
 })
 
+test('element: an empty tone lets the seed pick the theme', () => {
+  const make = (attrs: string) => {
+    const host = document.createElement('div')
+    host.innerHTML = `<opaline-avatar seed="a" look="cosmos" ${attrs}></opaline-avatar>`
+    document.body.append(host)
+    const svg = host.querySelector('svg')!.outerHTML
+    host.remove()
+    return svg.replace(/a[0-9a-z]{7}-[a-z0-9]+(-[\w-]+)?/g, 'ID')
+  }
+  // Seed "a" draws tone 1, so an empty attribute read as 0 would differ.
+  expect(make('tone=""')).toBe(make(''))
+  expect(make('tone="0"')).not.toBe(make(''))
+})
+
 runGroupContract({
   name: 'element',
   async render({ members, ...props }) {
@@ -61,11 +75,12 @@ runGroupContract({
       if (v !== undefined) group.setAttribute(k, String(v))
     for (const m of members) {
       const kid = document.createElement('opaline-avatar')
-      const { seed, src, alt } =
-        typeof m === 'object' ? m : { seed: m, src: undefined, alt: undefined }
+      const { seed, src, alt, status } =
+        typeof m === 'object' ? m : { seed: m, src: undefined, alt: undefined, status: undefined }
       kid.setAttribute('seed', String(seed ?? ''))
       if (src) kid.setAttribute('src', src)
       if (alt) kid.setAttribute('alt', alt)
+      if (status) kid.setAttribute('status', status)
       group.append(kid)
     }
     document.body.append(group)

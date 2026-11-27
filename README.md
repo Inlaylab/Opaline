@@ -54,7 +54,7 @@ Grey circles, shared initials and random colors all fall short. Opaline fixes ea
 
 ## Benefits
 
-- **Distinct, with honest numbers.** Each style can draw about 4.3 billion faces: the seed is hashed to 32 bits. Measured with `pnpm --filter @inlaylab/opaline uniqueness`, 100,000 seeds give 100,000 different SVGs in each of the seven styles. At 1,000,000 seeds, 99.99% are different (84 pairs share a face); at 10,000,000, 99.9%. The options add 52,000+ looks on top, so two users who share a seed's face can still be told apart by style or option.
+- **Distinct, with honest numbers.** Each style can draw about 4.3 billion faces: the seed is hashed to 32 bits. Measured with `pnpm --filter @inlaylab/opaline uniqueness`, 100,000 seeds give 100,000 different SVGs in each of the seven 1.2 styles. At 1,000,000 seeds, 99.99% are different (84 pairs share a face); at 10,000,000, 99.9%. The options add 52,000+ looks on top, so two users who share a seed's face can still be told apart by style or option.
 - **Deterministic.** Cache avatars on a CDN, store them in a database or send them in email. They never change.
 - **SSR safe.** No hydration warnings in Next, Nuxt, SvelteKit or Angular SSR. React support is server-component safe.
 - **Tiny.** The core has zero dependencies, and each style is a separate import.
@@ -76,8 +76,12 @@ Grey circles, shared initials and random colors all fall short. Opaline fixes ea
 | **Plush**    | `@inlaylab/opaline/plush`    | Gummy critters, now and then wearing a hat, glasses or a flower        |
 | **Pip**      | `@inlaylab/opaline/pip`      | Bold geometric shapes with two pill eyes, legible down to 24px         |
 | **Initials** | `@inlaylab/opaline/initials` | The person's initials on a seeded tile with the Opaline sheen          |
+| **Critters** | `@inlaylab/opaline/critters` | Soft vinyl-toy animals, nineteen of them, with jolly faces             |
+| **Cosmos**   | `@inlaylab/opaline/cosmos`   | Glowing pastel space objects with colour themes                        |
+| **Folk**     | `@inlaylab/opaline/folk`     | Human-like people with funny, moody or cocky faces                     |
+| **Doodle**   | `@inlaylab/opaline/doodle`   | Face-only line drawings with big, expressive features                  |
 
-A seed keeps its color in every style, so switching looks never recolors your users.
+A seed keeps its color in every style, so switching looks never recolors your users. Two exceptions, by design: Critters use natural animal coats (set `coat: 'palette'` to follow the seed), and Cosmos objects keep their own colours.
 
 Not sure which to pick? Try them all in the [playground](https://inlaylab.github.io/Opaline/playground/).
 
@@ -209,11 +213,11 @@ const { svg } = createAvatar(clay, { seed: 'ada@inlay.dev' })
 createAvatar(clay, { seed: 'ada@inlay.dev', body: 'hood', ears: 'bunny', finish: 'gloss' }).svg
 ```
 
-| Option   | Values                  | Default                                                                               |
-| -------- | ----------------------- | ------------------------------------------------------------------------------------- |
-| `body`   | `jelly`, `hood`         | Chosen by the seed                                                                    |
-| `ears`   | `cat`, `bear`, `bunny`  | Chosen by the seed (hood only)                                                        |
-| `finish` | `flat`, `soft`, `gloss` | `soft` for Clay. `flat` for Morph and Gradient, so their output is unchanged from 0.2 |
+| Option   | Values                                 | Default                                                                                  |
+| -------- | -------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `body`   | `jelly`, `hood`, `ghost`               | Chosen by the seed (`ghost` only when set)                                               |
+| `ears`   | `cat`, `bear`, `bunny`, `fox`, `mouse` | Chosen by the seed (hood only; `fox` and `mouse` only when set)                          |
+| `finish` | `flat`, `soft`, `gloss`, `gummy`       | `soft` for Clay and Critters, `flat` for Morph, Gradient and Pip (Plush uses `material`) |
 
 Any option you set fixes that part of the avatar. The seed fills in the rest.
 
@@ -227,12 +231,36 @@ createAvatar(plush, { seed: 'ada@inlay.dev', accessory: 'beret' })
 createAvatar(pip, { seed: 'ada@inlay.dev', form: 'heart', finish: 'gloss' })
 ```
 
-| Option      | Values                                                                                   | Default                                          |
-| ----------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `accessory` | `none`, `beret`, `cap`, `beanie`, `glasses`, `shades`, `flower`, `sprout`, `bow`, `star` | Chosen by the seed (Plush). Eyewear needs a face |
-| `form`      | `circle`, `squircle`, `triangle`, `hexagon`, `diamond`, `heart`, `drop`, `pill`, `dome`  | Chosen by the seed (Pip)                         |
+| Option      | Values                                                                                                                                       | Default                                                                      |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `accessory` | `none`, `beret`, `cap`, `beanie`, `glasses`, `shades`, `flower`, `sprout`, `bow`, `star`; 1.3: `pumpkin`, `party`, `headphones`, `crown`     | Chosen by the seed (Plush; the 1.3 hats only when set). Eyewear needs a face |
+| `form`      | `circle`, `squircle`, `triangle`, `hexagon`, `diamond`, `heart`, `drop`, `pill`, `dome`; 1.3: `star`, `clover`, `shield`, `octagon`, `ghost` | Chosen by the seed (Pip; the 1.3 forms only when set)                        |
 
-Plush takes `mood`, `expression` and `family` like Morph; its gummy look is its finish. Pip takes `finish` (`flat` by default) and has pill eyes instead of expressions.
+Plush takes `mood`, `expression` and `family` like Morph, and `material`: `gummy` (its 1.2 look, the default), `flat` or `soft`. Plush ignores `finish`, as in 1.2, so a finish shared across looks never changes it. Pip takes `finish` (`flat` by default) and has pill eyes instead of expressions.
+
+### New in 1.3
+
+Everything new is opt-in: every 1.2 seed and option set renders the same bytes in 1.3.
+
+```ts
+import { critters } from '@inlaylab/opaline/critters'
+import { cosmos } from '@inlaylab/opaline/cosmos'
+import { folk } from '@inlaylab/opaline/folk'
+import { doodle } from '@inlaylab/opaline/doodle'
+
+createAvatar(critters, { seed, animal: 'owl', coat: 'palette', finish: 'gummy' })
+createAvatar(cosmos, { seed, object: 'rocket', tone: 1, shape: 'squircle' })
+createAvatar(folk, { seed, scheme: 'sepia', mood: 'attitude', shape: 'circle' })
+createAvatar(doodle, { seed, scheme: 'duotone', expression: 'smug' })
+createAvatar(morph, { seed, title: 'Ada', status: 'away' }) // reads "Ada (away)"
+```
+
+- **Critters**: `animal` (19), `coat` (`natural` or `palette`), `finish`, `mood`, `expression`. Faces are jolly unless you set a mood.
+- **Cosmos**: `object` (15), `tone` (the colour theme), `shape` (a night-sky tile). The face never recolours.
+- **Folk** and **Doodle**: `scheme` (`natural`, `bare`, `sepia`, `greyscale`, `duotone`, `muted`, `electric`, `inverted`, `pastel`, `bold`, `sunrise`), their own `expression` and `mood` (`happy`, `playful`, `attitude`, `moody`, `surprised`), and `shape` (`square` by default, or `none`). Folk defaults to `duotone`, Doodle to `natural`; `duotone` takes the seed's palette hue. With `shape: 'none'` the background is transparent, and `inverted` and `electric` draw light lines meant for a dark page.
+- **Every style**: `status` (`online`, `away`, `busy`, `offline`) draws a badge, not below 20px. With `title` or `alt` the label names it (`Ada (away)`), even below 20px; without them the status is not announced. `finish: 'gummy'` on Morph, Gradient, Pip, Clay and Critters. Eight more expressions (`starry`, `love`, `laugh`, `cool`, `nice`, `smug`, `yawn`, `wow`) by name. Gradient takes `form` for its own smooth outlines, Morph three more `family` values (`star`, `drop`, `bloom`).
+
+Bundle size grew in 1.3: shared faces, the gummy finish, Gradient forms and the status badge ship with every style. Core + Morph is 6.6 KB gzipped (4.9 KB in 1.2). Making them optional is planned for 1.4 (see the [roadmap](ROADMAP.md)).
 
 ### Initials and shapes
 
@@ -250,20 +278,22 @@ createAvatar(initials, { seed: user.id, text: 'Op', palette: 'pastel' })
 Every style takes `shape`: `circle`, `squircle` or `square`.
 
 - **Aura and Initials** draw their tile in that shape. They default to `circle`.
-- **Morph, Gradient, Clay, Plush and Pip** draw a soft tinted tile in that shape behind the character. Leave `shape` unset for a transparent background.
+- **Morph, Gradient, Clay, Plush, Pip and Critters** draw a soft tinted tile in that shape behind the character. Leave `shape` unset for a transparent background.
+- **Cosmos** sits on a night-sky tile in that shape.
+- **Folk and Doodle** default to `square`; `none` drops the tile.
 
 ### Theming
 
 Colors come out as CSS variables, so you can restyle avatars without rebuilding them.
 
-| Variable                               | Colors                                     |
-| -------------------------------------- | ------------------------------------------ |
-| `--avatar-c1`                          | The body                                   |
+| Variable                               | Colors                                             |
+| -------------------------------------- | -------------------------------------------------- |
+| `--avatar-c1`                          | The body                                           |
 | `--avatar-c2`                          | The arms and ears (Clay), the gummy centre (Plush) |
-| `--avatar-c3`                          | The hood opening (Clay)                    |
-| `--avatar-fg`                          | The Initials letters                       |
-| `--avatar-ring`                        | The ring between grouped avatars           |
-| `--avatar-more-bg`, `--avatar-more-fg` | The `+N` chip in a group                   |
+| `--avatar-c3`                          | The hood opening (Clay)                            |
+| `--avatar-fg`                          | The Initials letters                               |
+| `--avatar-ring`                        | The ring between grouped avatars                   |
+| `--avatar-more-bg`, `--avatar-more-fg` | The `+N` chip in a group                           |
 
 ## Avatar groups
 
@@ -331,7 +361,14 @@ pnpm dev     # build the packages, then run the docs site with live reload
 pnpm check   # build, test, lint, size, package checks, e2e and perf
 ```
 
-Requires Node 22 or later and pnpm.
+Requires Node 22 or later and pnpm. Read [CONTRIBUTING.md](CONTRIBUTING.md) before you open a pull request: it covers the output promise, golden files, size budgets and changesets.
+
+## Project
+
+- [Changelog](CHANGELOG.md): every release, every package.
+- [Roadmap](ROADMAP.md): what comes in 1.4 and 2.0.
+- [Contributing](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md).
+- [Security policy](SECURITY.md): report a vulnerability privately, not in an issue.
 
 ## The name
 
@@ -339,7 +376,7 @@ Opaline is milky, softly glowing glass. Light goes in and comes back as color th
 
 ## Support
 
-Ivorie is free and MIT licensed. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/bhavikbhensajaliya).
+Opaline is free and MIT licensed. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/bhavikbhensajaliya).
 
 ## License
 

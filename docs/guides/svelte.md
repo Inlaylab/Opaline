@@ -45,14 +45,14 @@ The package installs the core (`@inlaylab/opaline`) for you. It is built with Sv
 
 Props:
 
-| Prop        | What it does                                                         |
-| ----------- | -------------------------------------------------------------------- |
-| `seed`      | The string that decides the avatar. Use a stable ID or email.        |
-| `look`      | The style object: `aura`, `morph`, `gradient`, `clay`, `plush`, `pip` or `initials`. |
-| `size`      | Width and height in pixels.                                          |
-| `src`       | A photo URL. See [photo fallback](#6-photo-fallback).                |
-| `alt`       | The accessible name. With `alt` the avatar is `role="img"`. Without it, the avatar is hidden from assistive tech. |
-| other props | Every core option: `palette`, `shape`, `finish`, `expression`, `body`, `ears`, `text`, `accessory`, `form` and more. |
+| Prop        | What it does                                                                                                                                                                                              |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `seed`      | The string that decides the avatar. Use a stable ID or email.                                                                                                                                             |
+| `look`      | The style object: `aura`, `morph`, `gradient`, `clay`, `plush`, `pip`, `initials`, `critters`, `cosmos`, `folk` or `doodle`.                                                                              |
+| `size`      | Width and height in pixels.                                                                                                                                                                               |
+| `src`       | A photo URL. See [photo fallback](#6-photo-fallback).                                                                                                                                                     |
+| `alt`       | The accessible name. With `alt` the avatar is `role="img"`. Without it, the avatar is hidden from assistive tech.                                                                                         |
+| other props | Every core option: `palette`, `shape`, `finish`, `expression`, `body`, `ears`, `text`, `accessory`, `form`, and in 1.3 `status`, `animal`, `coat`, `object`, `tone`, `scheme`, Plush `material` and more. |
 
 Use the user ID rather than an email if people can change their email. Changing the seed changes the face. Props are reactive: change `seed` and the avatar redraws.
 
@@ -73,15 +73,19 @@ Use the user ID rather than an email if people can change their email. Changing 
 <Avatar seed={id} look={initials} />
 ```
 
-| Style    | Looks like                                    |
-| -------- | --------------------------------------------- |
-| Aura     | A glowing orb of blended color                |
-| Morph    | An organic blob with a face                   |
-| Gradient | Smooth shapes with expressive faces           |
-| Clay     | Small characters with jelly or hood bodies    |
-| Plush    | Gummy critters with a seeded accessory         |
-| Pip      | Geometric shapes with two pill eyes           |
-| Initials | Letters from the seed on a seeded tile        |
+| Style    | Looks like                                 |
+| -------- | ------------------------------------------ |
+| Aura     | A glowing orb of blended color             |
+| Morph    | An organic blob with a face                |
+| Gradient | Smooth shapes with expressive faces        |
+| Clay     | Small characters with jelly or hood bodies |
+| Plush    | Gummy critters with a seeded accessory     |
+| Pip      | Geometric shapes with two pill eyes        |
+| Initials | Letters from the seed on a seeded tile     |
+| Critters | Soft vinyl-toy animals, nineteen of them   |
+| Cosmos   | Glowing pastel space objects               |
+| Folk     | Human-like people with personality faces   |
+| Doodle   | Face-only line drawings                    |
 
 ## 5. Customize Clay and Initials
 
@@ -231,12 +235,12 @@ const png = new Resvg(forRaster(createAvatar(clay, { seed }), { size: 512 })).re
 
 ## Troubleshooting
 
-| Problem | Fix |
-| ------- | --- |
-| Avatar changed after a user edited their email | Seed with a stable user ID. |
-| Photo never shows | Check `src` loads in the network tab. A failed photo keeps the generated avatar on purpose. |
-| Svelte 4 project | The package needs Svelte 5.20 or later. |
-| Avatar group ring looks wrong on a dark page | Set `--avatar-ring` to your page background. |
+| Problem                                        | Fix                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Avatar changed after a user edited their email | Seed with a stable user ID.                                                                 |
+| Photo never shows                              | Check `src` loads in the network tab. A failed photo keeps the generated avatar on purpose. |
+| Svelte 4 project                               | The package needs Svelte 5.20 or later.                                                     |
+| Avatar group ring looks wrong on a dark page   | Set `--avatar-ring` to your page background.                                                |
 
 ## Next steps
 

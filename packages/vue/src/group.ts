@@ -1,4 +1,10 @@
-import { avatarGroup, type GroupMember, type Shape, type Style } from '@inlaylab/opaline'
+import {
+  avatarGroup,
+  type GroupMember,
+  type Shape,
+  type Status,
+  type Style,
+} from '@inlaylab/opaline'
 import { defineComponent, h, type PropType } from 'vue'
 import { Avatar, type AvatarProps } from './avatar.ts'
 
@@ -50,6 +56,7 @@ export const AvatarGroup = defineComponent({
                   seed: m.seed,
                   src: m.src,
                   alt: m.alt,
+                  status: m.status ?? (attrs.status as Status | undefined),
                 }),
               ],
             ),

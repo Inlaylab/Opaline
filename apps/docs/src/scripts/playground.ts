@@ -1,6 +1,11 @@
+import { siteHue } from './hue'
 import { createAvatar, type Style } from '@inlaylab/opaline'
 import { aura } from '@inlaylab/opaline/aura'
 import { clay } from '@inlaylab/opaline/clay'
+import { cosmos } from '@inlaylab/opaline/cosmos'
+import { critters } from '@inlaylab/opaline/critters'
+import { doodle } from '@inlaylab/opaline/doodle'
+import { folk } from '@inlaylab/opaline/folk'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
@@ -9,7 +14,19 @@ import { plush } from '@inlaylab/opaline/plush'
 import { toPng } from '@inlaylab/opaline/png'
 import { randomHero } from './heroes'
 
-const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials, plush, pip }
+const STYLES: Record<string, Style<any>> = {
+  morph,
+  gradient,
+  aura,
+  clay,
+  initials,
+  plush,
+  pip,
+  critters,
+  cosmos,
+  folk,
+  doodle,
+}
 /** Styles that always fill a tile, so their shape defaults to circle and they have no face. */
 const TILED = new Set(['aura', 'initials'])
 /** Every control, by name. Its value is `#pg-<name>` (input or select) or the checked `pg-<name>` radio. */
@@ -24,11 +41,21 @@ const FIELDS = [
   'form',
   'shape',
   'text',
+  'gform',
+  'animal',
+  'coat',
+  'object',
+  'scheme',
+  'face',
+  'status',
   'size',
 ]
-/** Plush has no finish (its gummy look is its finish); Pip has pill eyes, not expressions. */
-const NO_FINISH = new Set(['aura', 'initials', 'plush'])
-const NO_EXPRESSION = new Set(['aura', 'initials', 'pip'])
+/** Aura and Initials keep their sheen; Cosmos glows on its own; Folk and Doodle are line drawings. */
+const NO_FINISH = new Set(['aura', 'initials', 'cosmos', 'folk', 'doodle'])
+/** Pip has pill eyes; Folk and Doodle have their own faces (the Face control). */
+const NO_EXPRESSION = new Set(['aura', 'initials', 'pip', 'folk', 'doodle'])
+/** Folk and Doodle sit on a square tile unless told otherwise, and can drop it (`none`). */
+const PERSONA = new Set(['folk', 'doodle'])
 const DEFAULTS: Record<string, string> = { seed: 'Starfire', style: 'morph', size: '64' }
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
@@ -66,13 +93,22 @@ function chosen(): { style: string; opts: Opts } {
     const v = field(key)
     if (v) opts[key] = v
   }
-  if (!NO_FINISH.has(style)) set('finish')
+  if (style === 'plush' && field('finish')) opts.material = field('finish')
+  else if (!NO_FINISH.has(style)) set('finish')
   if (!NO_EXPRESSION.has(style)) set('expression')
   set('palette')
   if (style === 'clay') set('body')
   if (style === 'plush') set('accessory')
   if (style === 'pip') set('form')
-  set('shape')
+  if (style === 'gradient' && field('gform')) opts.form = field('gform')
+  if (style === 'critters') (set('animal'), set('coat'))
+  if (style === 'cosmos') set('object')
+  if (PERSONA.has(style)) {
+    set('scheme')
+    if (field('face')) opts.expression = field('face')
+  }
+  set('status')
+  if (field('shape') !== 'none' || PERSONA.has(style)) set('shape')
   if (style === 'initials' && field('text').trim()) opts.text = field('text')
   return { style, opts }
 }
@@ -83,6 +119,10 @@ function link(): string {
   const { style, opts } = chosen()
   const all: Record<string, string> = { seed: field('seed'), style, size: field('size') }
   for (const [k, v] of Object.entries(opts)) all[k] = String(v)
+  // Gradient's form and the persona faces have controls of their own.
+  if (style === 'gradient' && opts.form) ((all.gform = String(opts.form)), delete all.form)
+  if (PERSONA.has(style) && opts.expression)
+    ((all.face = String(opts.expression)), delete all.expression)
   for (const key of FIELDS)
     if (all[key] !== undefined && all[key] !== (DEFAULTS[key] ?? '')) params.set(key, all[key]!)
   const q = params.toString()
@@ -169,7 +209,10 @@ function render(): void {
   // The light pane carries the plain output; every other copy needs an instance so IDs never clash.
   const avatar = createAvatar(look, { seed, ...opts, size: 176 })
   // The site accent follows the seed's hue, like every style does.
-  document.documentElement.style.setProperty('--hue', String(avatar.toJSON().hue))
+  document.documentElement.style.setProperty(
+    '--hue',
+    String(siteHue(avatar.toJSON().hue as number)),
+  )
   $('pg-light').innerHTML = avatar.svg
   $('pg-dark').innerHTML = createAvatar(look, { seed, ...opts, size: 176, instance: 'd' }).svg
   for (const el of document.querySelectorAll<HTMLElement>('[data-at]'))
@@ -204,11 +247,22 @@ function render(): void {
   $('pg-text-field').hidden = style !== 'initials'
   $('pg-accessory-field').hidden = style !== 'plush'
   $('pg-form-field').hidden = style !== 'pip'
+  $('pg-gform-field').hidden = style !== 'gradient'
+  $('pg-animal-field').hidden = style !== 'critters'
+  $('pg-coat-field').hidden = style !== 'critters'
+  $('pg-object-field').hidden = style !== 'cosmos'
+  $('pg-scheme-field').hidden = !PERSONA.has(style)
+  $('pg-face-field').hidden = !PERSONA.has(style)
+  $('pg-shape-none').hidden = !PERSONA.has(style)
   $('pg-finish-field').hidden = NO_FINISH.has(style)
   $('pg-expression-field').hidden = NO_EXPRESSION.has(style)
   // The first shape option is each style's own default: a circle tile, or no tile at all.
-  $('pg-shape-default').textContent = TILED.has(style) ? 'Circle' : 'None'
-  $('pg-caption').textContent = `${style} · ${size}px`
+  $('pg-shape-default').textContent = TILED.has(style)
+    ? 'Circle'
+    : PERSONA.has(style)
+      ? 'Square'
+      : 'None'
+  $('pg-caption').textContent = `${style}, ${size}px`
   // The address bar always holds a link to what is on screen.
   if (link() !== location.pathname + location.search + location.hash)
     history.replaceState(history.state, '', link())
@@ -219,6 +273,8 @@ export function initPlayground(): void {
   const controls = $('pg-controls')
   controls.addEventListener('input', render)
   controls.addEventListener('change', render)
+  // Enter in the seed field must not reload the page.
+  controls.addEventListener('submit', (e) => e.preventDefault())
   // Export size sits under the code, outside the form: without this the caption, code and PNG kept
   // the old size until some other control re-rendered, and that late re-render could shift the
   // buttons between mouse down and up, so a PNG click was lost.
@@ -227,6 +283,8 @@ export function initPlayground(): void {
     setField('seed', randomHero(field('seed')))
     render()
   })
+  for (const r of document.querySelectorAll<HTMLInputElement>('input[name="pg-view"]'))
+    r.addEventListener('change', () => ($('pg-preview').dataset.view = r.value))
   $('pg-reset').addEventListener('click', () => {
     reset()
     render()

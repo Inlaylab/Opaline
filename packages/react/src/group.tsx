@@ -37,7 +37,14 @@ export function AvatarGroup({
     <span data-opaline-group="" role="group" aria-label={alt || undefined} style={css(g.css.root)}>
       {g.shown.map((m, i) => (
         <span key={i} data-opaline-member="" style={css(i ? g.css.member : g.css.first)}>
-          <Avatar {...options} size={size} seed={m.seed} src={m.src} alt={m.alt} />
+          <Avatar
+            {...options}
+            size={size}
+            seed={m.seed}
+            src={m.src}
+            alt={m.alt}
+            status={m.status ?? options.status}
+          />
         </span>
       ))}
       {g.rest ? (

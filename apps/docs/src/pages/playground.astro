@@ -1,17 +1,15 @@
 ---
 import Base from '../layouts/Base.astro'
+import { STYLE_INFO } from '../data/styles'
 
-const STYLES = [
-  ['morph', 'Morph', 'Blob with a face'],
-  ['gradient', 'Gradient', 'Smooth and expressive'],
-  ['aura', 'Aura', 'Glowing orb'],
-  ['clay', 'Clay', 'Little characters'],
-  ['initials', 'Initials', 'Letters on a tile'],
-  ['plush', 'Plush', 'Gummy critters'],
-  ['pip', 'Pip', 'Shapes with pill eyes'],
-]
+const STYLES = STYLE_INFO.map((s) => [s.id, s.name, s.hint])
 const PALETTES = ['', 'pastel', 'electric', 'muted', 'warm', 'cool', 'mono']
-const EXPRESSIONS = ['beam', 'content', 'proud', 'dreamy', 'hmm', 'shy', 'sleepy', 'curious', 'oh', 'cheeky', 'wink', 'giggle']
+const EXPRESSIONS = ['beam', 'content', 'proud', 'dreamy', 'hmm', 'shy', 'sleepy', 'curious', 'oh', 'cheeky', 'wink', 'giggle', 'starry', 'love', 'laugh', 'cool', 'nice', 'smug', 'yawn', 'wow']
+const FACES = ['grin', 'beam', 'laugh', 'hearts', 'starry', 'wink', 'cheeky', 'whistle', 'smug', 'cool', 'boss', 'meh', 'chill', 'thinking', 'moody', 'dreamy', 'shook', 'oops']
+const ANIMALS = ['cat', 'sloth', 'dog', 'hamster', 'rabbit', 'ferret', 'fox', 'panda', 'koala', 'penguin', 'deer', 'frog', 'owl', 'chick', 'axolotl', 'lion', 'pig', 'mouse', 'octopus']
+const OBJECTS = ['sun', 'galaxy', 'black hole', 'nebula', 'comet', 'moon', 'crescent', 'star', 'quasar', 'pulsar', 'ufo', 'rocket', 'asteroid', 'supernova', 'satellite']
+const SCHEMES = ['natural', 'bare', 'sepia', 'greyscale', 'duotone', 'muted', 'electric', 'inverted', 'pastel', 'bold', 'sunrise']
+const GFORMS = ['pebble', 'bean', 'cloud', 'leaf', 'shell', 'wave', 'bun', 'kite', 'cushion']
 const TABS = [
   ['core', 'Core'],
   ['react', 'React'],
@@ -22,8 +20,8 @@ const TABS = [
   ['svg', 'SVG'],
   ['json', 'JSON'],
 ]
-const ACCESSORIES = ['none', 'beret', 'cap', 'beanie', 'glasses', 'shades', 'flower', 'sprout', 'bow', 'star']
-const FORMS = ['circle', 'squircle', 'triangle', 'hexagon', 'diamond', 'heart', 'drop', 'pill', 'dome']
+const ACCESSORIES = ['none', 'beret', 'cap', 'beanie', 'glasses', 'shades', 'flower', 'sprout', 'bow', 'star', 'pumpkin', 'party', 'headphones', 'crown']
+const FORMS = ['circle', 'squircle', 'triangle', 'hexagon', 'diamond', 'heart', 'drop', 'pill', 'dome', 'star', 'clover', 'shield', 'octagon', 'ghost']
 const AT = [24, 32, 40, 56, 80]
 ---
 
@@ -31,20 +29,19 @@ const AT = [24, 32, 40, 56, 80]
   <div class="wrap page-head">
     <div>
       <h1>Design your avatar</h1>
-      <p>Type a name, pick a style, tweak the details. Everything you see is the library's real output, and the address bar always links to it.</p>
+      <p>Pick a style, tweak the details, copy the code. Everything you see is the library's real output, and the address bar always links to it.</p>
     </div>
     <div class="page-actions">
-      <button class="btn" id="pg-reset" type="button">Reset</button>
-      <button class="btn primary" id="pg-share" type="button">Share</button>
+      <button class="btn" id="pg-reset" type="button">Reset options</button>
+      <button class="btn primary" id="pg-share" type="button">Copy link</button>
     </div>
   </div>
 
   <div class="wrap pg2">
-    <form class="card pg2-controls" id="pg-controls" onsubmit="return false" aria-label="Avatar options">
+    <form class="card pg2-controls" id="pg-controls" aria-label="Avatar options">
       <div class="step">
-        <span class="step-num">1</span>
         <label class="step-title" for="pg-seed">Seed</label>
-        <p class="step-hint">Any string: a user ID, an email or a name. The same seed always gives the same avatar.</p>
+        <p class="step-hint">A user ID, an email or a name. The same seed always draws the same avatar.</p>
         <div class="seed-row">
           <input class="input" id="pg-seed" value="Starfire" autocomplete="off" spellcheck="false" />
           <button class="btn icon" id="pg-shuffle" type="button" aria-label="Random hero" title="Random hero">
@@ -54,11 +51,10 @@ const AT = [24, 32, 40, 56, 80]
       </div>
 
       <fieldset class="step">
-        <span class="step-num">2</span>
         <legend class="step-title">Style</legend>
         <div class="style-cards">
           {STYLES.map(([value, label, hint], i) => (
-            <label class="style-card">
+            <label class="style-card" title={hint}>
               <input type="radio" name="pg-style" value={value} checked={i === 0} />
               <span class="style-thumb" data-thumb={value}></span>
               <span class="style-name">{label}</span>
@@ -69,10 +65,9 @@ const AT = [24, 32, 40, 56, 80]
       </fieldset>
 
       <fieldset class="step">
-        <span class="step-num">3</span>
-        <legend class="step-title">Details</legend>
+        <legend class="step-title">Color</legend>
         <div class="sub">
-          <span class="sub-label">Palette</span>
+          <span class="sub-label sr-only">Palette</span>
           <div class="swatches">
             {PALETTES.map((p) => (
               <label class="swatch" title={p || 'vivid (default)'}>
@@ -83,25 +78,34 @@ const AT = [24, 32, 40, 56, 80]
             ))}
           </div>
         </div>
+      </fieldset>
+
+      <fieldset class="step">
+        <legend class="step-title">Shape and finish</legend>
         <div class="sub" id="pg-shape-field">
           <span class="sub-label">Shape</span>
           <div class="seg">
             <label><input type="radio" name="pg-shape" value="" checked /><span id="pg-shape-default">None</span></label>
             {['circle', 'squircle', 'square'].map((v) => <label><input type="radio" name="pg-shape" value={v} /><span>{v}</span></label>)}
+            <label id="pg-shape-none" hidden><input type="radio" name="pg-shape" value="none" /><span>none</span></label>
           </div>
         </div>
         <div class="sub" id="pg-finish-field">
           <span class="sub-label">Finish</span>
           <div class="seg">
             <label><input type="radio" name="pg-finish" value="" checked /><span>Default</span></label>
-            {['flat', 'soft', 'gloss'].map((v) => <label><input type="radio" name="pg-finish" value={v} /><span>{v}</span></label>)}
+            {['flat', 'soft', 'gloss', 'gummy'].map((v) => <label><input type="radio" name="pg-finish" value={v} /><span>{v}</span></label>)}
           </div>
         </div>
+      </fieldset>
+
+      <fieldset class="step">
+        <legend class="step-title">Details</legend>
         <div class="sub" id="pg-body-field" hidden>
           <span class="sub-label">Body</span>
           <div class="seg">
             <label><input type="radio" name="pg-body" value="" checked /><span>Seeded</span></label>
-            {['jelly', 'hood'].map((v) => <label><input type="radio" name="pg-body" value={v} /><span>{v}</span></label>)}
+            {['jelly', 'hood', 'ghost'].map((v) => <label><input type="radio" name="pg-body" value={v} /><span>{v}</span></label>)}
           </div>
         </div>
         <label class="sub" id="pg-accessory-field" hidden>
@@ -111,6 +115,34 @@ const AT = [24, 32, 40, 56, 80]
         <label class="sub" id="pg-form-field" hidden>
           <span class="sub-label">Form</span>
           <select class="select" id="pg-form"><option value="">Seeded</option>{FORMS.map((f) => <option>{f}</option>)}</select>
+        </label>
+        <label class="sub" id="pg-gform-field" hidden>
+          <span class="sub-label">Form</span>
+          <select class="select" id="pg-gform"><option value="">Classic</option>{GFORMS.map((f) => <option>{f}</option>)}</select>
+        </label>
+        <label class="sub" id="pg-animal-field" hidden>
+          <span class="sub-label">Animal</span>
+          <select class="select" id="pg-animal"><option value="">Seeded</option>{ANIMALS.map((a) => <option>{a}</option>)}</select>
+        </label>
+        <label class="sub" id="pg-coat-field" hidden>
+          <span class="sub-label">Coat</span>
+          <select class="select" id="pg-coat"><option value="">Natural</option><option>palette</option></select>
+        </label>
+        <label class="sub" id="pg-object-field" hidden>
+          <span class="sub-label">Object</span>
+          <select class="select" id="pg-object"><option value="">Seeded</option>{OBJECTS.map((o) => <option>{o}</option>)}</select>
+        </label>
+        <label class="sub" id="pg-scheme-field" hidden>
+          <span class="sub-label">Colour look</span>
+          <select class="select" id="pg-scheme"><option value="">Default</option>{SCHEMES.map((s) => <option>{s}</option>)}</select>
+        </label>
+        <label class="sub" id="pg-face-field" hidden>
+          <span class="sub-label">Face</span>
+          <select class="select" id="pg-face"><option value="">Seeded</option>{FACES.map((f) => <option>{f}</option>)}</select>
+        </label>
+        <label class="sub" id="pg-status-field">
+          <span class="sub-label">Status</span>
+          <select class="select" id="pg-status"><option value="">None</option>{['online', 'away', 'busy', 'offline'].map((s) => <option>{s}</option>)}</select>
         </label>
         <label class="sub" id="pg-expression-field">
           <span class="sub-label">Expression</span>
@@ -125,13 +157,20 @@ const AT = [24, 32, 40, 56, 80]
 
     <div class="pg2-main">
       <div class="card pg2-stage">
-        <div class="pg-preview" id="pg-preview">
+        <div class="pg2-bar">
+          <span class="at-caption" id="pg-caption"></span>
+          <div class="seg view-seg" role="radiogroup" aria-label="Preview background">
+            <label><input type="radio" name="pg-view" value="both" checked /><span>Both</span></label>
+            <label><input type="radio" name="pg-view" value="light" /><span>Light</span></label>
+            <label><input type="radio" name="pg-view" value="dark" /><span>Dark</span></label>
+          </div>
+        </div>
+        <div class="pg-preview" id="pg-preview" data-view="both">
           <div class="pane light" id="pg-light"></div>
           <div class="pane dark" id="pg-dark"></div>
         </div>
         <div class="pg2-sizes" aria-label="At common sizes">
           {AT.map((px) => <span class="at" data-at={px} title={`${px}px`}></span>)}
-          <span class="at-caption muted" id="pg-caption"></span>
         </div>
       </div>
 

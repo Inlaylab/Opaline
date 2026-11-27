@@ -1,12 +1,4 @@
-import {
-  createAvatar,
-  type AuraOptions,
-  type ClayOptions,
-  type InitialsOptions,
-  type PipOptions,
-  type PlushOptions,
-  type Style,
-} from '@inlaylab/opaline'
+import { createAvatar, statusLabel, type LookOptions, type Style } from '@inlaylab/opaline'
 import { useId, type JSX } from 'react'
 import { Photo } from './photo.tsx'
 
@@ -19,11 +11,7 @@ export type AvatarProps = {
   src?: string
   /** Accessible name. Without it the avatar is decorative and hidden from assistive tech. */
   alt?: string
-} & ClayOptions &
-  AuraOptions &
-  InitialsOptions &
-  PlushOptions &
-  PipOptions
+} & LookOptions
 
 /** Server-safe: without `src` it renders no client code at all. */
 export function Avatar({ look, size = 64, src, alt, ...options }: AvatarProps): JSX.Element {
@@ -34,7 +22,9 @@ export function Avatar({ look, size = 64, src, alt, ...options }: AvatarProps): 
     <span
       data-opaline=""
       style={{ display: 'inline-block', width: size, height: size, position: 'relative' }}
-      {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': true })}
+      {...(alt
+        ? { role: 'img', 'aria-label': statusLabel(alt, options.status) }
+        : { 'aria-hidden': true })}
     >
       {/* Safe: the core escapes every input that reaches the SVG. */}
       <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} />

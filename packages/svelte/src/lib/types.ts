@@ -1,12 +1,4 @@
-import type {
-  AuraOptions,
-  ClayOptions,
-  GroupMember,
-  InitialsOptions,
-  PipOptions,
-  PlushOptions,
-  Style,
-} from '@inlaylab/opaline'
+import type { GroupMember, LookOptions, Style } from '@inlaylab/opaline'
 
 export type AvatarProps = {
   seed: string | number | null | undefined
@@ -17,11 +9,7 @@ export type AvatarProps = {
   src?: string
   /** Accessible name. Without it the avatar is decorative and hidden from assistive tech. */
   alt?: string
-} & ClayOptions &
-  AuraOptions &
-  InitialsOptions &
-  PlushOptions &
-  PipOptions
+} & LookOptions
 
 export type AvatarGroupProps = Omit<AvatarProps, 'seed' | 'src' | 'alt'> & {
   /** Seeds, or `{ seed, src, alt }` for a photo and an accessible name. */

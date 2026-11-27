@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro'
+import { STYLE_INFO } from '../data/styles'
 
 const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
 
@@ -81,28 +82,25 @@ const MANAGERS = [
   ['yarn', 'yarn add'],
   ['bun', 'bun add'],
 ]
-const STYLES = [
-  ['clay', 'Clay', 'Little characters: a jelly body, or a hood with cat, bear or bunny ears.'],
-  ['morph', 'Morph', 'An organic blob with a face.'],
-  ['gradient', 'Gradient', 'Smooth shapes with expressive faces.'],
-  ['aura', 'Aura', 'A glowing orb of blended color.'],
-  ['plush', 'Plush', 'Gummy critters, now and then wearing a hat, glasses or a flower.'],
-  ['pip', 'Pip', 'Bold geometric shapes with two pill eyes. Reads well at 24px.'],
-  ['initials', 'Initials', 'Readable letters on a seeded tile.'],
-]
+const STYLES = STYLE_INFO.map((s) => [s.id, s.name, s.blurb])
 const OPTIONS = [
   ['seed', 'string · number · null', 'Any string: user ID, email, name. Emails are lower-cased; whitespace is trimmed.'],
   ['size', 'number', 'Pixel size. Default 64 (40 in groups).'],
   ['palette', 'vivid · pastel · electric · muted · warm · cool · mono', 'Color family. Default vivid.'],
-  ['shape', 'circle · squircle · square', 'Every style. Aura and Initials default to circle; on the others it adds a tinted tile.'],
-  ['finish', 'flat · soft · gloss', 'Light and shade. Morph, Gradient and Pip default to flat, Clay to soft. Plush is always gummy.'],
-  ['expression', 'beam · content · … · giggle', 'Fix the face. Or set mood: happy · calm · surprised · playful.'],
+  ['shape', 'circle · squircle · square · none', 'Every style. Aura and Initials default to circle; Folk and Doodle to square (none drops it); on the others it adds a tile.'],
+  ['finish', 'flat · soft · gloss · gummy', 'Light and shade. Morph, Gradient and Pip default to flat, Clay and Critters to soft. Plush ignores it.'],
+  ['material', 'gummy · flat · soft', 'Plush only. Default gummy, its jelly look.'],
+  ['expression', 'beam · content · … · wow', 'Fix the face. Or set mood: happy · calm · surprised · playful. Folk and Doodle have their own: grin · smug · moody · … and moods happy · playful · attitude · moody · surprised.'],
+  ['status', 'online · away · busy · offline', 'Every style: a presence badge, bottom right. With a title or alt it is read out, e.g. Ada (away).'],
   ['face', 'boolean', 'Every style but Aura and Initials shows a face unless false.'],
-  ['family', 'egg · duo · tri · cushion · clover · petal', 'Morph and Gradient blob shape.'],
-  ['body · ears', 'jelly · hood · cat · bear · bunny', 'Clay only. Ears go with the hood.'],
+  ['family', 'egg · duo · tri · cushion · clover · petal · star · drop · bloom', 'Morph and Gradient blob shape.'],
+  ['animal · coat', 'cat · fox · owl · … · octopus · natural · palette', 'Critters only. Seeded animal; natural coat unless coat: palette.'],
+  ['object · tone', 'sun · galaxy · ufo · … · satellite · number', 'Cosmos only. Seeded object and colour theme.'],
+  ['scheme', 'natural · bare · sepia · greyscale · duotone · muted · electric · inverted · pastel · bold · sunrise', 'Folk and Doodle: the colour look. Folk defaults to duotone in the seed palette hue; Doodle to natural.'],
+  ['body · ears', 'jelly · hood · ghost · cat · bear · bunny · fox · mouse', 'Clay only. Ears go with the hood.'],
   ['text', 'string', 'Initials only. Up to 3 letters, shown as given.'],
-  ['accessory', 'none · beret · cap · beanie · glasses · shades · flower · sprout · bow · star', 'Plush only. Seeded when unset; glasses and shades need the face.'],
-  ['form', 'circle · squircle · triangle · hexagon · diamond · heart · drop · pill · dome', 'Pip only. Seeded when unset.'],
+  ['accessory', 'none · beret · cap · beanie · glasses · shades · flower · sprout · bow · star · pumpkin · party · headphones · crown', 'Plush only. Seeded when unset (the last four only when set); glasses and shades need the face.'],
+  ['form', 'Pip: circle · … · dome · star · clover · shield · octagon · ghost. Gradient: pebble · bean · cloud · leaf · shell · wave · bun · kite · cushion', 'Pip: seeded when unset. Gradient: its classic outline when unset.'],
   ['backdrop', 'none · tint', 'A soft circle behind the body.'],
   ['src · alt', 'string', 'Components only: a photo shown once it loads, and an accessible name.'],
   ['members · max', 'array · number', 'Groups only: who to show, and how many before the +N chip.'],
@@ -175,7 +173,7 @@ const fw0 = FRAMEWORKS[0]!.id
 
       <section id="styles" class="doc-sec">
         <h2>Styles</h2>
-        <p>Seven looks, one API. A seed keeps its color in every look. Each is its own import path: <code>@inlaylab/opaline/&lt;style&gt;</code>.</p>
+        <p>Eleven looks, one API. A seed keeps its color in every look except Critters (natural coats) and Cosmos. Each is its own import path: <code>@inlaylab/opaline/&lt;style&gt;</code>. <a href={`${BASE}styles/`}>See every style up close</a>.</p>
         <ul class="card style-list">
           {STYLES.map(([id, name, desc]) => (
             <li>
@@ -253,7 +251,7 @@ const fw0 = FRAMEWORKS[0]!.id
           <opaline-avatar id="theme-avatar" seed="ada@inlay.dev" look="clay" size="96"></opaline-avatar>
           <label class="field">--avatar-c1<input type="color" id="theme-c1" value="#7c3aed" /></label>
           <label class="field">--avatar-c2<input type="color" id="theme-c2" value="#5b21b6" /></label>
-          <pre class="code" id="theme-css" style="padding:0"></pre>
+          <pre class="code flush" id="theme-css"></pre>
         </div>
       </section>
 

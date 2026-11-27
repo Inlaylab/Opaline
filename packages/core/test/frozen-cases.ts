@@ -1,6 +1,10 @@
 import type { Style } from '../src/index.ts'
 import { aura } from '../src/styles/aura.ts'
 import { clay } from '../src/styles/clay.ts'
+import { cosmos } from '../src/styles/cosmos.ts'
+import { critters } from '../src/styles/critters.ts'
+import { doodle } from '../src/styles/doodle.ts'
+import { folk } from '../src/styles/folk.ts'
 import { gradient } from '../src/styles/gradient.ts'
 import { initials } from '../src/styles/initials.ts'
 import { morph } from '../src/styles/morph.ts'
@@ -88,4 +92,48 @@ export const FROZEN: readonly (readonly [string, Style<any>, readonly object[]])
       { shape: 'square' },
     ],
   ],
+]
+
+/** 1.3 additions, locked in their own manifest (`frozen-1.3.json`); `frozen-1.json` never changes. */
+export const FROZEN_13: readonly (readonly [string, Style<any>, readonly object[]])[] = [
+  [
+    'morph',
+    morph,
+    [{ finish: 'gummy' }, { status: 'online' }, { family: 'bloom' }, { expression: 'cool' }],
+  ],
+  ['gradient', gradient, [{ finish: 'gummy' }, { form: 'bun' }, { form: 'leaf', finish: 'soft' }]],
+  ['clay', clay, [{ body: 'ghost' }, { body: 'hood', ears: 'fox' }, { finish: 'gummy' }]],
+  ['plush', plush, [{ material: 'flat' }, { material: 'soft' }, { accessory: 'crown' }]],
+  ['pip', pip, [{ form: 'star' }, { finish: 'gummy' }]],
+  [
+    'critters',
+    critters,
+    [
+      {},
+      { animal: 'panda' },
+      { coat: 'palette' },
+      { finish: 'gummy' },
+      { finish: 'gloss' },
+      { mood: 'calm' },
+      { shape: 'squircle' },
+    ],
+  ],
+  [
+    'cosmos',
+    cosmos,
+    [{}, { object: 'galaxy' }, { object: 'quasar', tone: 2 }, { face: false }, { shape: 'circle' }],
+  ],
+  [
+    'folk',
+    folk,
+    [
+      {},
+      { scheme: 'natural' },
+      { scheme: 'sepia' },
+      { scheme: 'sunrise', shape: 'circle' },
+      { shape: 'none' },
+      { mood: 'attitude' },
+    ],
+  ],
+  ['doodle', doodle, [{}, { scheme: 'inverted' }, { shape: 'squircle' }]],
 ]

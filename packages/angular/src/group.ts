@@ -37,6 +37,7 @@ import { OpalineAvatar } from './avatar'
           [seed]="m.seed"
           [src]="m.src"
           [alt]="m.alt"
+          [status]="m.status"
           [look]="look()"
           [size]="size()"
           [palette]="palette()"
