@@ -14,37 +14,29 @@ const SEEDS = Array.from({ length: 100 }, (_, i) => {
         ? `user_${(i * 7919).toString(36)}`
         : `${n}${i}`
 })
-const LOOKS = ['morph', 'gradient', 'aura', 'clay', 'plush', 'pip', 'initials']
+const LOOKS = ['morph', 'gradient', 'aura', 'clay', 'plush', 'pip', 'initials', 'folk', 'doodle', 'critters', 'cosmos']
+// The family row shows styles that keep the seed's hue; Critters and Cosmos have their own colours.
+const FAMILY = LOOKS.filter((l) => l !== 'critters' && l !== 'cosmos')
 const VERSION = core.version
-// The spotlight's floating characters: [look, seed, x %, y %, size px, depth 0 (sharp) .. 1 (far)].
-const FLOATERS: [string, string, number, number, number, number][] = [
-  ['pip', 'Nova', 4, 10, 64, 0.05],
-  ['plush', 'Juniper', 11, 24, 76, 0],
-  ['pip', 'Orbit', 27, 5, 30, 0.7],
-  ['pip', 'Kiwi', 2, 40, 34, 0.8],
-  ['plush', 'Mochi', 82, 9, 70, 0.1],
-  ['pip', 'Pebble', 91, 33, 44, 0.5],
-  ['pip', 'Sprocket', 90, 2, 28, 0.85],
-  ['plush', 'Bramble', 72, 5, 34, 0.75],
-  ['pip', 'Comet', 58, 3, 26, 0.9],
-  ['plush', 'Tofu', 40, 7, 28, 0.95],
-  ['pip', 'Fizz', 48, 96, 26, 1],
-]
-const ACCESSORIES = ['beret', 'cap', 'beanie', 'glasses', 'shades', 'flower', 'sprout', 'bow', 'star', 'none']
-const FORMS = ['circle', 'squircle', 'triangle', 'hexagon', 'diamond', 'heart', 'drop', 'pill', 'dome']
+const ANIMALS = ['cat', 'fox', 'panda', 'koala', 'penguin', 'frog', 'owl', 'axolotl']
+const OBJECTS = ['sun', 'galaxy', 'nebula', 'comet', 'moon', 'ufo', 'rocket', 'satellite']
+const FACES = ['grin', 'laugh', 'hearts', 'wink', 'smug', 'cool', 'moody', 'shook']
+const LOOK_NAMES = ['natural', 'duotone', 'sepia', 'muted', 'electric', 'pastel', 'bold', 'sunrise']
 const FEATURES = [
-  ['plush', 'Plush', 'Gummy critters. Now and then one wears a hat, glasses or a flower.', 'accessory', ACCESSORIES],
-  ['pip', 'Pip', 'Bold shapes with two pill eyes. Clear at 24px, friendly at 240.', 'form', FORMS],
+  ['critters', 'Critters', 'Soft vinyl-toy animals in natural coats. Nineteen of them, picked by the seed.', 'animal', ANIMALS],
+  ['cosmos', 'Cosmos', 'Glowing space objects with their own colors, from suns to satellites.', 'object', OBJECTS],
+  ['folk', 'Folk', 'People with personality: head and shoulders, and a face that is funny, moody or cocky.', 'expression', FACES],
+  ['doodle', 'Doodle', 'Face-only line drawings with big, expressive features and a colour look.', 'scheme', LOOK_NAMES],
 ] as const
 // Measured, not estimated: `pnpm --filter @inlaylab/opaline uniqueness` draws 100,000 seeds per
 // style and finds 100,000 different SVGs in each. The ceiling is the 32-bit seed hash: about 4.3
-// billion faces per style, and at 1,000,000 seeds 99.99% differ (84 pairs repeat). Looks: the option combinations of all seven
+// billion faces per style, and at 1,000,000 seeds 99.99% differ (84 pairs repeat). Looks: the option combinations of the seven 1.2
 // styles (families, bodies, accessories, forms, faces, finishes, backgrounds, palettes) add up to
 // 52,542 before the seed varies color and outline.
 const STATS: [number, string, string, string][] = [
   [100000, '', 'users, 100,000 different faces', 'Measured in every style. Up to 4.3 billion faces each.'],
   [52000, '+', 'looks to dial in', 'Styles, shapes, faces, finishes and palettes.'],
-  [7, '', 'styles, one color per person', 'The seed picks the color first, in every look.'],
+  [11, '', 'styles, one color per person', 'The seed picks the color first. Critters and Cosmos keep their own.'],
   [0, '', 'runtime dependencies', 'A tiny core, plus native wrappers.'],
 ]
 const CREW = ['Ada', 'Kofi', 'Hana', 'Mateo', 'Priya', 'Søren']
@@ -55,7 +47,7 @@ const MEMBERS = [
   ['Hana Sato', 'hana@inlay.dev', 'Editor'],
   ['Mateo Rossi', 'mateo@inlay.dev', 'Viewer'],
 ]
-const STYLE_NAMES: Record<string, string> = { morph: 'Morph', gradient: 'Gradient', aura: 'Aura', clay: 'Clay', plush: 'Plush', pip: 'Pip', initials: 'Initials' }
+const STYLE_NAMES: Record<string, string> = { morph: 'Morph', gradient: 'Gradient', aura: 'Aura', clay: 'Clay', plush: 'Plush', pip: 'Pip', initials: 'Initials', folk: 'Folk', doodle: 'Doodle', critters: 'Critters', cosmos: 'Cosmos' }
 const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
 // Shortest working code per framework; the docs page has the full setup.
 const SHIP = [
@@ -76,22 +68,21 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
     <div class="wrap hero-grid">
     <div class="hero-head">
       <div class="hero-badges">
-        <a class="badge badge-oss" href="https://github.com/Inlaylab" target="_blank" rel="noreferrer"><span class="dot"></span><span>Open source by <b>Inlaylab</b>, v{VERSION}</span></a>
-        <a class="badge badge-new" href="#new"><span class="new-tag">New</span>Plush and Pip</a>
+        <a class="badge badge-new" href={`${BASE}changelog/`}><span class="new-tag">1.3</span>Critters, Cosmos, Folk and Doodle</a>
       </div>
-      <h1>Every user <span class="marker">gets a face.</span></h1>
-      <p>Opaline turns a user ID, email or name into a friendly avatar. The same input draws the same face on every device, as clean SVG. Nothing is uploaded or stored.</p>
+      <h1>SVG avatars for your users, from one string.</h1>
+      <p>Eleven styles, no runtime dependencies. The same seed draws the same face in React, Vue, Svelte, Angular and plain HTML. Nothing is uploaded or stored.</p>
       <div class="hero-try">
         <svg class="hero-try-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="8" r="4" /></svg>
         <input class="input" id="hero-seed" value="Starfire" placeholder="Type your name" aria-label="Type a name to draw its avatar" autocomplete="off" spellcheck="false" />
-        <button class="btn pill hero-shuffle" id="hero-shuffle" type="button">
+        <button class="btn hero-shuffle" id="hero-shuffle" type="button">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" /></svg>
           <span class="shuffle-text">Random hero</span>
         </button>
       </div>
       <div class="hero-actions">
-        <a class="btn primary pill lg" id="hero-customize" href={`${BASE}playground/`}>Customize this avatar</a>
-        <a class="btn pill lg" href={`${BASE}docs/`}>Read the docs</a>
+        <a class="btn primary lg" id="hero-customize" href={`${BASE}playground/`}>Customize this avatar</a>
+        <a class="btn lg" href={`${BASE}docs/`}>Read the docs</a>
       </div>
       <div class="install-bar">
         <span class="mono"><span class="prompt">$ </span>npm i @inlaylab/opaline</span>
@@ -101,7 +92,6 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
 
     <!-- The product window: a team page drawn by Opaline. The typed name is "You"; the dock re-skins every face. -->
     <div class="hero-window-wrap">
-      <div class="opal" aria-hidden="true"></div>
       <div class="app-window">
         <div class="app-chrome" aria-hidden="true">
           <span class="lights"><i></i><i></i><i></i></span>
@@ -144,17 +134,6 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
       </div>
     </div>
     </div>
-    <div class="marquee" aria-hidden="true">
-      {[0, 1].map((row) => (
-        <div class={`marquee-row${row ? ' rev' : ''}`}>
-          {[0, 1].map(() => (
-            <div class="marquee-track">
-              {SEEDS.slice(row * 24, row * 24 + 24).map((seed, i) => <opaline-avatar seed={seed} look={LOOKS[(i + row) % LOOKS.length]} size="56"></opaline-avatar>)}
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
   </div>
 
   <section class="stats" aria-label="Opaline in numbers">
@@ -171,45 +150,34 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
     </div>
   </section>
 
-  <section class="spotlight" id="new" aria-labelledby="new-title">
+  <section class="block spotlight" id="new" aria-labelledby="new-title">
     <div class="wrap">
-      <div class="stage">
-        <div class="floaters" aria-hidden="true">
-          {FLOATERS.map(([look, seed, x, y, size, depth], i) => (
-            <span class={depth >= 0.7 ? 'floater far' : 'floater'} style={`--x:${x}%;--y:${y}%;--depth:${depth};--i:${i}`}>
-              <opaline-avatar seed={seed} look={look} size={String(size)}></opaline-avatar>
-            </span>
-          ))}
-        </div>
-        <div class="stage-head">
-          <span class="stage-eyebrow">New in 1.2</span>
-          <h2 id="new-title">Meet <span class="marker">Plush and Pip.</span></h2>
-          <p>Two new looks, drawn as clean SVG like the rest. Pick one and try the options: every avatar below follows the name in the hero.</p>
-        </div>
-        <div class="features-pair">
-          {FEATURES.map(([look, name, blurb, option, values]) => (
-            <article class="feature" data-feature={look}>
-              <div class="feature-top">
-                <div class="feature-face" data-feature-face>
-                  <opaline-avatar seed="Starfire" look={look} size="152"></opaline-avatar>
-                </div>
-                <div class="feature-copy">
-                  <h3>{name}</h3>
-                  <p>{blurb}</p>
-                  <code>@inlaylab/opaline/{look}</code>
-                </div>
+      <div class="sec-head">
+        <h2 id="new-title">Four new styles in 1.3</h2>
+        <p>Critters, Cosmos, Folk and Doodle. Pick an option on any card: every face follows the name in the hero. <a href={`${BASE}styles/`}>See all eleven styles</a>.</p>
+      </div>
+      <div class="features-grid">
+        {FEATURES.map(([look, name, blurb, option, values]) => (
+          <article class="feature" data-feature={look}>
+            <div class="feature-top">
+              <div class="feature-face" data-feature-face>
+                <opaline-avatar seed="Starfire" look={look} size="112" shape={look === 'folk' || look === 'doodle' ? 'squircle' : undefined}></opaline-avatar>
               </div>
-              <div class="feature-label">{option}</div>
-              <div class="feature-chips" role="radiogroup" aria-label={`${name} ${option}`}>
-                <button type="button" role="radio" aria-checked="true" data-opt={option} data-value="">Seeded</button>
-                {values.map((v) => <button type="button" role="radio" aria-checked="false" data-opt={option} data-value={v}>{v}</button>)}
+              <div class="feature-copy">
+                <h3>{name}</h3>
+                <p>{blurb}</p>
               </div>
-              <div class="feature-crew">
-                {CREW.map((seed) => <opaline-avatar seed={seed} look={look} size="44" title={seed}></opaline-avatar>)}
-              </div>
-            </article>
-          ))}
-        </div>
+            </div>
+            <div class="feature-label">{option}</div>
+            <div class="feature-chips" role="radiogroup" aria-label={`${name} ${option}`}>
+              <button type="button" role="radio" aria-checked="true" data-opt={option} data-value="">Seeded</button>
+              {values.map((v) => <button type="button" role="radio" aria-checked="false" data-opt={option} data-value={v}>{v}</button>)}
+            </div>
+            <div class="feature-crew">
+              {CREW.map((seed) => <opaline-avatar seed={seed} look={look} size="40" title={seed} shape={look === 'folk' || look === 'doodle' ? 'squircle' : undefined}></opaline-avatar>)}
+            </div>
+          </article>
+        ))}
       </div>
     </div>
   </section>
@@ -218,17 +186,16 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
     <div class="wrap">
       <div class="family-head">
         <div class="sec-head">
-          <h2 id="family-title">One person, one color, every style.</h2>
-          <p>The seed picks the color first, so switching looks never recolors your users. Type a name in the hero and watch the whole row follow.</p>
+          <h2 id="family-title">One person, one color, every style</h2>
+          <p>The seed picks the color first, so switching styles never recolors your users. Type a name in the hero and the whole row follows. Critters and Cosmos keep their own colors.</p>
         </div>
         <div class="family-seed" aria-live="polite"><span class="family-swatch" id="family-swatch"></span><span><b id="family-name">Starfire</b><small id="family-hue"></small></span></div>
       </div>
       <div class="family-row">
-        {LOOKS.map((l) => (
-          <a class="family-card" href={`${BASE}playground/?style=${l}`} data-family={l}>
+        {FAMILY.map((l) => (
+          <a class="family-card" href={`${BASE}styles/#${l}`} data-family={l}>
             <span class="family-tile"></span>
-            <span class="family-name">{STYLE_NAMES[l]}{(l === 'plush' || l === 'pip') && <span class="new-dot">New</span>}</span>
-            <code>/{l}</code>
+            <span class="family-name">{STYLE_NAMES[l]}</span>
           </a>
         ))}
       </div>
@@ -238,7 +205,7 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
   <section class="block ship" id="install">
     <div class="wrap ship-grid">
       <div class="sec-head">
-        <h2>Ship it in a minute.</h2>
+        <h2>Install in a minute</h2>
         <p>Install, import a style, pass a seed. Your signup flow never shows a grey silhouette again.</p>
         <ol class="ship-steps">
           <li>Install the package for your framework.</li>
@@ -267,7 +234,7 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
 
   <section class="block features">
     <div class="wrap">
-      <h2 class="lead-title">One seed in. The same face out, everywhere.</h2>
+      <h2 class="lead-title">One seed in, the same face out</h2>
       <ul class="facts">
         <li><b>Deterministic</b><span>Same seed, same avatar: on the server, in every browser, in every framework.</span></li>
         <li><b>Zero dependencies</b><span>A tiny core plus native wrappers. Import only the styles you ship.</span></li>
@@ -282,14 +249,14 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
   <section class="block" id="gallery">
     <div class="wrap">
       <div class="sec-head">
-        <h2>One hundred seeds.</h2>
+        <h2>Sixty seeds, one style at a time</h2>
         <p>Names, emails and IDs, the way real apps pass them. Hover to see the seed.</p>
       </div>
       <div class="chips segmented" id="gallery-chips">
         {LOOKS.map((l, i) => <button class="tab" type="button" data-look={l} aria-selected={i === 0 ? 'true' : 'false'}>{l}</button>)}
       </div>
       <div class="gallery" id="gallery-grid">
-        {SEEDS.map((seed) => <opaline-avatar seed={seed} look="morph" size="56" title={seed}></opaline-avatar>)}
+        {SEEDS.slice(0, 60).map((seed) => <opaline-avatar seed={seed} look="morph" size="56" title={seed}></opaline-avatar>)}
       </div>
     </div>
   </section>
@@ -299,12 +266,12 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
       <opaline-avatar-group look="morph" size="48" max="5" alt="">
         {SEEDS.slice(40, 46).map((s) => <opaline-avatar seed={s}></opaline-avatar>)}
       </opaline-avatar-group>
-      <h2>Give your users a face today.</h2>
+      <h2>Add Opaline to your app</h2>
       <p>Free and open source. Code and art are MIT licensed.</p>
       <div class="hero-actions">
-        <a class="btn primary pill lg" href={`${BASE}docs/`}>Get started</a>
-        <a class="btn pill lg" href={`${BASE}playground/`}>Open the playground</a>
-        <a class="btn pill lg" href={`${BASE}compare/`}>Compare libraries</a>
+        <a class="btn primary lg" href={`${BASE}docs/`}>Read the docs</a>
+        <a class="btn lg" href={`${BASE}playground/`}>Open the playground</a>
+        <a class="btn lg" href={`${BASE}compare/`}>Compare libraries</a>
       </div>
     </div>
   </section>
@@ -312,14 +279,31 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
     import { createAvatar, type Style } from '@inlaylab/opaline'
     import { aura } from '@inlaylab/opaline/aura'
     import { clay } from '@inlaylab/opaline/clay'
+    import { cosmos } from '@inlaylab/opaline/cosmos'
+    import { critters } from '@inlaylab/opaline/critters'
+    import { doodle } from '@inlaylab/opaline/doodle'
+    import { folk } from '@inlaylab/opaline/folk'
     import { gradient } from '@inlaylab/opaline/gradient'
     import { initials } from '@inlaylab/opaline/initials'
     import { morph } from '@inlaylab/opaline/morph'
     import { pip } from '@inlaylab/opaline/pip'
     import { plush } from '@inlaylab/opaline/plush'
     import { randomHero } from '../scripts/heroes'
+    import { siteHue } from '../scripts/hue'
 
-    const STYLES: Record<string, Style<any>> = { morph, gradient, aura, clay, initials, plush, pip }
+    const STYLES: Record<string, Style<any>> = {
+      morph,
+      gradient,
+      aura,
+      clay,
+      initials,
+      plush,
+      pip,
+      critters,
+      cosmos,
+      folk,
+      doodle,
+    }
     const hero = document.getElementById('hero-seed') as HTMLInputElement
     const face = document.getElementById('hero-face')!
     const customize = document.getElementById('hero-customize') as HTMLAnchorElement
@@ -342,22 +326,22 @@ const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
         hue = a.toJSON().hue as number
       }
       document.getElementById('family-name')!.textContent = seed || 'An empty seed'
-      document.getElementById('family-hue')!.textContent = `hue ${hue}° in all seven`
+      document.getElementById('family-hue')!.textContent = `hue ${hue}° in all nine`
       document.getElementById('family-swatch')!.style.background = `oklch(0.74 0.16 ${hue})`
       // The site accent takes the seed's hue too, the same way every style does.
-      document.documentElement.style.setProperty('--hue', String(hue))
+      document.documentElement.style.setProperty('--hue', String(siteHue(hue)))
       face.setAttribute('aria-label', `Avatar for ${seed || 'an empty seed'}`)
       // The product window: the typed name is the signed-in user, and the chosen style skins the whole team.
       const name = seed || 'An empty seed'
       document.getElementById('hero-name')!.textContent = name
       document.getElementById('hero-you')!.textContent = name
-      document.getElementById('hero-hue')!.textContent = `Hue ${hue}°, the same in every style`
+      document.getElementById('hero-hue')!.textContent = `${look[0]!.toUpperCase()}${look.slice(1)}, hue ${hue}°`
       for (const el of document.querySelectorAll<HTMLElement>('[data-hero-size]'))
         el.innerHTML = createAvatar(STYLES[look]!, { seed, size: Number(el.dataset.heroSize), instance: `s${el.dataset.heroSize}` }).svg
       for (const el of document.querySelectorAll('[data-hero-you]')) el.setAttribute('seed', seed)
       for (const el of document.querySelectorAll('[data-hero-you], [data-hero-member]')) el.setAttribute('look', look)
       for (const el of document.querySelectorAll<HTMLElement>('[data-hero] .tile'))
-        el.innerHTML = createAvatar(STYLES[el.parentElement!.dataset.hero!]!, { seed, size: 56, instance: 'h' }).svg
+        el.innerHTML = createAvatar(STYLES[el.parentElement!.dataset.hero!]!, { seed, size: 40, shape: 'circle', instance: 'h' }).svg
       const q = new URLSearchParams()
       if (seed) q.set('seed', seed)
       if (look !== 'morph') q.set('style', look)

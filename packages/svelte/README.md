@@ -17,7 +17,7 @@ npm i @inlaylab/opaline-svelte
 
 Props: `seed`, `look`, `size`, `src`, `alt`, and every core option.
 
-Groups: `AvatarGroup` overlaps avatars and adds a `+N` chip past `max`.
+Groups: `AvatarGroup` overlaps avatars and adds a `+N` chip past `max`. A member's `status` (`{ seed, status }`) shows its badge; a `status` on the group goes to members without one.
 
 ```svelte
 <AvatarGroup look={clay} members={[user.email, { seed: 'grace', src, alt: 'Grace' }]} max={4} />
@@ -25,4 +25,4 @@ Groups: `AvatarGroup` overlaps avatars and adds a `+N` chip past `max`.
 
 Same seed, same avatar: from 1.0, the same seed and options give a byte-identical SVG in every 1.x release.
 
-[Playground and docs](https://inlaylab.github.io/Opaline/) · [GitHub](https://github.com/Inlaylab/Opaline) · MIT for code and art.
+[Playground and docs](https://inlaylab.github.io/Opaline/) · [GitHub](https://github.com/Inlaylab/Opaline) · [Changelog](https://github.com/Inlaylab/Opaline/blob/main/CHANGELOG.md) · MIT for code and art.

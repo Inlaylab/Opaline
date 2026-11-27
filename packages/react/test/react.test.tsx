@@ -94,3 +94,18 @@ test('react group: server markup hydrates without changes', async () => {
   })
   expect(errors).toEqual([])
 })
+
+test('react group: a group status reaches members without their own', () => {
+  const html = renderToString(
+    <AvatarGroup
+      look={STYLES.clay}
+      status="away"
+      members={[
+        { seed: 'ada', alt: 'Ada', status: 'busy' },
+        { seed: 'grace', alt: 'Grace' },
+      ]}
+    />,
+  )
+  expect(html).toContain('aria-label="Ada (busy)"')
+  expect(html).toContain('aria-label="Grace (away)"')
+})

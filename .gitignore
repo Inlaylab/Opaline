@@ -13,3 +13,5 @@ next-env.d.ts
 .nuxt
 .output
 apps/ssr-sveltekit/build
+docs/superpowers/
+.impeccable

@@ -1,0 +1,68 @@
+---
+import log from '../../../../packages/core/CHANGELOG.md?raw'
+import Base from '../layouts/Base.astro'
+import { RELEASES } from '../data/releases'
+import { STYLE_INFO } from '../data/styles'
+import { inline, parseChangelog } from '../scripts/changelog'
+
+const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
+const releases = parseChangelog(log)
+const id = (v: string) => `v${v.replaceAll('.', '-')}`
+const day = (d?: string) =>
+  d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : undefined
+// The styles each release introduced, drawn above its notes.
+const NEW_IN: Record<string, string[]> = {}
+for (const s of STYLE_INFO) {
+  const v = `${s.since}.0`
+  if (releases.some((r) => r.version === v)) (NEW_IN[v] ??= []).push(s.id)
+}
+const GROUPS = ['New', 'Improved', 'Changed', 'Fixed'] as const
+---
+
+<Base page="changelog" title="Opaline changelog: what changed in each release" description="Every Opaline release, newest first: new styles, options and fixes. Within 1.x, a seed you already use keeps drawing the same avatar.">
+  <div class="wrap page-head">
+    <div>
+      <h1>Changelog</h1>
+      <p>What changed in each release, newest first. All Opaline packages share one version number. Within 1.x, an avatar you already use never changes: new styles and options appear only when you ask for them.</p>
+    </div>
+    <div class="page-actions">
+      <a class="btn" href="https://www.npmjs.com/package/@inlaylab/opaline" target="_blank" rel="noreferrer">View on npm</a>
+      <a class="btn" href="https://github.com/Inlaylab/Opaline/releases" target="_blank" rel="noreferrer">GitHub releases</a>
+    </div>
+  </div>
+
+  <div class="wrap releases">
+    {releases.map((r, i) => {
+      const h = RELEASES[r.version]
+      const date = day(h?.date)
+      return (
+        <article class:list={['release', { latest: i === 0 }]} id={id(r.version)}>
+          <div class="release-meta">
+            <a class="release-version" href={`#${id(r.version)}`}>{r.version}</a>
+            {date && <time datetime={h!.date}>{date}</time>}
+            <span class="release-kind">{r.kind}</span>
+          </div>
+          <div class="release-main">
+            <h2>{h?.title ?? r.version}</h2>
+            {h && <p class="release-summary" set:html={inline(h.summary)} />}
+            {NEW_IN[r.version] && (
+              <div class="release-faces">
+                {NEW_IN[r.version]!.map((look) => <a href={`${BASE}styles/#${look}`} title={look}><opaline-avatar seed="Starfire" look={look} size="44" alt={look}></opaline-avatar></a>)}
+              </div>
+            )}
+            {h && GROUPS.filter((g) => h.notes[g]?.length).map((g) => (
+              <section class="release-group">
+                <h3>{g}</h3>
+                <ul>{h.notes[g]!.map((n) => <li set:html={inline(n)} />)}</ul>
+              </section>
+            ))}
+            <details class="release-full">
+              <summary>Full release notes</summary>
+              <div class="release-body" set:html={r.html} />
+            </details>
+          </div>
+        </article>
+      )
+    })}
+  </div>
+</Base>

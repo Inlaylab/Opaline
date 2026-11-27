@@ -2,7 +2,8 @@ import type { Rng } from '../prng.ts'
 import { num } from '../svg.ts'
 import { known } from './known.ts'
 
-export type Family = 'egg' | 'duo' | 'tri' | 'cushion' | 'clover' | 'petal'
+export type Family =
+  'egg' | 'duo' | 'tri' | 'cushion' | 'clover' | 'petal' | 'star' | 'drop' | 'bloom'
 export type Point = [number, number]
 export type Genome = { family: Family; lobes: number; poly: Point[]; d: string }
 
@@ -15,8 +16,15 @@ const SPEC: Record<Family, [number, number, number, number?]> = {
   cushion: [4, 0.035, 0.06, Math.PI / 4],
   clover: [4, 0.15, 0.2],
   petal: [5, 0.13, 0.17],
+  // 1.3, opt-in only through `family`: the seeded pick keeps the six 1.2 families.
+  star: [7, 0.09, 0.12],
+  drop: [1, 0.2, 0.26, Math.PI / 2],
+  bloom: [8, 0.05, 0.07],
 }
-export const FAMILIES = Object.keys(SPEC) as readonly Family[]
+/** The seeded pool (the 1.2 six). */
+export const FAMILIES: readonly Family[] = ['egg', 'duo', 'tri', 'cushion', 'clover', 'petal']
+/** Every family a `family` option accepts. */
+export const ALL_FAMILIES = Object.keys(SPEC) as readonly Family[]
 
 /** Seeded blob: a radial lobe wave plus low wobble, fit into 8..92. */
 export function genome(rng: Rng, requested?: Family): Genome {

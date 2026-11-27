@@ -1,5 +1,6 @@
 import { createIds } from './ids.ts'
 import { createRng, hash, type Rng } from './prng.ts'
+import { badge, statusLabel, type Status } from './parts/status.ts'
 import { normalizeSeed } from './seed.ts'
 import { el, escapeXml } from './svg.ts'
 
@@ -9,6 +10,8 @@ export type BaseOptions = {
   title?: string
   /** Per-instance ID suffix from a wrapper, so the same avatar can appear twice on a page. */
   instance?: string
+  /** A presence badge in the bottom-right corner. Not drawn below 20px. */
+  status?: Status
 }
 export type RenderContext = { rng: Rng; id: (name: string) => string; seed: string }
 export type Rendered = { defs?: string; body: string; picks: Record<string, unknown> }
@@ -37,7 +40,9 @@ const stableStringify = (v: unknown): string =>
     : String(JSON.stringify(v))
 
 export function createAvatar<O extends object>(style: Style<O>, options: BaseOptions & O): Avatar {
-  const { seed: rawSeed, size = 64, title, instance, ...rest } = options
+  const { seed: rawSeed, size = 64, title: rawTitle, instance, status, ...rest } = options
+  // The badge has no ids, so status stays out of the ID scope: the rest of the SVG is unchanged.
+  const title = rawTitle ? statusLabel(rawTitle, status) : rawTitle
   if (!(Number.isFinite(size) && size > 0))
     throw new RangeError('size must be a positive finite number')
   const seed = normalizeSeed(rawSeed)
@@ -65,7 +70,8 @@ export function createAvatar<O extends object>(style: Style<O>, options: BaseOpt
     },
     (label === undefined ? '' : `<title>${label}</title>`) +
       (defs ? `<defs>${defs}</defs>` : '') +
-      body,
+      body +
+      (size >= 20 ? badge(status) : ''),
   )
   return {
     svg,

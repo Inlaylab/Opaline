@@ -1,16 +1,16 @@
 import {
   createAvatar,
-  type AuraOptions,
-  type ClayOptions,
   type GroupMember,
-  type InitialsOptions,
-  type PipOptions,
-  type PlushOptions,
+  type LookOptions,
   type Shape,
   type Style,
 } from '@inlaylab/opaline'
 import { aura } from '@inlaylab/opaline/aura'
 import { clay } from '@inlaylab/opaline/clay'
+import { cosmos } from '@inlaylab/opaline/cosmos'
+import { critters } from '@inlaylab/opaline/critters'
+import { doodle } from '@inlaylab/opaline/doodle'
+import { folk } from '@inlaylab/opaline/folk'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
@@ -24,12 +24,19 @@ export type Props = {
   size?: number
   src?: string
   alt?: string
-  look?: 'morph' | 'gradient' | 'aura' | 'clay' | 'initials' | 'plush' | 'pip'
-} & ClayOptions &
-  AuraOptions &
-  InitialsOptions &
-  PlushOptions &
-  PipOptions
+  look?:
+    | 'morph'
+    | 'gradient'
+    | 'aura'
+    | 'clay'
+    | 'initials'
+    | 'plush'
+    | 'pip'
+    | 'critters'
+    | 'cosmos'
+    | 'folk'
+    | 'doodle'
+} & LookOptions
 
 export type Adapter = {
   name: string
@@ -50,6 +57,10 @@ export const STYLES: Record<NonNullable<Props['look']>, Style<any>> = {
   initials,
   plush,
   pip,
+  critters,
+  cosmos,
+  folk,
+  doodle,
 }
 
 // A real 1×1 PNG, and bytes that are not an image, so no test needs the network.
@@ -138,7 +149,7 @@ export function runContract(adapter: Adapter): void {
     for (const name of Object.keys(props)) expect(root.hasAttribute(name)).toBe(false)
   })
 
-  for (const look of ['gradient', 'clay'] as const)
+  for (const look of ['gradient', 'clay', 'critters', 'cosmos', 'folk', 'doodle'] as const)
     test(`${adapter.name}: instance ids differ for the same ${look} avatar`, async () => {
       const a = await adapter.render({ seed: 'same', look })
       const b = await adapter.render({ seed: 'same', look })
@@ -171,6 +182,30 @@ export function runContract(adapter: Adapter): void {
       const root = await adapter.render(props)
       expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
     }
+  })
+
+  test(`${adapter.name}: 1.3 styles and options reach the core`, async () => {
+    for (const props of [
+      { seed: 'b', look: 'critters', animal: 'fox', finish: 'gummy' },
+      { seed: 'b', look: 'critters', coat: 'palette', palette: 'cool', shape: 'circle' },
+      { seed: 'b', look: 'cosmos', object: 'quasar', tone: 1 },
+      { seed: 'b', look: 'cosmos', object: 'rocket', shape: 'squircle' },
+      { seed: 'b', look: 'folk', scheme: 'sepia', shape: 'circle', expression: 'smug' },
+      { seed: 'b', look: 'doodle', scheme: 'duotone', mood: 'attitude', shape: 'none' },
+      { seed: 'b', look: 'gradient', form: 'bean', finish: 'gummy' },
+      { seed: 'b', look: 'plush', material: 'flat', accessory: 'crown' },
+    ] as Props[]) {
+      const root = await adapter.render(props)
+      expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
+    }
+  })
+
+  test(`${adapter.name}: status draws the badge and names it`, async () => {
+    const props: Props = { seed: 'a', alt: 'Ada', status: 'away' }
+    const root = await adapter.render(props)
+    expect(root.getAttribute('aria-label')).toBe('Ada (away)')
+    expect(stripInstance(svgOf(root).outerHTML)).toBe(expectedSvg(props))
+    expect(svgOf(root).outerHTML).toContain('#f0a020')
   })
 
   test(`${adapter.name}: initials with shape and text reach the core`, async () => {
@@ -311,6 +346,18 @@ export function runGroupContract(adapter: GroupAdapter): void {
     await until(() => imgOf(first!)?.hidden === false)
     expect(second!.getAttribute('aria-hidden')).toBe('true')
     expect(imgOf(second!)).toBeNull()
+  })
+
+  test(`${adapter.name} group: members keep their own status`, async () => {
+    const root = await adapter.render({
+      members: [{ seed: 'ada', alt: 'Ada', status: 'busy' }, 'grace'],
+    })
+    const [first, second] = membersOf(root).map((m) =>
+      m.querySelector<HTMLElement>('[data-opaline]')!,
+    )
+    expect(first!.getAttribute('aria-label')).toBe('Ada (busy)')
+    expect(svgOf(first!).outerHTML).toContain('#e0453a')
+    expect(svgOf(second!).outerHTML).not.toContain('#e0453a')
   })
 
   test(`${adapter.name} group: avatars overlap and options reach the core`, async () => {

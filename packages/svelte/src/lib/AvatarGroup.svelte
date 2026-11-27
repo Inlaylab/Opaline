@@ -10,7 +10,7 @@
 <span data-opaline-group="" role="group" aria-label={alt || undefined} style={g.css.root}>
   {#each g.shown as m, i (i)}
     <span data-opaline-member="" style={i ? g.css.member : g.css.first}>
-      <Avatar {...options} {size} seed={m.seed} src={m.src} alt={m.alt} />
+      <Avatar {...options} {size} seed={m.seed} src={m.src} alt={m.alt} status={m.status ?? options.status} />
     </span>
   {/each}
   {#if g.rest}

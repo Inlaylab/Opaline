@@ -47,14 +47,14 @@ defineProps<{ user: { email: string; name: string } }>()
 
 Props:
 
-| Prop        | What it does                                                         |
-| ----------- | -------------------------------------------------------------------- |
-| `seed`      | The string that decides the avatar. Use a stable ID or email.        |
-| `look`      | The style object: `aura`, `morph`, `gradient`, `clay`, `plush`, `pip` or `initials`. |
-| `size`      | Width and height in pixels.                                          |
-| `src`       | A photo URL. See [photo fallback](#6-photo-fallback).                |
-| `alt`       | The accessible name. With `alt` the avatar is `role="img"`. Without it, the avatar is hidden from assistive tech. |
-| other props | Every core option: `palette`, `shape`, `finish`, `expression`, `body`, `ears`, `text`, `accessory`, `form` and more. |
+| Prop        | What it does                                                                                                                                                                                              |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `seed`      | The string that decides the avatar. Use a stable ID or email.                                                                                                                                             |
+| `look`      | The style object: `aura`, `morph`, `gradient`, `clay`, `plush`, `pip`, `initials`, `critters`, `cosmos`, `folk` or `doodle`.                                                                              |
+| `size`      | Width and height in pixels.                                                                                                                                                                               |
+| `src`       | A photo URL. See [photo fallback](#6-photo-fallback).                                                                                                                                                     |
+| `alt`       | The accessible name. With `alt` the avatar is `role="img"`. Without it, the avatar is hidden from assistive tech.                                                                                         |
+| other props | Every core option: `palette`, `shape`, `finish`, `expression`, `body`, `ears`, `text`, `accessory`, `form`, and in 1.3 `status`, `animal`, `coat`, `object`, `tone`, `scheme`, Plush `material` and more. |
 
 Use the user ID rather than an email if people can change their email. Changing the seed changes the face.
 
@@ -77,15 +77,19 @@ import { initials } from '@inlaylab/opaline/initials'
 </template>
 ```
 
-| Style    | Looks like                                    |
-| -------- | --------------------------------------------- |
-| Aura     | A glowing orb of blended color                |
-| Morph    | An organic blob with a face                   |
-| Gradient | Smooth shapes with expressive faces           |
-| Clay     | Small characters with jelly or hood bodies    |
-| Plush    | Gummy critters with a seeded accessory         |
-| Pip      | Geometric shapes with two pill eyes           |
-| Initials | Letters from the seed on a seeded tile        |
+| Style    | Looks like                                 |
+| -------- | ------------------------------------------ |
+| Aura     | A glowing orb of blended color             |
+| Morph    | An organic blob with a face                |
+| Gradient | Smooth shapes with expressive faces        |
+| Clay     | Small characters with jelly or hood bodies |
+| Plush    | Gummy critters with a seeded accessory     |
+| Pip      | Geometric shapes with two pill eyes        |
+| Initials | Letters from the seed on a seeded tile     |
+| Critters | Soft vinyl-toy animals, nineteen of them   |
+| Cosmos   | Glowing pastel space objects               |
+| Folk     | Human-like people with personality faces   |
+| Doodle   | Face-only line drawings                    |
 
 ## 5. Customize Clay and Initials
 
@@ -108,7 +112,8 @@ Any option you set fixes that part. The seed fills in everything else.
 <img src="../launch/images/new-in-1-1.png" alt="Initials, avatar groups and PNG export, new in 1.1" width="100%">
 
 ```vue
-<Avatar seed="ada.lovelace@inlay.dev" :look="initials" shape="squircle" /> <!-- AL -->
+<Avatar seed="ada.lovelace@inlay.dev" :look="initials" shape="squircle" />
+<!-- AL -->
 <Avatar :seed="user.id" :look="initials" text="Op" palette="pastel" />
 ```
 
@@ -247,12 +252,12 @@ If `members` can change after mount, use a `computed` for `group` instead of a p
 
 ## Troubleshooting
 
-| Problem | Fix |
-| ------- | --- |
-| Avatar changed after a user edited their email | Seed with a stable user ID. |
-| Photo never shows | Check `src` loads in the network tab. A failed photo keeps the generated avatar on purpose. |
-| Gradients look wrong with several Vue apps | Set `app.config.idPrefix` on each app. |
-| Avatar group ring looks wrong on a dark page | Set `--avatar-ring` to your page background. |
+| Problem                                        | Fix                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Avatar changed after a user edited their email | Seed with a stable user ID.                                                                 |
+| Photo never shows                              | Check `src` loads in the network tab. A failed photo keeps the generated avatar on purpose. |
+| Gradients look wrong with several Vue apps     | Set `app.config.idPrefix` on each app.                                                      |
+| Avatar group ring looks wrong on a dark page   | Set `--avatar-ring` to your page background.                                                |
 
 ## Next steps
 

@@ -1,4 +1,8 @@
 import { clay } from '../src/styles/clay.ts'
+import { cosmos } from '../src/styles/cosmos.ts'
+import { critters } from '../src/styles/critters.ts'
+import { doodle } from '../src/styles/doodle.ts'
+import { folk } from '../src/styles/folk.ts'
 import { aura } from '../src/styles/aura.ts'
 import { gradient } from '../src/styles/gradient.ts'
 import { initials } from '../src/styles/initials.ts'
@@ -23,3 +27,11 @@ goldenSuite(plush, 'plush')
 goldenSuite(plush, 'plush-glasses', { accessory: 'glasses' })
 goldenSuite(pip, 'pip')
 goldenSuite(pip, 'pip-gloss', { finish: 'gloss' })
+goldenSuite(gradient, 'gradient-gummy', { finish: 'gummy' })
+goldenSuite(plush, 'plush-flat', { material: 'flat' })
+goldenSuite(critters, 'critters')
+goldenSuite(critters, 'critters-gummy', { finish: 'gummy' })
+goldenSuite(cosmos, 'cosmos')
+goldenSuite(folk, 'folk')
+goldenSuite(doodle, 'doodle')
+goldenSuite(morph, 'morph-status', { status: 'away' })

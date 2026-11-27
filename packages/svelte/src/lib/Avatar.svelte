@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createAvatar } from '@inlaylab/opaline'
+  import { createAvatar, statusLabel } from '@inlaylab/opaline'
   import Photo from './Photo.svelte'
   import type { AvatarProps } from './types.js'
 
@@ -14,7 +14,7 @@
   data-opaline=""
   style="display:inline-block;width:{size}px;height:{size}px;position:relative"
   role={alt ? 'img' : undefined}
-  aria-label={alt || undefined}
+  aria-label={alt ? statusLabel(alt, options.status) : undefined}
   aria-hidden={alt ? undefined : 'true'}
 >
   <span style="display:contents">{@html svg}</span>

@@ -5,20 +5,36 @@ import {
   accessory as wearOver,
   EYEWEAR,
   eyewear,
+  SEEDED_ACCESSORIES,
   type Accessory,
 } from '../parts/accessory.ts'
 import { face } from '../parts/face.ts'
-import { bbox, type Box } from '../parts/finish.ts'
+import {
+  bbox,
+  drawBubbles,
+  finishDefs,
+  finishOver,
+  gummyDefs,
+  gummyOver,
+  gummyShadow,
+  type Box,
+  type Finish,
+} from '../parts/finish.ts'
 import { inscribed } from '../parts/inscribed.ts'
 import { known } from '../parts/known.ts'
 import { PALETTES, pickBase } from '../parts/palette.ts'
-import { FAMILIES as ALL_FAMILIES, genome, type Family, type Point } from '../parts/shape.ts'
+import { ALL_FAMILIES, genome, type Family, type Point } from '../parts/shape.ts'
 import { backdrop, SHAPES } from '../parts/tile.ts'
 import { el, num } from '../svg.ts'
 import type { BlobOptions } from './blob.ts'
 import { colorVars, lch } from './paint.ts'
 
 export type PlushOptions = Omit<BlobOptions, 'finish'> & {
+  /**
+   * `gummy` (default) is the 1.2 jelly look; `flat` and `soft` draw the same dripping body without
+   * it. Plush ignores `finish`, as in 1.2, so a finish shared across looks never changes it.
+   */
+  material?: Exclude<Finish, 'gloss'>
   /**
    * Something the critter wears. Unset: drawn from the seed, often `none`. Glasses and shades sit
    * on the face, so with `face: false` they are left off (and the pick reads `none`).
@@ -28,7 +44,8 @@ export type PlushOptions = Omit<BlobOptions, 'finish'> & {
 
 const FAMILIES: Family[] = ['egg', 'cushion', 'duo', 'tri']
 const ANY_FAMILY = Object.fromEntries(ALL_FAMILIES.map((f) => [f, true])) as Record<Family, true>
-const ACCESSORY_NAMES = Object.keys(ACCESSORIES) as Accessory[]
+// The seeded draw keeps the 1.2 list; the 1.3 hats come only through `accessory`.
+const ACCESSORY_NAMES = SEEDED_ACCESSORIES
 // `none` twice: about one critter in six is bare.
 const ACCESSORY_DRAW: Accessory[] = ['none', ...ACCESSORY_NAMES]
 /** Squashed wider and lower, as if the jelly settled under its own weight. */
@@ -41,7 +58,7 @@ const ROUND = 0.45
 const POINTS = 96
 /** Drips spread evenly along the bottom, so the edge wobbles like jelly sliding off a spoon. */
 const DRIPS = 5
-const BUBBLES = 4
+const PLUSH_FINISHES = { flat: true, soft: true, gummy: true } as const
 
 /** Evenly spaced points along a closed outline. */
 function resample(poly: Point[], n: number): Point[] {
@@ -104,7 +121,7 @@ function sag(pts: Point[], g: Rng, box: Box): Point[] {
 /** Gummy critters: a clear-looking body with drips, bubbles, a face, and now and then something to wear. */
 export const plush: Style<PlushOptions> = {
   name: 'plush',
-  defaults: { palette: 'vivid', face: true, backdrop: 'none' },
+  defaults: { palette: 'vivid', face: true, backdrop: 'none', material: 'gummy' },
   render(ctx, opts): Rendered {
     const { rng, id } = ctx
     const palette = known(PALETTES, opts.palette) ?? 'vivid'
@@ -122,11 +139,8 @@ export const plush: Style<PlushOptions> = {
       return [50 + (x - 50) * k * SX, CY + (y - 50) * k * SY]
     })
     const edge = sag(resample(poly, POINTS), g, bbox(poly))
-    const shown = g.int(2, BUBBLES)
-    const bubbles = Array.from(
-      { length: BUBBLES },
-      () => [g.int(0, POINTS - 1), g.float(5, 9), g.float(1.3, 2.6)] as const,
-    )
+    const bubbles = drawBubbles(g, POINTS)
+    const finish = known(PLUSH_FINISHES, opts.material) ?? 'gummy'
     const d = smooth(edge)
     const body = bbox(edge)
     const [x, y, r] = inscribed(poly)
@@ -134,62 +148,17 @@ export const plush: Style<PlushOptions> = {
     const color = colorVars()
     // Named first, so --avatar-c1 is the body here too; the light gummy centre is --avatar-c2.
     const fill = color(lch(b.l, b.c, b.h))
-    const glow = color(lch(Math.min(b.l + 0.14, 0.97), b.c * 0.7, b.h))
-    const deep = lch(b.l - 0.2, b.c, b.h)
-    const stop = (offset: number, c: string, o: number) =>
-      el('stop', { offset, 'stop-color': c, 'stop-opacity': o })
-    const defs =
-      // Brighter in the middle, deeper at the edge: reads as clear without letting the page through.
-      el(
-        'radialGradient',
-        { id: id('jg'), cx: 0.45, cy: 0.4, r: 0.65 },
-        stop(0, glow, 0.9) + stop(0.5, glow, 0) + stop(0.62, deep, 0) + stop(1, deep, 0.5),
-      ) +
-      el('radialGradient', { id: id('jh') }, stop(0, '#fff', 0.8) + stop(1, '#fff', 0)) +
-      el(
-        'radialGradient',
-        { id: id('js') },
-        stop(0, lch(0.3, 0.08, b.h), 0.32) + stop(1, lch(0.3, 0.08, b.h), 0),
-      )
-
-    const hx = body.x + body.w * 0.3
-    const hy = body.y + body.h * 0.2
-    let out =
-      // A soft shadow pooled underneath, kept inside the frame.
-      el('ellipse', {
-        cx: num(body.x + body.w / 2),
-        cy: num(Math.min(body.y + body.h + 1, 96)),
-        rx: num(body.w * 0.46),
-        ry: 3.2,
-        fill: `url(#${id('js')})`,
-      }) +
-      el('path', { d, fill }) +
-      el('path', { d, fill: `url(#${id('jg')})` }) +
-      el('ellipse', {
-        cx: num(hx),
-        cy: num(hy),
-        rx: num(body.w * 0.17),
-        ry: num(body.h * 0.08),
-        transform: `rotate(-22 ${num(hx)} ${num(hy)})`,
-        fill: `url(#${id('jh')})`,
-      })
-    // Clear bubbles just inside the edge; any that would sit on the face are left out.
-    for (const [i, inset, br] of bubbles.slice(0, shown)) {
-      const [px, py] = edge[i]!
-      const dist = Math.hypot(50 - px, CY - py) || 1
-      const bx = px + ((50 - px) * inset) / dist
-      const by = py + ((CY - py) * inset) / dist
-      if (opts.face !== false && Math.hypot(bx - x, by - y) < r * 0.9) continue
-      out += el('circle', {
-        cx: num(bx),
-        cy: num(by),
-        r: num(br),
-        fill: '#fff',
-        'fill-opacity': 0.3,
-        stroke: '#fff',
-        'stroke-opacity': 0.6,
-        'stroke-width': 0.6,
-      })
+    let defs: string
+    let out: string
+    if (finish === 'gummy') {
+      defs = gummyDefs(id, color(lch(Math.min(b.l + 0.14, 0.97), b.c * 0.7, b.h)), b)
+      out =
+        gummyShadow(id, body) +
+        el('path', { d, fill }) +
+        gummyOver(id, d, body, edge, [50, CY], bubbles, opts.face !== false ? [x, y, r] : undefined)
+    } else {
+      defs = finishDefs(finish, id, b.h)
+      out = el('path', { d, fill }) + finishOver(finish, id, d, body)
     }
 
     const tile = known(SHAPES, opts.shape)
@@ -226,6 +195,7 @@ export const plush: Style<PlushOptions> = {
       family: shape.family,
       accessory: wears,
     }
+    if (finish !== 'gummy') picks.material = finish
     if (tile) picks.shape = tile
     if (opts.face !== false) {
       const f = face(

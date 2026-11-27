@@ -1,0 +1,108 @@
+---
+import Base from '../layouts/Base.astro'
+import { NEWEST, RANGES, STYLE_INFO } from '../data/styles'
+
+const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
+const WALL = ['ada@inlay.dev', 'Grace Hopper', 'linus.okafor', 'Kofi', 'Hana Sato', 'mateo_92', 'Priya', 'Søren', 'Lena', 'olu.adeyemi', 'Aiko', 'Zoë']
+---
+
+<Base page="styles" title="Opaline styles: eleven avatar looks from one seed" description="Every Opaline avatar style side by side: Morph, Gradient, Aura, Clay, Initials, Plush, Pip, Critters, Cosmos, Folk and Doodle, with every value of the option each one is known for.">
+  <div class="wrap page-head">
+    <div>
+      <h1>Eleven styles, one seed</h1>
+      <p>Each style is its own import, so you ship only the ones you use. Type a name to draw it in every style. The color stays the same everywhere except Critters and Cosmos, which have their own.</p>
+    </div>
+    <label class="styles-seed">
+      <span class="sr-only">Name to draw</span>
+      <input class="input" id="styles-seed" value="Starfire" autocomplete="off" spellcheck="false" />
+    </label>
+  </div>
+
+  <div class="wrap styles-layout">
+    <nav class="styles-index" id="styles-index" aria-label="Styles">
+      {STYLE_INFO.map((s) => (
+        <a href={`#${s.id}`}>
+          <opaline-avatar data-styles-seed seed="Starfire" look={s.id} size="24" shape={s.id === 'folk' || s.id === 'doodle' ? 'squircle' : undefined}></opaline-avatar>
+          <span>{s.name}</span>
+        </a>
+      ))}
+    </nav>
+
+    <div class="specimens">
+      {STYLE_INFO.map((s) => {
+        const range = RANGES[s.id]!
+        return (
+          <section class="specimen" id={s.id}>
+            <header class="specimen-head">
+              <h2>{s.name}</h2>
+              {s.since === NEWEST && <span class="new-tag">New in {NEWEST}</span>}
+              <p>{s.blurb}</p>
+            </header>
+            <div class="specimen-body">
+              <div class="specimen-face">
+                <span class="pane light"><opaline-avatar data-styles-seed seed="Starfire" look={s.id} size="132"></opaline-avatar></span>
+                <span class="pane dark"><opaline-avatar data-styles-seed seed="Starfire" look={s.id} size="132"></opaline-avatar></span>
+              </div>
+              <div class="specimen-wall">
+                {WALL.map((seed) => <opaline-avatar seed={seed} look={s.id} size="52" title={seed}></opaline-avatar>)}
+              </div>
+            </div>
+            <div class="specimen-range">
+              <h3>{range.option}, {range.values.length} values</h3>
+              <div class="range-faces">
+                {range.values.map((v) => <opaline-avatar seed="Ada" look={s.id} {...{ [range.option]: v }} size="44" title={v}></opaline-avatar>)}
+              </div>
+            </div>
+            <div class="specimen-actions">
+              <a class="btn primary" href={`${BASE}playground/?style=${s.id}`} data-style-try={s.id}>Try {s.name}</a>
+              <button class="btn" type="button" data-copy-import={`import { ${s.id} } from '@inlaylab/opaline/${s.id}'`}>Copy import</button>
+              <code>@inlaylab/opaline/{s.id}</code>
+            </div>
+          </section>
+        )
+      })}
+    </div>
+  </div>
+
+  <script>
+    const seed = document.getElementById('styles-seed') as HTMLInputElement
+    const big = document.querySelectorAll('[data-styles-seed]')
+    const tries = document.querySelectorAll<HTMLAnchorElement>('[data-style-try]')
+    const base = tries[0]!.getAttribute('href')!.split('?')[0]
+    // The large faces follow the typed name; Try opens the playground on the same name.
+    seed.addEventListener('input', () => {
+      for (const a of big) a.setAttribute('seed', seed.value)
+      for (const a of tries) {
+        const q = new URLSearchParams({ style: a.dataset.styleTry! })
+        if (seed.value) q.set('seed', seed.value)
+        a.href = `${base}?${q}`
+      }
+    })
+
+    for (const b of document.querySelectorAll<HTMLButtonElement>('[data-copy-import]'))
+      b.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(b.dataset.copyImport!)
+          b.textContent = 'Copied'
+        } catch {
+          b.textContent = 'Copy failed'
+        }
+        setTimeout(() => (b.textContent = 'Copy import'), 1400)
+      })
+
+    // The index highlights the style in view.
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('#styles-index a')]
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries)
+          if (e.isIntersecting)
+            for (const a of links) {
+              if (a.hash === `#${e.target.id}`) a.setAttribute('aria-current', 'true')
+              else a.removeAttribute('aria-current')
+            }
+      },
+      { rootMargin: '-20% 0px -70% 0px' },
+    )
+    for (const el of document.querySelectorAll('.specimen')) spy.observe(el)
+  </script>
+</Base>

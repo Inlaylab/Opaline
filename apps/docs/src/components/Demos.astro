@@ -1,7 +1,6 @@
 ---
 /** Real product screens built only from <opaline-avatar> and <opaline-avatar-group>. */
 const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/')
-const CATEGORIES = ['All', 'Social', 'SaaS', 'Teams', 'Messaging']
 const USERS = [
   ['Ada Lovelace', 'ada@inlay.dev', 'Owner', 'active', '2 min ago'],
   ['Grace Hopper', 'grace@inlay.dev', 'Admin', 'active', '1 h ago'],
@@ -34,21 +33,18 @@ const CALL = ['Ada Lovelace', 'Kofi Mensah', 'Priya Raman', 'Mateo Rossi', 'Hana
 <section class="block demos-band" id="demos">
   <div class="wrap">
     <div class="sec-head demos-head">
-      <h2>See it in real products.</h2>
-      <p>Ten screens people build every day, each made from one component. Every face comes from its seed; nothing is uploaded or stored.</p>
-    </div>
-    <div class="chips segmented demo-filter" id="demo-filter" role="tablist" aria-label="Filter demos">
-      {CATEGORIES.map((c, i) => <button class="tab" type="button" role="tab" data-cat={c} aria-selected={i === 0 ? 'true' : 'false'}>{c}</button>)}
+      <h2>Product screens built with Opaline</h2>
+      <p>Six screens people build every day, each made from one component. Every face comes from its seed; nothing is uploaded or stored.</p>
     </div>
 
     <div class="demos">
-      <article class="card demo profile-demo" data-cat="Social">
+      <article class="card demo profile-demo span-4">
         <div class="profile-cover" aria-hidden="true"></div>
         <div class="profile-body">
           <opaline-avatar class="profile-avatar" seed="maya@inlay.dev" look="clay" finish="gloss" shape="circle" size="88" alt="Maya Chen"></opaline-avatar>
           <div class="profile-head">
-            <div><b>Maya Chen</b><span class="muted">@maya · Product designer</span></div>
-            <button class="btn primary pill" type="button">Follow</button>
+            <div><b>Maya Chen</b><span class="muted">@maya, product designer</span></div>
+            <button class="btn primary" type="button">Follow</button>
           </div>
           <p class="profile-bio">Designing calm interfaces at Inlay. Tea, type and tiny details.</p>
           <ul class="profile-stats">
@@ -60,11 +56,11 @@ const CALL = ['Ada Lovelace', 'Kofi Mensah', 'Priya Raman', 'Mateo Rossi', 'Hana
         <footer class="demo-foot"><span class="demo-tag">Profile</span><code>look="clay" finish="gloss"</code></footer>
       </article>
 
-      <article class="card demo" data-cat="Social">
+      <article class="card demo span-4">
         <div class="post">
           <div class="post-head">
             <opaline-avatar seed="kofi@inlay.dev" look="morph" shape="squircle" size="44" alt="Kofi Mensah"></opaline-avatar>
-            <div><b>Kofi Mensah</b><span class="muted">2h · Public</span></div>
+            <div><b>Kofi Mensah</b><span class="muted">2h, public</span></div>
           </div>
           <p>Shipped avatars for every signup today. Nobody gets the grey silhouette any more.</p>
           <div class="post-likes">
@@ -87,34 +83,24 @@ const CALL = ['Ada Lovelace', 'Kofi Mensah', 'Priya Raman', 'Mateo Rossi', 'Hana
         <footer class="demo-foot"><span class="demo-tag">Feed</span><code>&lt;opaline-avatar-group max="3"&gt;</code></footer>
       </article>
 
-      <article class="card demo" data-cat="Teams">
-        <div class="project">
-          <div class="project-top">
-            <span class="project-icon" aria-hidden="true">◆</span>
-            <div><b>Website relaunch</b><span class="muted">Due Friday · 68%</span></div>
-          </div>
-          <div class="progress" aria-hidden="true"><span style="width:68%"></span></div>
-          <div class="project-team">
-            <opaline-avatar-group look="clay" size="32" max="4" alt="Project members">
-              {TEAM.map((s) => <opaline-avatar seed={s}></opaline-avatar>)}
-            </opaline-avatar-group>
-            <span class="muted">{TEAM.length} members</span>
-          </div>
-        </div>
-        <div class="chat" aria-label="Chat">
-          <div class="msg">
-            <opaline-avatar seed="grace@inlay.dev" look="clay" size="28" alt="Grace"></opaline-avatar>
-            <p>Hero copy is final. Can someone check mobile?</p>
-          </div>
-          <div class="msg me">
-            <p>On it, sending screenshots in 5.</p>
-            <opaline-avatar seed="ada@inlay.dev" look="clay" size="28" alt="You"></opaline-avatar>
-          </div>
-        </div>
-        <footer class="demo-foot"><span class="demo-tag">Project</span><code>&lt;opaline-avatar-group max="4"&gt;</code></footer>
+      <article class="card demo span-4">
+        <div class="list-head"><b>Inbox</b><span class="pill-count">2 new</span></div>
+        <ul class="inbox">
+          {INBOX.map(([name, subject, preview, time, unread]) => (
+            <li class={unread ? 'unread' : undefined}>
+              <opaline-avatar seed={name as string} look="aura" size="40" alt={name as string}></opaline-avatar>
+              <div class="inbox-text">
+                <div class="inbox-top"><b>{name}</b><span class="muted">{time}</span></div>
+                <span class="inbox-subject">{subject}</span>
+                <span class="muted inbox-preview">{preview}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <footer class="demo-foot"><span class="demo-tag">Inbox</span><code>look="aura"</code></footer>
       </article>
 
-      <article class="card demo wide-demo" data-cat="SaaS">
+      <article class="card demo span-8">
         <div class="admin-head">
           <div><b>Members</b><span class="muted">{USERS.length} people in Inlay Workspace</span></div>
           <button class="btn" type="button">Invite</button>
@@ -142,43 +128,8 @@ const CALL = ['Ada Lovelace', 'Kofi Mensah', 'Priya Raman', 'Mateo Rossi', 'Hana
         <footer class="demo-foot"><span class="demo-tag">Admin portal</span><code>look="initials" shape="squircle"</code></footer>
       </article>
 
-      <article class="card demo" data-cat="Messaging">
-        <div class="list-head"><b>Inbox</b><span class="pill-count">2 new</span></div>
-        <ul class="inbox">
-          {INBOX.map(([name, subject, preview, time, unread]) => (
-            <li class={unread ? 'unread' : undefined}>
-              <opaline-avatar seed={name as string} look="aura" size="40" alt={name as string}></opaline-avatar>
-              <div class="inbox-text">
-                <div class="inbox-top"><b>{name}</b><span class="muted">{time}</span></div>
-                <span class="inbox-subject">{subject}</span>
-                <span class="muted inbox-preview">{preview}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <footer class="demo-foot"><span class="demo-tag">Inbox</span><code>look="aura"</code></footer>
-      </article>
 
-      <article class="card demo" data-cat="SaaS">
-        <div class="switcher">
-          <div class="switcher-current">
-            <opaline-avatar seed="ada@inlay.dev" look="gradient" shape="circle" size="40" alt="Ada Lovelace"></opaline-avatar>
-            <div><b>Ada Lovelace</b><span class="muted">ada@inlay.dev</span></div>
-            <span class="check" aria-label="Signed in">✓</span>
-          </div>
-          <span class="switcher-label muted">Switch account</span>
-          {[['Ada at Analytical', 'ada@analytical.co'], ['Inlay Design', 'design@inlay.dev']].map(([n, e]) => (
-            <div class="switcher-row">
-              <opaline-avatar seed={e} look="gradient" shape="circle" size="32"></opaline-avatar>
-              <div><b>{n}</b><span class="muted">{e}</span></div>
-            </div>
-          ))}
-          <div class="switcher-row add"><span class="add-icon" aria-hidden="true">+</span><span>Add another account</span></div>
-        </div>
-        <footer class="demo-foot"><span class="demo-tag">Account switcher</span><code>look="gradient" shape="circle"</code></footer>
-      </article>
-
-      <article class="card demo" data-cat="Social">
+      <article class="card demo span-4">
         <div class="list-head"><b>Weekly leaderboard</b><span class="muted">Points</span></div>
         <ol class="leaders">
           {LEADERS.map(([name, pts], i) => (
@@ -193,41 +144,8 @@ const CALL = ['Ada Lovelace', 'Kofi Mensah', 'Priya Raman', 'Mateo Rossi', 'Hana
         <footer class="demo-foot"><span class="demo-tag">Leaderboard</span><code>look="clay" body="hood"</code></footer>
       </article>
 
-      <article class="card demo" data-cat="SaaS">
-        <div class="list-head"><b>Notifications</b><a href="#demos" class="muted small">Mark all read</a></div>
-        <ul class="notes">
-          {NOTES.map(([who, verb, what, when]) => (
-            <li>
-              <opaline-avatar seed={who} look="morph" size="36" alt={who}></opaline-avatar>
-              <p><b>{who}</b> {verb} <b>{what}</b><span class="muted"> · {when}</span></p>
-            </li>
-          ))}
-        </ul>
-        <footer class="demo-foot"><span class="demo-tag">Notifications</span><code>look="morph"</code></footer>
-      </article>
-
-      <article class="card demo" data-cat="Teams">
-        <div class="list-head"><b>Sprint 24</b><span class="muted">Board</span></div>
-        <div class="kanban">
-          {[['In progress', [['Billing page redesign', ['grace', 'linus']], ['Fix SSO redirect', ['mateo']]]], ['Review', [['Avatar groups', ['ada', 'priya', 'kofi', 'hana', 'olu']]]]].map(([col, cards]) => (
-            <div class="kanban-col">
-              <span class="kanban-title muted">{col as string}</span>
-              {(cards as [string, string[]][]).map(([title, people]) => (
-                <div class="kanban-card">
-                  <span>{title}</span>
-                  <opaline-avatar-group look="initials" size="22" max="3" alt="Assignees">
-                    {people.map((p) => <opaline-avatar seed={p}></opaline-avatar>)}
-                  </opaline-avatar-group>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        <footer class="demo-foot"><span class="demo-tag">Kanban</span><code>look="initials" size="22"</code></footer>
-      </article>
-
-      <article class="card demo wide-demo" data-cat="Messaging">
-        <div class="list-head"><b>Design sync</b><span class="live">● Live · 24:13</span></div>
+      <article class="card demo span-12">
+        <div class="list-head"><b>Design sync</b><span class="live">Live, 24:13</span></div>
         <div class="call">
           {CALL.map((name, i) => (
             <div class={`call-tile${i === 1 ? ' speaking' : ''}`}>
@@ -241,22 +159,8 @@ const CALL = ['Ada Lovelace', 'Kofi Mensah', 'Priya Raman', 'Mateo Rossi', 'Hana
     </div>
 
     <div class="demos-cta">
-      <a class="btn primary pill lg" href={`${BASE}playground/`}>Make your own</a>
-      <a class="btn pill lg" href={`${BASE}docs/`}>Read the docs</a>
+      <a class="btn primary lg" href={`${BASE}playground/`}>Open the playground</a>
+      <a class="btn lg" href={`${BASE}docs/`}>Read the docs</a>
     </div>
   </div>
 </section>
-
-<script>
-  const filter = document.getElementById('demo-filter')!
-  filter.addEventListener('click', (e) => {
-    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-cat]')
-    if (!b) return
-    const cat = b.dataset.cat!
-    for (const x of filter.children) x.setAttribute('aria-selected', String(x === b))
-    for (const card of document.querySelectorAll<HTMLElement>('.demos > .demo'))
-      card.hidden = cat !== 'All' && card.dataset.cat !== cat
-    // On a phone the cards are one swipe row: show the first match after filtering.
-    document.querySelector('.demos')!.scrollLeft = 0
-  })
-</script>

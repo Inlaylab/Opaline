@@ -23,9 +23,11 @@ export class UserAvatar {
 }
 ```
 
-Inputs: `seed`, `look`, `size`, `src`, `alt`, `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body`, `ears`, `text`, `accessory` and `form`. Works with Angular 20 to 22.
+Inputs: `seed`, `look`, `size`, `src`, `alt`, `palette`, `finish`, `expression`, `mood`, `face`, `family`, `backdrop`, `shape`, `body`, `ears`, `text`, `accessory`, `form`, and from 1.3 `status`, `material`, `animal`, `coat`, `object`, `tone` and `scheme`. Works with Angular 20 to 22.
 
-Groups: `OpalineAvatarGroup` (`<op-avatar-group>`) overlaps avatars and adds a `+N` chip past `max`. Inputs: `members` (seeds or `{ seed, src, alt }`), `look`, `max`, `size`, `alt`, `palette`, `shape` and `finish`.
+With `status` and `alt`, the avatar is read out as `Ada (away)`.
+
+Groups: `OpalineAvatarGroup` (`<op-avatar-group>`) overlaps avatars and adds a `+N` chip past `max`. Inputs: `members` (seeds or `{ seed, src, alt, status }`), `look`, `max`, `size`, `alt`, `palette`, `shape` and `finish`.
 
 ```html
 <op-avatar-group [members]="people" [look]="clay" max="4" alt="Project members" />
@@ -33,4 +35,4 @@ Groups: `OpalineAvatarGroup` (`<op-avatar-group>`) overlaps avatars and adds a `
 
 Same seed, same avatar: from 1.0, the same seed and options give a byte-identical SVG in every 1.x release.
 
-[Playground and docs](https://inlaylab.github.io/Opaline/) · [GitHub](https://github.com/Inlaylab/Opaline) · MIT for code and art.
+[Playground and docs](https://inlaylab.github.io/Opaline/) · [GitHub](https://github.com/Inlaylab/Opaline) · [Changelog](https://github.com/Inlaylab/Opaline/blob/main/CHANGELOG.md) · MIT for code and art.

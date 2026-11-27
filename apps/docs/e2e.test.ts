@@ -119,7 +119,7 @@ test('every style offers every shape', async () => {
   await page.goto(PG)
   await pick(page, 'style', 'morph')
   expect(await page.locator('#pg-shape-field').isVisible()).toBe(true)
-  expect(await page.locator('#pg-shape-field label').allTextContents()).toEqual([
+  expect(await page.locator('#pg-shape-field label:visible').allTextContents()).toEqual([
     'None',
     'circle',
     'squircle',
@@ -132,6 +132,10 @@ test('every style offers every shape', async () => {
   )
   await pick(page, 'style', 'aura')
   expect(await page.locator('#pg-shape-default').textContent()).toBe('Circle')
+  // Folk and Doodle sit on a square tile by default and can drop it.
+  await pick(page, 'style', 'folk')
+  expect(await page.locator('#pg-shape-default').textContent()).toBe('Square')
+  expect(await page.locator('#pg-shape-none').isVisible()).toBe(true)
 })
 
 test('user input is escaped, never rendered as markup', async () => {
@@ -224,12 +228,23 @@ test('style-specific controls hide for other styles', async () => {
   expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
   await pick(page, 'style', 'plush')
   expect(await page.locator('#pg-accessory-field').isVisible()).toBe(true)
-  expect(await page.locator('#pg-finish-field').isVisible()).toBe(false)
+  // 1.3: Plush takes gummy (its default), flat or soft.
+  expect(await page.locator('#pg-finish-field').isVisible()).toBe(true)
   expect(await page.locator('#pg-expression-field').isVisible()).toBe(true)
   await pick(page, 'style', 'pip')
   expect(await page.locator('#pg-form-field').isVisible()).toBe(true)
   expect(await page.locator('#pg-accessory-field').isVisible()).toBe(false)
   expect(await page.locator('#pg-finish-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
+  await pick(page, 'style', 'critters')
+  expect(await page.locator('#pg-animal-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-object-field').isVisible()).toBe(false)
+  await pick(page, 'style', 'cosmos')
+  expect(await page.locator('#pg-object-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-finish-field').isVisible()).toBe(false)
+  await pick(page, 'style', 'doodle')
+  expect(await page.locator('#pg-scheme-field').isVisible()).toBe(true)
+  expect(await page.locator('#pg-face-field').isVisible()).toBe(true)
   expect(await page.locator('#pg-expression-field').isVisible()).toBe(false)
 })
 
@@ -267,6 +282,49 @@ test('no horizontal scroll at phone width', () => expectNoHorizontalScroll(''))
 test('no horizontal scroll on the playground at phone width', () =>
   expectNoHorizontalScroll('playground/'))
 test('no horizontal scroll on the docs at phone width', () => expectNoHorizontalScroll('docs/'))
+test('no horizontal scroll on the styles at phone width', () => expectNoHorizontalScroll('styles/'))
+test('no horizontal scroll on the changelog at phone width', () =>
+  expectNoHorizontalScroll('changelog/'))
+
+test('the styles page shows every style and follows the typed name', async () => {
+  const page = await newPage()
+  await page.goto(`${URL_}styles/`)
+  expect(await page.locator('.specimen').count()).toBe(11)
+  expect(await page.locator('#styles-index a').count()).toBe(11)
+  await page.waitForFunction(() => document.querySelectorAll('.specimen-face svg').length === 22)
+  // Each style draws every value of its own option.
+  expect(await page.locator('#critters .range-faces opaline-avatar').count()).toBe(19)
+  await page.fill('#styles-seed', 'Ada')
+  expect(await page.locator('#cosmos [data-styles-seed]').first().getAttribute('seed')).toBe('Ada')
+  expect(await page.getAttribute('#folk [data-style-try]', 'href')).toContain('style=folk&seed=Ada')
+})
+
+test('the changelog lists every release, newest first, with its notes', async () => {
+  const page = await newPage()
+  await page.goto(`${URL_}changelog/`)
+  const versions = await page.locator('.release-version').allTextContents()
+  expect(versions[0]).toBe('1.3.0')
+  expect(versions).toContain('0.1.0')
+  expect(await page.locator('#v1-3-0 .release-group li').count()).toBeGreaterThan(5)
+  expect(await page.locator('#v1-3-0 .release-faces opaline-avatar').count()).toBe(4)
+  // The full notes sit behind a disclosure and keep the original text.
+  await page.click('#v1-3-0 .release-full summary')
+  expect(await page.locator('#v1-3-0 .release-body').textContent()).toContain('critters')
+  // No raw markdown left in the text.
+  expect(await page.locator('.releases').textContent()).not.toMatch(/\*\*|`/)
+})
+
+test('the phone menu opens, lists every page and closes on Escape', async () => {
+  const page = await newPage({ viewport: { width: 390, height: 800 } })
+  await page.goto(URL_)
+  expect(await page.locator('.nav').isVisible()).toBe(false)
+  await page.click('.menu summary')
+  expect(await page.locator('.menu-panel a').allTextContents()).toEqual(
+    expect.arrayContaining(['Playground', 'Styles', 'Docs', 'Changelog', 'Compare']),
+  )
+  await page.keyboard.press('Escape')
+  expect(await page.locator('.menu-panel').isVisible()).toBe(false)
+})
 
 test('built HTML only references assets under the Pages base', () => {
   // Windows lists nested files with backslashes; compare with forward slashes on every OS.
@@ -341,7 +399,7 @@ test('the demos render avatars and groups with +N chips', async () => {
   await page.goto(URL_)
   const demos = page.locator('#demos')
   expect(await demos.locator('opaline-avatar svg').count()).toBeGreaterThan(10)
-  expect(await demos.locator('[data-opaline-more]').allTextContents()).toEqual(['+5', '+3', '+2'])
+  expect(await demos.locator('[data-opaline-more]').allTextContents()).toEqual(['+5'])
   expect(await demos.locator('.admin-table tbody tr').count()).toBe(4)
 })
 
@@ -402,20 +460,27 @@ test('every page links the favicon, and it is a real ICO', async () => {
   expect(res.ok).toBe(true)
 })
 
-test('the demo filter shows one category at a time', async () => {
+test('the hero dock re-skins the window and stays inside it', async () => {
   const page = await newPage()
   await page.goto(URL_)
-  const shown = () => page.locator('.demos > .demo:visible')
-  const all = await shown().count()
-  expect(all).toBe(10)
-  await page.click('#demo-filter [data-cat="Messaging"]')
-  expect(await shown().count()).toBe(2)
-  for (const cat of await shown().evaluateAll((els) =>
-    els.map((e) => (e as HTMLElement).dataset.cat),
-  ))
-    expect(cat).toBe('Messaging')
-  await page.click('#demo-filter [data-cat="All"]')
-  expect(await shown().count()).toBe(all)
+  const dock = await page.locator('.hero-looks').boundingBox()
+  const win = await page.locator('.app-window').boundingBox()
+  expect(dock!.x).toBeGreaterThanOrEqual(win!.x - 1)
+  expect(dock!.x + dock!.width).toBeLessThanOrEqual(win!.x + win!.width + 1)
+  expect(await page.locator('[data-hero]').count()).toBe(11)
+  await page.click('[data-hero="critters"]')
+  expect(await page.locator('[data-hero-you]').getAttribute('look')).toBe('critters')
+  expect(await page.textContent('#hero-hue')).toContain('Critters')
+})
+
+test('the new styles section shows all four 1.3 styles', async () => {
+  const page = await newPage()
+  await page.goto(URL_)
+  expect(
+    await page
+      .locator('[data-feature]')
+      .evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset.feature)),
+  ).toEqual(['critters', 'cosmos', 'folk', 'doodle'])
 })
 
 test('the hero hands its seed to the playground', async () => {
@@ -427,39 +492,42 @@ test('the hero hands its seed to the playground', async () => {
   expect(await page.inputValue('#pg-seed')).toBe('Zoë N')
 })
 
-test('the spotlight chips dress the plush and shape the pip, big avatar and crew alike', async () => {
+test('the spotlight chips pick the critter and the folk face, big avatar and crew alike', async () => {
   const page = await newPage()
   await page.goto(URL_)
-  await page.click('[data-feature="plush"] [data-value="beret"]')
-  const plush = page.locator('[data-feature="plush"] opaline-avatar')
-  expect(await plush.count()).toBe(7)
-  for (const a of await plush.all()) expect(await a.getAttribute('accessory')).toBe('beret')
-  await page.click('[data-feature="pip"] [data-value="heart"]')
-  for (const a of await page.locator('[data-feature="pip"] opaline-avatar').all())
-    expect(await a.getAttribute('form')).toBe('heart')
+  await page.click('[data-feature="critters"] [data-value="fox"]')
+  const critters = page.locator('[data-feature="critters"] opaline-avatar')
+  expect(await critters.count()).toBe(7)
+  for (const a of await critters.all()) expect(await a.getAttribute('animal')).toBe('fox')
+  await page.click('[data-feature="folk"] [data-value="wink"]')
+  for (const a of await page.locator('[data-feature="folk"] opaline-avatar').all())
+    expect(await a.getAttribute('expression')).toBe('wink')
   // Seeded takes the option off again.
-  await page.click('[data-feature="plush"] [data-value=""]')
-  expect(await plush.first().getAttribute('accessory')).toBeNull()
+  await page.click('[data-feature="critters"] [data-value=""]')
+  expect(await critters.first().getAttribute('animal')).toBeNull()
 })
 
-test('the style family follows the hero seed with one hue across all seven', async () => {
+test('the style family follows the hero seed with one hue across all nine', async () => {
   const page = await newPage()
   await page.goto(URL_)
   await page.fill('#hero-seed', 'Grace Hopper')
   expect(await page.textContent('#family-name')).toBe('Grace Hopper')
   expect(
     await page
-      .locator('[data-feature="plush"] [data-feature-face] opaline-avatar')
+      .locator('[data-feature="critters"] [data-feature-face] opaline-avatar')
       .getAttribute('seed'),
   ).toBe('Grace Hopper')
   const fills = await page
     .locator('.family-tile svg')
     .evaluateAll((svgs) => svgs.map((s) => /--avatar-c1, (#[0-9a-f]{6})/.exec(s.outerHTML)?.[1]))
-  expect(fills).toHaveLength(7)
-  expect(new Set(fills).size).toBe(1)
+  // Nine tiles; the seven with a themeable body colour share it. Folk and Doodle take the same hue
+  // for their clothes and tint, without the CSS variable.
+  expect(fills).toHaveLength(9)
+  expect(fills.filter(Boolean)).toHaveLength(7)
+  expect(new Set(fills.filter(Boolean)).size).toBe(1)
 })
 
 test('the stats show their final numbers in the HTML, before any script runs', async () => {
   const html = readFileSync(new URL('./dist/index.html', import.meta.url), 'utf8')
-  for (const n of ['100,000', '52,000+', '7', '0']) expect(html).toContain(`>${n}</span>`)
+  for (const n of ['100,000', '52,000+', '11', '0']) expect(html).toContain(`>${n}</span>`)
 })

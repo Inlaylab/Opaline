@@ -1,6 +1,10 @@
-import { createAvatar, escapeXml, type Style } from '@inlaylab/opaline'
+import { createAvatar, escapeXml, statusLabel, type Style } from '@inlaylab/opaline'
 import { aura } from '@inlaylab/opaline/aura'
 import { clay } from '@inlaylab/opaline/clay'
+import { cosmos } from '@inlaylab/opaline/cosmos'
+import { critters } from '@inlaylab/opaline/critters'
+import { doodle } from '@inlaylab/opaline/doodle'
+import { folk } from '@inlaylab/opaline/folk'
 import { gradient } from '@inlaylab/opaline/gradient'
 import { initials } from '@inlaylab/opaline/initials'
 import { morph } from '@inlaylab/opaline/morph'
@@ -9,7 +13,19 @@ import { plush } from '@inlaylab/opaline/plush'
 
 export { OpalineAvatarGroup } from './group.ts'
 
-const LOOKS: Record<string, Style<any>> = { morph, gradient, aura, clay, initials, plush, pip }
+const LOOKS: Record<string, Style<any>> = {
+  morph,
+  gradient,
+  aura,
+  clay,
+  initials,
+  plush,
+  pip,
+  critters,
+  cosmos,
+  folk,
+  doodle,
+}
 const ATTRS = [
   'seed',
   'look',
@@ -24,11 +40,18 @@ const ATTRS = [
   'backdrop',
   'shape',
   'finish',
+  'material',
   'body',
   'ears',
   'text',
   'accessory',
   'form',
+  'animal',
+  'coat',
+  'object',
+  'tone',
+  'scheme',
+  'status',
 ] as const
 const IMG_STYLE =
   'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit'
@@ -63,6 +86,7 @@ export class OpalineAvatar extends HTMLElement {
     const size = Number.isFinite(n) && n > 0 ? n : 64
     const alt = get('alt')
     const src = get('src')
+    const tone = get('tone')?.trim()
     const svg = createAvatar(
       Object.hasOwn(LOOKS, get('look') ?? '') ? LOOKS[get('look')!]! : morph,
       {
@@ -77,14 +101,24 @@ export class OpalineAvatar extends HTMLElement {
         backdrop: get('backdrop'),
         shape: get('shape'),
         finish: get('finish'),
+        material: get('material'),
         body: get('body'),
         ears: get('ears'),
         text: get('text'),
         accessory: get('accessory'),
         form: get('form'),
+        animal: get('animal'),
+        coat: get('coat'),
+        object: get('object'),
+        // A number only when the attribute is one; anything else, '' included, lets the seed pick.
+        tone: tone && Number.isFinite(Number(tone)) ? Number(tone) : undefined,
+        scheme: get('scheme'),
+        status: get('status'),
       } as never,
     ).svg
-    const a11y = alt ? `role="img" aria-label="${escapeXml(alt)}"` : 'aria-hidden="true"'
+    const a11y = alt
+      ? `role="img" aria-label="${escapeXml(statusLabel(alt, get('status')))}"`
+      : 'aria-hidden="true"'
     const img = src ? `<img src="${escapeXml(src)}" alt="" style="${IMG_STYLE}" hidden>` : ''
     this.innerHTML = `<span data-opaline="" style="display:inline-block;width:${size}px;height:${size}px;position:relative" ${a11y}>${svg}${img}</span>`
     const el = this.querySelector('img')

@@ -1,5 +1,15 @@
 import type { Rendered, Style } from '../create.ts'
-import { bbox, finishDefs, finishOver, FINISHES, type Finish } from '../parts/finish.ts'
+import {
+  bbox,
+  drawBubbles,
+  finishDefs,
+  finishOver,
+  FINISHES,
+  gummyDefs,
+  gummyOver,
+  gummyShadow,
+  type Finish,
+} from '../parts/finish.ts'
 import { inscribed } from '../parts/inscribed.ts'
 import { known } from '../parts/known.ts'
 import { PALETTES, pickBase, type PaletteName } from '../parts/palette.ts'
@@ -10,7 +20,20 @@ import { colorVars, lch } from './paint.ts'
 
 /** The outline of a Pip's body. */
 export type PipForm =
-  'circle' | 'squircle' | 'triangle' | 'hexagon' | 'diamond' | 'heart' | 'drop' | 'pill' | 'dome'
+  | 'circle'
+  | 'squircle'
+  | 'triangle'
+  | 'hexagon'
+  | 'diamond'
+  | 'heart'
+  | 'drop'
+  | 'pill'
+  | 'dome'
+  | 'star'
+  | 'clover'
+  | 'shield'
+  | 'octagon'
+  | 'ghost'
 
 export type PipOptions = {
   palette?: PaletteName
@@ -84,8 +107,64 @@ const FORMS: Record<PipForm, Polygon | Curve> = {
     at: (t) => [Math.sin(t) * Math.sin(t / 2) ** 1.3, -Math.cos(t)],
     fit: 84,
   },
+  // 1.3, opt-in only through `form`: the seeded pick keeps the nine 1.2 forms.
+  star: {
+    kind: 'poly',
+    v: Array.from({ length: 10 }, (_, i): Point => {
+      const a = -Math.PI / 2 + (i * Math.PI) / 5
+      const r = i % 2 ? 0.58 : 1
+      return [Math.cos(a) * r, Math.sin(a) * r]
+    }),
+    t: Array(10).fill(0.3),
+    fit: 86,
+  },
+  clover: {
+    kind: 'curve',
+    at: (t) => {
+      const r = 1 + 0.32 * Math.cos(4 * t)
+      return [Math.cos(t) * r, Math.sin(t) * r]
+    },
+    fit: 84,
+  },
+  shield: {
+    kind: 'poly',
+    v: [
+      [0, -0.8],
+      [0.68, -0.58],
+      [0.62, 0.12],
+      [0, 0.82],
+      [-0.62, 0.12],
+      [-0.68, -0.58],
+    ],
+    t: [0.2, 0.3, 0.45, 0.3, 0.45, 0.3],
+    fit: 84,
+  },
+  octagon: { kind: 'poly', v: ring(8, Math.PI / 8), t: Array(8).fill(0.3), fit: 82 },
+  ghost: {
+    kind: 'curve',
+    // A dome over a wavy hem.
+    at: (t) =>
+      Math.sin(t) < 0
+        ? [Math.cos(t), Math.sin(t)]
+        : [
+            Math.cos(t),
+            0.9 * Math.min(1, Math.sin(t) * 3) + 0.08 * Math.cos(Math.cos(t) * Math.PI * 3),
+          ],
+    fit: 84,
+  },
 }
-const FORM_NAMES = Object.keys(FORMS) as PipForm[]
+/** The seeded pool: the nine 1.2 forms. */
+const FORM_NAMES: PipForm[] = [
+  'circle',
+  'squircle',
+  'triangle',
+  'hexagon',
+  'diamond',
+  'pill',
+  'dome',
+  'heart',
+  'drop',
+]
 
 /** A cubic that bends to the next edge: 0.55 of the way to the vertex makes a right angle round. */
 const K = 0.55
@@ -174,8 +253,25 @@ export const pip: Style<PipOptions> = {
     const [x, y, r] = inscribed(poly)
     // The gloss highlight goes by the inscribed circle, so it never floats off a tip or a lobe.
     const light = { x: x - r * 1.2, y: y - r * 1.2, w: r * 2.4, h: r * 2.4 }
-    let out =
-      el('path', { d, fill: colorVars()(lch(b.l, b.c, b.h)) }) + finishOver(finish, id, d, light)
+    const color = colorVars()
+    let out = el('path', { d, fill: color(lch(b.l, b.c, b.h)) }) + finishOver(finish, id, d, light)
+    let gummy = ''
+    if (finish === 'gummy') {
+      const box = bbox(poly)
+      gummy = gummyDefs(id, color(lch(Math.min(b.l + 0.14, 0.97), b.c * 0.7, b.h)), b)
+      out =
+        gummyShadow(id, box) +
+        out +
+        gummyOver(
+          id,
+          d,
+          box,
+          poly,
+          [box.x + box.w / 2, box.y + box.h / 2],
+          drawBubbles(rng.fork('gummy'), poly.length),
+          opts.face !== false ? [x, y, r] : undefined,
+        )
+    }
     const tile = known(SHAPES, opts.shape)
     if (opts.backdrop === 'tint' || tile)
       out = backdrop(tile, `var(--avatar-bg, ${lch(0.95, 0.03, b.h)})`) + out
@@ -205,6 +301,6 @@ export const pip: Style<PipOptions> = {
       }
       out += el('g', { transform: `translate(${num(cx)} ${num(cy)}) rotate(${num(tilt)})` }, eyes)
     }
-    return { defs: finishDefs(finish, id, b.h), body: out, picks }
+    return { defs: finishDefs(finish, id, b.h) + gummy, body: out, picks }
   },
 }

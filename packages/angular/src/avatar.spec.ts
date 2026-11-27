@@ -22,6 +22,7 @@ const refs = new Map<HTMLElement, ComponentRef<OpalineAvatar>>()
 
 const INPUTS = [
   'finish',
+  'material',
   'body',
   'ears',
   'seed',
@@ -38,6 +39,12 @@ const INPUTS = [
   'text',
   'accessory',
   'form',
+  'animal',
+  'coat',
+  'object',
+  'tone',
+  'scheme',
+  'status',
 ] as const
 
 async function apply(ref: ComponentRef<OpalineAvatar>, { look = 'morph', ...props }: Props) {

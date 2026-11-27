@@ -13,7 +13,7 @@
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/morph.js": "{ morph }"
     },
-    "limit": "5 KB",
+    "limit": "7 KB",
     "gzip": true
   },
   {
@@ -23,7 +23,7 @@
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/gradient.js": "{ gradient }"
     },
-    "limit": "5.25 KB",
+    "limit": "7.8 KB",
     "gzip": true
   },
   {
@@ -63,7 +63,7 @@
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/plush.js": "{ plush }"
     },
-    "limit": "8 KB",
+    "limit": "9.3 KB",
     "gzip": true
   },
   {
@@ -73,7 +73,47 @@
       "packages/core/dist/index.js": "{ createAvatar }",
       "packages/core/dist/pip.js": "{ pip }"
     },
-    "limit": "5 KB",
+    "limit": "5.65 KB",
+    "gzip": true
+  },
+  {
+    "name": "core + critters",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/critters.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/critters.js": "{ critters }"
+    },
+    "limit": "9.1 KB",
+    "gzip": true
+  },
+  {
+    "name": "core + cosmos",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/cosmos.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/cosmos.js": "{ cosmos }"
+    },
+    "limit": "8.3 KB",
+    "gzip": true
+  },
+  {
+    "name": "core + folk",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/folk.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/folk.js": "{ folk }"
+    },
+    "limit": "7.7 KB",
+    "gzip": true
+  },
+  {
+    "name": "core + doodle",
+    "path": ["packages/core/dist/index.js", "packages/core/dist/doodle.js"],
+    "import": {
+      "packages/core/dist/index.js": "{ createAvatar }",
+      "packages/core/dist/doodle.js": "{ doodle }"
+    },
+    "limit": "6.75 KB",
     "gzip": true
   },
   {
@@ -101,7 +141,11 @@
       "@inlaylab/opaline/clay",
       "@inlaylab/opaline/initials",
       "@inlaylab/opaline/plush",
-      "@inlaylab/opaline/pip"
+      "@inlaylab/opaline/pip",
+      "@inlaylab/opaline/critters",
+      "@inlaylab/opaline/cosmos",
+      "@inlaylab/opaline/folk",
+      "@inlaylab/opaline/doodle"
     ],
     "limit": "2 KB",
     "gzip": true
@@ -124,7 +168,7 @@
     "name": "angular (own code, avatar + group, partial-compiled FESM)",
     "path": "packages/angular/dist/fesm2022/inlaylab-opaline-angular.mjs",
     "ignore": ["@angular/core", "@angular/platform-browser", "@inlaylab/opaline"],
-    "limit": "3 KB",
+    "limit": "3.35 KB",
     "gzip": true
   }
 ]
